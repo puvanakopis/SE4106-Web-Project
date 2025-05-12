@@ -1,13 +1,13 @@
 .combined-container {
   padding-top: 2.5rem;
   padding-bottom: 2.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 5rem;
+  padding-right: 5rem;
   height: fit-content;
   display: grid;
   justify-content: center;
   align-items: center !important;
-  gap: 1.2rem;
+  gap: 4rem;
   grid-template-columns: 1fr;
 }
 
@@ -24,6 +24,7 @@
 
 .card:hover {
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  transform: scale(1.015);
 }
 
 
@@ -95,12 +96,14 @@
 
 
 
+/* Responsive layout */
 @media (max-width: 1024px) {
   .combined-container {
     place-items: center;
     margin: auto;
     padding: 0;
     grid-template-columns: repeat(1, 1fr);
+
   }
 }
 
