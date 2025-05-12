@@ -69,11 +69,11 @@
 }
 
 .NavItem:hover {
-  color: #1084E3 !important;
+  color: #007bff !important;
   cursor: pointer;
 }
 
 .NavItem.active {
-  color: #1084E3 !important;
+  color: #007bff !important;
   cursor: pointer;
 }

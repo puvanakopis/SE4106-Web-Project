@@ -1,8 +1,5 @@
 .combined-container {
-  padding-top: 2.5rem;
-  padding-bottom: 2.5rem;
-  padding-left: 5rem;
-  padding-right: 5rem;
+  padding: 4% 8%;
   height: fit-content;
   display: grid;
   justify-content: center;

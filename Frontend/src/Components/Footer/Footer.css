@@ -18,14 +18,14 @@
 
  /* About Us , Services , Contact Info */
 .footer-section .header{
-    color: #1084E3 !important;
+    color: #007bff !important;
     font-size: 25px;
     padding-bottom: 10px;
 }
 
 /* Contact Info */
 .footer-section .social-media{
-    color: #1084E3 !important;
+    color: #007bff !important;
     font-size: 25px;
     cursor: pointer;
 }
