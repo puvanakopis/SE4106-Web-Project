@@ -4,14 +4,15 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home"
 import Footer from './Components/Footer/Footer';
 
+
 function App() {
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <Routes>
-      <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </>
   )
 }
