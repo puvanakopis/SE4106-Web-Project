@@ -1,0 +1,84 @@
+.testimonial-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+
+/* Testimonial Box */
+.testimonial-box {
+  position: relative;
+  width: 100%;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+
+/* Quote and Author */
+.testimonial-quote {
+  font-size: 1.125rem;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.testimonial-author {
+  margin-top: 1.5rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+/* Navigation Buttons  */
+.testimonial-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: black;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.testimonial-button:hover {
+  color: var(--primary-color);
+}
+
+.testimonial-button.left {
+  left: 0;
+}
+
+.testimonial-button.right {
+  right: 0;
+}
+
+.testimonial-content {
+  transition: opacity 0.4s ease;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
+
+/* Responsive layout */
+@media (min-width: 640px) {
+  .testimonial-box {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  
+  .testimonial-quote {
+    font-size: 1.25rem;
+  }
+}
