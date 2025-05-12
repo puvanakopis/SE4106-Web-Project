@@ -30,7 +30,7 @@
 }
 
 .feature-card:hover {
-    transform: scale(1);
+    transform: translateY(-5px);
 }
 
 .icon-circle {

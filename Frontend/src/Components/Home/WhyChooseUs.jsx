@@ -1,4 +1,3 @@
-import React from 'react';
 import './WhyChooseUs.css';
 import { FaPhone, FaUsers, FaHeadset } from 'react-icons/fa';
 
