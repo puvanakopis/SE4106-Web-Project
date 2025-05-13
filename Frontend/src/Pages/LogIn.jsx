@@ -46,13 +46,13 @@ const Login = () => {
                     {/* Sign up link */}
                     <div className="form-footer">
                         <p>
-                            Don't Have an Account? <a href="/"> Sign Up</a>
+                            Don't Have an Account? <a href='/signup'> Sign Up</a>
                         </p>
                     </div>
 
                     {/* Submit button */}
                     <div className="form-action">
-                        <button type="submit">Log In</button>
+                        <button type="submit" >Log In</button>
                     </div>
                 </form>
             </div>
