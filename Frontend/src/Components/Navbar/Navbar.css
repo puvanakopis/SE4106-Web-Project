@@ -69,100 +69,11 @@
 }
 
 .NavItem:hover {
-  color: #1084E3 !important;
+  color: var(--primary-color)!important;
   cursor: pointer;
 }
 
 .NavItem.active {
-  color: #1084E3 !important;
+  color: var(--primary-color) !important;
   cursor: pointer;
-=======
-/* @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap'); */
-
-
-.Navbar{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    padding: 15px 0;
-}
-
-
-
-/* --------------- Logo section --------------- */
-.logo{
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.logo .logo-text{
-    font-family: "DM Serif Display", serif;
-    font-weight: 800 !important;
-    font-style: normal;
-    font-size: 35px;
-    cursor: pointer;
-    text-decoration: none;
-    color: black;
-}
-
-
-
-/* --------------- Navigation links list --------------- */
-.NavList{
-    width: 60%;
-    width: 60%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.NavList Ul{
-    font-size: 18px;
-    width: 60%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    list-style-type: none;
-
-}
-
-.NavItem{
-    text-decoration: none;
-    color: black;
-    transition: all ease-in-out 0.2s;
-}
-
-.NavItem:hover{
-    color: #1084E3 !important;
-    cursor: pointer;
-}
-
-.NavItem.active{
-    color: #1084E3 !important;
-    cursor: pointer;
-}
-
-
-
-
-/* --------------- Sign up --------------- */
-.login{
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login .login-button{
-    text-decoration: none;
-    color: black;
-    width: fit-content;
-    font-size: 20px;
-    padding: 8px 25px;
-    border-radius: 50px;
-    border: 2px black solid;
-    box-shadow: 1px 1px 10px rgb(132, 130, 130);
-    cursor: pointer;
 }

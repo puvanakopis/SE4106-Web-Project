@@ -4,7 +4,7 @@ import './Navbar.css';
 
 const Navbar = () => {
 
-    // Toggles the mobile
+    // Toggles the mobile menu visibility
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => {
@@ -15,16 +15,14 @@ const Navbar = () => {
         setIsMenuOpen(false);
     };
 
-    // get the current URL path
+    // Get the current URL path
     const location = useLocation();
     const currentPath = location.pathname;
 
     return (
         <nav className="Navbar">
-
             {/* ----------------- navbar container ----------------- */}
             <div className="navbar-container">
-
                 {/* Logo */}
                 <div className="logo">
                     <Link to="/" className="logo-text">CampusEase</Link>
@@ -55,7 +53,12 @@ const Navbar = () => {
                 </Link>
 
                 {/* Hamburger Icon for Mobile */}
-                <button onClick={toggleMenu} className="md:hidden cursor-pointer" aria-label="Toggle menu">
+                <button
+                    onClick={toggleMenu}
+                    className="md:hidden cursor-pointer"
+                    aria-label="Toggle menu"
+                    aria-expanded={isMenuOpen ? "true" : "false"}
+                >
                     ☰
                 </button>
             </div>
@@ -80,7 +83,11 @@ const Navbar = () => {
                             <Link className={`NavItem ${currentPath === "/contact" ? "active" : ""}`} to="/contact" onClick={closeMenu}>Contact</Link>
                         </li>
                     </ul>
-                    <Link to="/login" onClick={closeMenu} className="mt-4 block w-full text-center border border-black rounded-full px-6 py-2 shadow-sm hover:bg-gray-100 transition login-button">
+                    <Link
+                        to="/login"
+                        onClick={closeMenu}
+                        className="mt-4 block w-full text-center border border-black rounded-full px-6 py-2 shadow-sm hover:bg-gray-100 transition login-button"
+                    >
                         Sign up
                     </Link>
                 </div>
@@ -88,3 +95,5 @@ const Navbar = () => {
         </nav>
     );
 };
+
+export default Navbar;
