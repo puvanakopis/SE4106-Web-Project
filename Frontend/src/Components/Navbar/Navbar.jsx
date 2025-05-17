@@ -20,7 +20,7 @@ const Navbar = () => {
 
     // Toggles the submenu visibility
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
-     const closeSubMenu = () => setIsSubMenuOpen(false);
+    const closeSubMenu = () => setIsSubMenuOpen(false);
 
     const subMenuRef = useRef(null);
 
@@ -41,9 +41,12 @@ const Navbar = () => {
 
 
     //Usecontext to check if the user is logged in
-    const { isLoggedIn } = useContext(AuthContext);
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
-
+    const logout = () => {
+        setIsLoggedIn(false);
+        localStorage.removeItem('token');
+    };
 
 
     return (
@@ -84,7 +87,7 @@ const Navbar = () => {
                             <div ref={subMenuRef} className={`sub-menu ${isSubMenuOpen ? 'open' : ''}`}>
                                 <Link className={`subItem ${currentPath === "/profile" ? "active" : ""}`} to="/profile" onClick={closeSubMenu}>Profile</Link>
                                 <Link className={`subItem ${currentPath === "/saved" ? "active" : ""}`} to="/saved" onClick={closeSubMenu}>Saved</Link>
-                                <Link className='subItem' to="/" onClick={closeSubMenu}>Logout</Link>
+                                <Link className='subItem' to="/" onClick={() => (closeSubMenu(), logout())}>Logout</Link>
                             </div>
                         </>
                         : <Link to="/login" className="login-button hidden">
@@ -139,7 +142,7 @@ const Navbar = () => {
 
 
                         {isLoggedIn ?
-                          <Link onClick={closeMenu}  to="/" className="sub-login-button">
+                            <Link onClick={closeMenu} to="/" className="sub-login-button">
                                 Log Out
                             </Link>
                             : <Link onClick={closeMenu} to="/login" className="sub-login-button">

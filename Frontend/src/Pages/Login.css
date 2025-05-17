@@ -4,7 +4,7 @@
     align-items: center;
 }
 
-.sub-container {
+.form-container .sub-container {
     padding: 4% 8%;
     margin-top: 5%;
     background-color: #f3f2f285;
@@ -34,61 +34,74 @@
 }
 
 /* Name, Email, Mobile, Address, Password and Profile Photo input field */
-.form-group {
+.login-form .form-group,
+.signup-form .form-group {
     display: flex;
     flex-direction: column;
 }
 
-.form-group label {
+.login-form .form-group label,
+.signup-form .form-group label {
     margin-bottom: 5px;
     font-weight: 500;
 }
 
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="password"],
-.form-group input[type="file"] {
+.login-form .form-group input[type="text"],
+.login-form .form-group input[type="email"],
+.login-form .form-group input[type="password"],
+.login-form .form-group input[type="file"],
+.signup-form .form-group input[type="text"],
+.signup-form .form-group input[type="email"],
+.signup-form .form-group input[type="password"],
+.signup-form .form-group input[type="file"] {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.full-width {
+.login-form .full-width,
+.signup-form .full-width {
     grid-column: 1 / -1;
     margin-top: 15px;
 }
 
- /* Profile Photo input field */
-.uploadProfile {
+/* Profile Photo input field */
+.signup-form .uploadProfile {
     width: fit-content;
     border: solid #ccc 1px;
     border-radius: 4px;
 }
 
-.uploadProfile img {
+.signup-form .uploadProfile img {
     width: 100px;
     height: 100px;
     border-radius: 4px;
 }
 
+
+
 /* Sign up link */
-.form-footer {
+.login-form .form-footer,
+.signup-form .form-footer {
     text-align: center;
     margin: 20px 0;
 }
 
-.form-footer a {
+.login-form .form-footer a,
+.signup-form .form-footer a {
     color: var(--primary-color);
     text-decoration: none;
     font-weight: 500;
 }
 
 /* Submit button */
-.form-action {
+.login-form .form-action,
+.signup-form .form-action {
     text-align: center;
 }
 
-.form-action button {
+.login-form .form-action button,
+.signup-form .form-action button {
     padding: 10px 30px;
     background-color: var(--primary-color);
     color: white;
@@ -98,13 +111,15 @@
     cursor: pointer;
 }
 
-.form-action button:hover {
+.login-form .form-action button:hover,
+.signup-form .form-action button:hover {
     color: black;
 }
 
 
 /* For sign Up Page */
-.form-grid {
+.login-form .form-grid,
+.signup-form .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
@@ -113,7 +128,8 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .form-grid {
+    .login-form .form-grid,
+    .signup-form .form-grid {
         grid-template-columns: 1fr;
     }
 }

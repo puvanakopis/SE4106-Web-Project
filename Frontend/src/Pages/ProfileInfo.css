@@ -4,25 +4,25 @@
 
 
 /* Container layout */
-.profile-container {
+.profile .profile-container {
     display: flex;
     flex-direction: column;
     height: fit-content;
 
 }
 
-.user_name {
+.profile .user_name {
     padding: 1% 3% 5% 1%;
 }
 
-.user_name div {
+.profile .user_name div {
     font-size: 40px;
 }
 
 
 
 /* -------------- Sidebar -------------- */
-.profile-sidebar {
+.profile .profile-sidebar {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -32,16 +32,16 @@
     row-gap: 1.5rem;
 }
 
-.profile-title {
+.profile .profile-title {
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.profile-title:hover {
+.profile .profile-title:hover {
     color: var(--primary-color);
 }
 
-.profile-title.active {
+.profile .profile-title.active {
     color: var(--primary-color);
 }
 
@@ -49,7 +49,7 @@
 
 
 /* -------------- account info , delete , password Section -------------- */
-.profile-form-section {
+.profile .profile-form-section {
     flex: 3;
     background-color: #ffffff;
     border: 1px solid #e5e7eb;
@@ -58,13 +58,13 @@
     padding: 5%;
 }
 
-.profile-form {
+.profile .profile-form {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.form-group {
+.profile .form-group {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -72,13 +72,13 @@
     gap: 1rem;
 }
 
-.form-group label {
+.profile .form-group label {
     width: 30%;
     font-weight: 500;
 }
 
-.form-group input,
-.form-group select {
+.profile .form-group input,
+.profile .form-group select {
     color: #6f7173;
     width: 70%;
     padding: 0.5rem;
@@ -86,11 +86,11 @@
     border-radius: 4px;
 }
 
-.button-group {
+.profile .button-group {
     justify-content: flex-end;
 }
 
-.save-button {
+.profile .save-button {
     background-color: var(--primary-color);
     color: white;
     padding: 0.5rem 1.5rem;
@@ -100,18 +100,18 @@
     transition: all 0.3s ease;
 }
 
-.save-button:hover {
+.profile .save-button:hover {
     color: black;
 }
 
 
-.form-group.delete {
+.profile .form-group.delete {
     display: flex;
     flex-direction: column;
     align-items: start !important;
 }
 
-.form-group.delete div {
+.profile .form-group.delete div {
     padding-left: 5%;
     color: #6f7173;
 }
@@ -120,42 +120,42 @@
 
 /* -------------- Responsive styles  --------------  */
 @media (min-width: 900px) {
-    .profile-container {
+    .profile .profile-container {
         flex-direction: row;
     }
 }
 
 @media (max-width: 900px) {
-    .user_name {
+    .profile .user_name {
         padding: 1% 3% 2% 1%;
     }
 
-    .profile-container {
+    .profile .profile-container {
         padding: 1% 5%;
     }
 
-    .profile-sidebar {
+    .profile .profile-sidebar {
         padding: 10% !important;
     }
 
-    .profile-form {
+    .profile .profile-form {
         padding: 2% 10% !important;
     }
 
-    .form-group {
+    .profile .form-group {
         display: flex;
         flex-direction: column !important;
         align-items: start !important;
 
     }
 
-    .form-group label,
-    .form-group input,
-    .form-group select {
+    .profile .form-group label,
+    .profile .form-group input,
+    .profile .form-group select {
         width: 100% !important;
     }
 
-    .form-group.button-group {
+    .profile .form-group.button-group {
         display: flex;
         align-items: end !important;
     }

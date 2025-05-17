@@ -90,7 +90,7 @@ const SignUp = () => {
                     </div>
 
                     {/* Profile Photo input field */}
-                    <div className="form-group full-width">
+                    <div className="form-group">
                         <label>Profile Photo</label>
                         <label className='uploadProfile' htmlFor="file-input">
                             <img src={image ? URL.createObjectURL(image) : upload_area} alt="" />
