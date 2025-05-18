@@ -1,0 +1,134 @@
+.web-about {
+    padding: 4% 8%;
+}
+
+/* Sections */
+.web-about .about-section {
+    padding: 4rem 2rem;
+}
+
+
+/* Section Title */
+.web-about .section-title {
+    padding: 10px 100px 0px 0px;
+    margin-top: 0px;
+    margin-bottom: 50px;
+    width: fit-content;
+    font-size: 35px;
+    font-weight: bold;
+    border-bottom: 4px solid var(--primary-color);
+}
+
+
+/* ---------- Our Story ---------- */
+.web-about .section-text {
+    color: #4a5568;
+}
+
+
+/* ---------- Mission and Vision ---------- */
+.web-about .grid-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    column-gap: 4rem;
+}
+
+.web-about .card {
+    display: flex;
+    height: 16rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #ddd;
+    padding: 2rem;
+    border-radius: 2rem;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.web-about .card-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.web-about .card-text {
+    color: #718096;
+}
+
+/* ---------- How It Helps ---------- */
+.web-about .grid-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+
+}
+
+.web-about .grid-features div {
+    display: flex;
+    width: max-content;
+    height: 8rem;
+    justify-self: center;
+    align-self: center;
+    background-color: #ddd;
+    padding: 2rem;
+    border-radius: 2rem;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.web-about .grid-features div:hover {
+    transform: translateY(-5px);
+}
+
+/* ---------- Testimonial ---------- */
+.web-about .testimonial {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-style: italic;
+    font-size: 1.5rem;
+}
+
+
+
+@media (max-width: 768px) {
+    .web-about .about-section {
+        padding: 2rem 1rem;
+    }
+
+    .web-about .grid-container {
+        display: flex;
+        flex-direction: column;
+        row-gap: 4rem;
+
+    }
+
+    .web-about .grid-features,
+    .web-about .grid-container {
+        grid-template-columns: 1fr;
+
+    }
+
+    .web-about .section-title {
+        font-size: 24px;
+        padding: 10px 50px;
+        display: flex;
+        justify-self: center;
+        align-self: center;
+        text-align: center !important;
+    }
+
+    .web-about .card {
+        padding: 1rem;
+    }
+}
