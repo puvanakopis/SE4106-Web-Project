@@ -64,10 +64,19 @@
  /* Contact Form and  Contact Info  */
  .contact-form,
  .contact-info {
-     background-color: #f3f4f6;
-     padding: 2rem;
-     border-radius: 0.5rem;
-     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ddd;
+    padding: 4rem;
+    border-radius: 2rem;
+    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s;
+ }
+
+ .contact-form:hover,
+ .contact-info:hover {
+    transform: translateY(-5px);
+
  }
 
 
@@ -94,7 +103,7 @@
  .form-group textarea {
      width: 100%;
      padding: 0.5rem 1rem;
-     border: 1px solid #d1d5db;
+     border: 1px solid #2e2e2f;
      border-radius: 0.375rem;
  }
 

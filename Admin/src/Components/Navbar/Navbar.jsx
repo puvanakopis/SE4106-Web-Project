@@ -69,6 +69,12 @@ const Navbar = () => {
                     <li>
                         <Link className={`NavItem ${currentPath === "/listroom" ? "active" : ""}`} to="/listroom">List Room</Link>
                     </li>
+                    <li>
+                        <Link className={`NavItem ${currentPath === "/addtransport" ? "active" : ""}`} to="/addtransport">Add Transport</Link>
+                    </li>
+                    <li>
+                        <Link className={`NavItem ${currentPath === "/listtransport" ? "active" : ""}`} to="/listtransport">List Transport</Link>
+                    </li>
                 </ul>
 
                 {/* Sign Up and Submenu */}
@@ -118,6 +124,12 @@ const Navbar = () => {
                             </li>
                             <li>
                                 <Link className={`NavItem ${currentPath === "/listroom" ? "active" : ""}`} to="/listroom" onClick={closeMenu}>List Room</Link>
+                            </li>
+                            <li>
+                                <Link className={`NavItem ${currentPath === "/addtransport" ? "active" : ""}`} to="/addtransport" onClick={closeMenu}>Add Transport</Link>
+                            </li>
+                            <li>
+                                <Link className={`NavItem ${currentPath === "/listtransport" ? "active" : ""}`} to="/listtransport" onClick={closeMenu}>List Transport</Link>
                             </li>
                             <li>
                                 <Link className={`NavItem ${currentPath === "/profile" ? "active" : ""}`} to="/profile" onClick={closeMenu}>Profile</Link>
