@@ -8,6 +8,8 @@ import Dashboard from "./Pages/Dashboard"
 import LogIn from './Pages/LogIn';
 import AddRoom from './Pages/AddRoom';
 import ListRoom from './Pages/ListRoom';
+import AddTransport from './Pages/AddTransport';
+import ListTransport from './Pages/ListTransport';
 import Profile from './Pages/ProfileInfo';
 
 import { AuthProvider } from './Context/AuthContext';
@@ -23,6 +25,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/addroom" element={<AddRoom />} />
         <Route path="/listroom" element={<ListRoom />} />
+        <Route path="/addtransport" element={<AddTransport />} />
+        <Route path="/listtransport" element={<ListTransport />} />
       </Routes>
       <Footer />
     </AuthProvider>
