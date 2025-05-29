@@ -11,6 +11,7 @@ import Profile from "./Pages/ProfileInfo";
 import Saved from "./Pages/Saved";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
+
 import Accommodation from "./Pages/Accommodation";
 import RoomDetails from "./Pages/RoomDetails";
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/saved" element={<Saved />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+
         <Route path="/accommodation" element={<Accommodation />} />
         <Route path="/room/:id" element={<RoomDetails />} />
       </Routes>
