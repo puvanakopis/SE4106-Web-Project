@@ -1,0 +1,74 @@
+/* Container */
+.listtransport-container {
+    padding: 4% 10%;
+}
+
+/* Title */
+.listtransport-title {
+    font-size: 25px;
+    font-weight: bold;
+    color: #1f2937;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+/* Table Wrapper */
+.transport-table-wrapper {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    max-height: 20rem;
+    overflow-y: auto;
+    background-color: #fff;
+}
+
+/* Table */
+.transport-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.transport-table thead {
+    background-color: #f9fafb;
+}
+
+.transport-table th,
+.transport-table td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.transport-table th {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Align Center */
+.center {
+    text-align: center;
+}
+
+/* Responsive Hide Column */
+.hide-on-sm {
+    display: table-cell;
+}
+
+@media screen and (max-width: 640px) {
+    .hide-on-sm {
+        display: none;
+    }
+}
+
+/* Checkbox styling */
+input[type="checkbox"].peer {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+}
+
+.mt-3 {
+    margin-top: 0.75rem;
+}

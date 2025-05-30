@@ -1,0 +1,63 @@
+/* Container */
+.listroom-container {
+    padding: 4% 10%;
+}
+
+/* Title */
+.listroom-title {
+    font-size: 25px;
+    font-weight: bold;
+    color: #1f2937;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+/* Table Wrapper */
+.room-table-wrapper {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    max-height: 20rem;
+    overflow-y: auto;
+    background-color: #fff;
+}
+
+/* Table */
+.room-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.room-table thead {
+    background-color: #f9fafb;
+}
+
+.room-table th,
+.room-table td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.room-table th {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Align Center */
+.center {
+    text-align: center;
+}
+
+/* Responsive Hide Column */
+.hide-on-sm {
+    display: table-cell;
+}
+
+@media screen and (max-width: 640px) {
+    .hide-on-sm {
+        display: none;
+    }
+}
