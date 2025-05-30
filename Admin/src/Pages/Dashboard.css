@@ -1,5 +1,5 @@
 .transport-container{
-    margin-top: 8%;
+    margin-top: 10%;
 }
 
 .dashboard-container {
@@ -54,7 +54,6 @@
 
 .bookings-table-wrapper {
     width: 100%;
-    max-width: 768px;
     text-align: left;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
