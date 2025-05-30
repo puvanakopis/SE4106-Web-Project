@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { assets, dashboardDummyData, transportDashboardDummyData } from "../Assets/assets";
+import { assets, dashboardAccommodationData, dashboardTransportData } from "../Assets/assets";
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const [dashboardData] = useState(dashboardDummyData);
-  const [dashboardTransportData] = useState(transportDashboardDummyData);
+  const [AccommodationData] = useState(dashboardAccommodationData);
+  const [TransportData] = useState(dashboardTransportData);
 
   return (
     <div className="dashboard-container">
@@ -20,7 +20,7 @@ const Dashboard = () => {
               <img src={assets.totalBookingIcon} alt="Total Booking Icon" className="icon" />
               <div>
                 <p className="summary-title">Total Booking</p>
-                <p className="summary-value">{dashboardData.totalBookings}</p>
+                <p className="summary-value">{AccommodationData.totalBookings}</p>
               </div>
             </div>
 
@@ -29,7 +29,7 @@ const Dashboard = () => {
               <img src={assets.totalRevenueIcon} alt="Total Revenue Icon" className="icon" />
               <div>
                 <p className="summary-title">Total Revenue</p>
-                <p className="summary-value">Rs {dashboardData.totalRevenue}.00</p>
+                <p className="summary-value">Rs {AccommodationData.totalRevenue}.00</p>
               </div>
             </div>
 
@@ -49,7 +49,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {dashboardData.bookings.map((item, index) => (
+              {AccommodationData.bookings.map((item, index) => (
                 <tr key={index}>
                   <td>{item.user.username}</td>
                   <td className="hide-on-sm">{item.room.roomType}</td>
@@ -114,7 +114,7 @@ const Dashboard = () => {
               {dashboardTransportData.bookings.map((item, index) => (
                 <tr key={index}>
                   <td>{item.user.username}</td>
-                  <td className="hide-on-sm">{item.vehicle.title}</td>
+                  <td className="hide-on-sm">{item.transport.vehicleName}</td>
                   <td>Rs {item.totalPrice}.00</td>
                   <td className="center">
                     {item.isPaid ? (
@@ -129,7 +129,6 @@ const Dashboard = () => {
           </table>
         </div>
       </div>
-
     </div>
   );
 };
