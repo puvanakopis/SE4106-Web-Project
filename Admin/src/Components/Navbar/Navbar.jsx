@@ -1,12 +1,22 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import './Navbar.css';
 import { AuthContext } from '../../Context/AuthContext';
 
 const Navbar = () => {
-    // Mobile menu open and closing states for animation
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
+    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
+    const subMenuRef = useRef(null);
+    const location = useLocation();
+    const currentPath = location.pathname;
+    const navigate = useNavigate();
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+
+    const scrollNavigate = (to) => {
+        navigate(to);
+        window.scrollTo(0, 0);
+    };
 
     const toggleMenu = () => {
         if (isMenuOpen) {
@@ -30,16 +40,14 @@ const Navbar = () => {
         }
     };
 
-    // Current path for active links
-    const location = useLocation();
-    const currentPath = location.pathname;
-
-    // Submenu toggle & close
-    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
-    const subMenuRef = useRef(null);
-
     const toggleSubMenu = () => setIsSubMenuOpen(!isSubMenuOpen);
     const closeSubMenu = () => setIsSubMenuOpen(false);
+
+    const logout = () => {
+        setIsLoggedIn(false);
+        localStorage.removeItem('token');
+        scrollNavigate('/');
+    };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -53,48 +61,40 @@ const Navbar = () => {
         };
     }, []);
 
-    // Auth context
-    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-
-    const logout = () => {
-        setIsLoggedIn(false);
-        localStorage.removeItem('token');
-    };
-
     return (
         <nav className="Navbar">
             <div className="navbar-container">
 
                 {/* Logo */}
                 <div className="logo">
-                    <Link to="/" className="logo-text">CampusEase</Link>
+                    <span onClick={() => scrollNavigate('/')} className="logo-text cursor-pointer">CampusEase</span>
                 </div>
 
                 {/* Desktop Navigation */}
                 <ul className="nav-links">
-                    <li><Link className={`NavItem ${currentPath === "/" ? "active" : ""}`} to="/">Dashboard</Link></li>
-                    <li><Link className={`NavItem ${currentPath === "/addroom" ? "active" : ""}`} to="/addroom">Add Room</Link></li>
-                    <li><Link className={`NavItem ${currentPath === "/listroom" ? "active" : ""}`} to="/listroom">List Room</Link></li>
-                    <li><Link className={`NavItem ${currentPath === "/addtransport" ? "active" : ""}`} to="/addtransport">Add Transport</Link></li>
-                    <li><Link className={`NavItem ${currentPath === "/listtransport" ? "active" : ""}`} to="/listtransport">List Transport</Link></li>
+                    <li><span onClick={() => scrollNavigate('/')} className={`NavItem cursor-pointer ${currentPath === "/" ? "active" : ""}`}>Dashboard</span></li>
+                    <li><span onClick={() => scrollNavigate('/addroom')} className={`NavItem cursor-pointer ${currentPath === "/addroom" ? "active" : ""}`}>Add Room</span></li>
+                    <li><span onClick={() => scrollNavigate('/listroom')} className={`NavItem cursor-pointer ${currentPath === "/listroom" ? "active" : ""}`}>List Room</span></li>
+                    <li><span onClick={() => scrollNavigate('/addtransport')} className={`NavItem cursor-pointer ${currentPath === "/addtransport" ? "active" : ""}`}>Add Transport</span></li>
+                    <li><span onClick={() => scrollNavigate('/listtransport')} className={`NavItem cursor-pointer ${currentPath === "/listtransport" ? "active" : ""}`}>List Transport</span></li>
                 </ul>
 
                 {/* Sign Up and Submenu */}
                 <div className="relative">
                     {isLoggedIn ? (
                         <>
-                            <Link onClick={toggleSubMenu} className="login-button hidden">
+                            <span onClick={toggleSubMenu} className="login-button hidden cursor-pointer">
                                 P
-                            </Link>
+                            </span>
                             <div ref={subMenuRef} className={`sub-menu ${isSubMenuOpen ? 'open' : ''}`}>
-                                <Link className={`subItem ${currentPath === "/profile" ? "active" : ""}`} to="/profile" onClick={closeSubMenu}>Profile</Link>
-                                <Link className='subItem' to="/" onClick={() => { closeSubMenu(); logout(); }}>Logout</Link>
+                                <span onClick={() => { closeSubMenu(); scrollNavigate('/profile'); }} className={`subItem cursor-pointer ${currentPath === "/profile" ? "active" : ""}`}>Profile</span>
+                                <span onClick={() => { closeSubMenu(); logout(); }} className="subItem cursor-pointer">Logout</span>
                             </div>
                         </>
                     ) : (
-                        <Link to="/login" className="login-button hidden">
+                        <span onClick={() => scrollNavigate('/login')} className="login-button hidden cursor-pointer">
                             Login
-                        </Link>
+                        </span>
                     )}
                 </div>
 
@@ -109,26 +109,28 @@ const Navbar = () => {
                 </button>
             </div>
 
-            {/* Mobile Navigation with animation */}
+            {/* Mobile Navigation */}
             {isMenuOpen && (
                 <div className={`custom-mobile-nav ${isClosing ? 'closing' : ''}`}>
                     <ul className="flex flex-col gap-4 text">
-                        <li><Link className={`NavItem ${currentPath === "/" ? "active" : ""}`} to="/" onClick={closeMenu}>Home</Link></li>
-                        <li><Link className={`NavItem ${currentPath === "/addroom" ? "active" : ""}`} to="/addroom" onClick={closeMenu}>Add Room</Link></li>
-                        <li><Link className={`NavItem ${currentPath === "/listroom" ? "active" : ""}`} to="/listroom" onClick={closeMenu}>List Room</Link></li>
-                        <li><Link className={`NavItem ${currentPath === "/addtransport" ? "active" : ""}`} to="/addtransport" onClick={closeMenu}>Add Transport</Link></li>
-                        <li><Link className={`NavItem ${currentPath === "/listtransport" ? "active" : ""}`} to="/listtransport" onClick={closeMenu}>List Transport</Link></li>
-                        <li><Link className={`NavItem ${currentPath === "/profile" ? "active" : ""}`} to="/profile" onClick={closeMenu}>Profile</Link></li>
+                        <li><span onClick={() => { closeMenu(); scrollNavigate('/'); }} className={`NavItem cursor-pointer ${currentPath === "/" ? "active" : ""}`}>Home</span></li>
+                        <li><span onClick={() => { closeMenu(); scrollNavigate('/addroom'); }} className={`NavItem cursor-pointer ${currentPath === "/addroom" ? "active" : ""}`}>Add Room</span></li>
+                        <li><span onClick={() => { closeMenu(); scrollNavigate('/listroom'); }} className={`NavItem cursor-pointer ${currentPath === "/listroom" ? "active" : ""}`}>List Room</span></li>
+                        <li><span onClick={() => { closeMenu(); scrollNavigate('/addtransport'); }} className={`NavItem cursor-pointer ${currentPath === "/addtransport" ? "active" : ""}`}>Add Transport</span></li>
+                        <li><span onClick={() => { closeMenu(); scrollNavigate('/listtransport'); }} className={`NavItem cursor-pointer ${currentPath === "/listtransport" ? "active" : ""}`}>List Transport</span></li>
+                        {isLoggedIn && (
+                            <li><span onClick={() => { closeMenu(); scrollNavigate('/profile'); }} className={`NavItem cursor-pointer ${currentPath === "/profile" ? "active" : ""}`}>Profile</span></li>
+                        )}
                     </ul>
 
                     {isLoggedIn ? (
-                        <Link onClick={() => { closeMenu(); logout(); }} to="/" className="sub-login-button">
+                        <span onClick={() => { closeMenu(); logout(); }} className="sub-login-button cursor-pointer">
                             Log Out
-                        </Link>
+                        </span>
                     ) : (
-                        <Link onClick={closeMenu} to="/login" className="sub-login-button">
+                        <span onClick={() => { closeMenu(); scrollNavigate('/login'); }} className="sub-login-button cursor-pointer">
                             Sign up
-                        </Link>
+                        </span>
                     )}
                 </div>
             )}
