@@ -122,8 +122,8 @@ const RoomDetails = () => {
             </div>
           </div>
         </div>
-        <button className='px-6 py-2.5 mt-4 rounded-md text-white bg-orange-500 hover:bg-orange-600 transition-all duration-200 font-medium shadow hover:shadow-lg active:scale-95'>
-          Contact Now
+        <button className='px-6 py-2.5 mt-4 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-all duration-200 font-medium shadow hover:shadow-lg active:scale-95'>
+          Book Now
         </button>
       </div>
 
