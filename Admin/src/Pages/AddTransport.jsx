@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { assets, transportData } from '../Assets/assets'; // Assuming you have transportData
+import React, { useState, useEffect } from 'react';
+import { assets, transportData } from '../Assets/assets';
 import './AddTransport.css';
 
 const AddTransport = () => {
@@ -29,13 +29,32 @@ const AddTransport = () => {
     averagePrice: transportData.reduce((sum, v) => sum + v.pricePerKm, 0) / transportData.length || 0
   };
 
+  // Scroll animation
+  useEffect(() => {
+    const elements = document.querySelectorAll('.ScrollingAnimation');
+
+    const handleScroll = () => {
+      elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.85) {
+          el.classList.add('show');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="dashboard-container">
       <form>
-        <div className="dashboard-title">Add Transport</div>
+        <div className="dashboard-title ScrollingAnimation">Add Transport</div>
 
         {/* ------------ Transport Statistics Summary ------------ */}
-        <div className="dashboard-summary">
+        <div className="dashboard-summary ScrollingAnimation">
           {/* Total Vehicles */}
           <div className="summary-box">
             <img src={assets.totalBookingIcon} alt="Total Vehicles Icon" className="icon" />
@@ -74,8 +93,8 @@ const AddTransport = () => {
         </div>
 
         {/* ------------ Uploading Image ------------ */}
-        <p className='section-title'>Vehicle Image</p>
-        <div className="image-upload">
+        <p className='section-title ScrollingAnimation'>Vehicle Image</p>
+        <div className="image-upload ScrollingAnimation">
           <label htmlFor="transportImage">
             <img
               className='upload-image'
@@ -93,8 +112,7 @@ const AddTransport = () => {
         </div>
 
         {/* ------------ Transport Info Inputs ------------ */}
-        <div className='input-grid'>
-          {/* Vehicle Type */}
+        <div className='input-grid ScrollingAnimation'>
           <div className="input-group">
             <p className="label-text">Vehicle Type</p>
             <select
@@ -110,7 +128,6 @@ const AddTransport = () => {
             </select>
           </div>
 
-          {/* Vehicle Name */}
           <div className="input-group">
             <p className='label-text'>Vehicle Name</p>
             <input
@@ -122,7 +139,6 @@ const AddTransport = () => {
             />
           </div>
 
-          {/* Registration Number */}
           <div className="input-group">
             <p className='label-text'>Registration Number</p>
             <input
@@ -134,7 +150,6 @@ const AddTransport = () => {
             />
           </div>
 
-          {/* Passenger Capacity */}
           <div className="input-group">
             <p className='label-text'>Passenger Capacity</p>
             <input
@@ -146,7 +161,6 @@ const AddTransport = () => {
             />
           </div>
 
-          {/* Price Per Km */}
           <div className="input-group">
             <p className='label-text'>Price Per Km (LKR)</p>
             <input
@@ -158,7 +172,6 @@ const AddTransport = () => {
             />
           </div>
 
-          {/* City */}
           <div className="input-group">
             <p className='label-text'>Operating City</p>
             <select
@@ -173,7 +186,6 @@ const AddTransport = () => {
             </select>
           </div>
 
-          {/* Contact Number */}
           <div className="input-group">
             <p className='label-text'>Contact Number</p>
             <input
@@ -186,8 +198,8 @@ const AddTransport = () => {
           </div>
         </div>
 
-        {/* Amenities */}
-        <div className="amenities-section">
+        {/* ------------ Amenities ------------ */}
+        <div className="amenities-section ScrollingAnimation">
           <p className='section-title'>Amenities</p>
           <div className='amenities-list'>
             {Object.keys(inputs.amenities).map((amenity, index) => (
@@ -196,10 +208,15 @@ const AddTransport = () => {
                   type="checkbox"
                   id={`amenities${index + 1}`}
                   checked={inputs.amenities[amenity]}
-                  onChange={() => setInputs({
-                    ...inputs,
-                    amenities: { ...inputs.amenities, [amenity]: !inputs.amenities[amenity] },
-                  })}
+                  onChange={() =>
+                    setInputs({
+                      ...inputs,
+                      amenities: {
+                        ...inputs.amenities,
+                        [amenity]: !inputs.amenities[amenity]
+                      }
+                    })
+                  }
                 />
                 <label htmlFor={`amenities${index + 1}`}>{amenity}</label>
               </div>
@@ -208,7 +225,7 @@ const AddTransport = () => {
         </div>
 
         {/* ------------ Submit Button ------------ */}
-        <button className='submit-button'>Add Transport</button>
+        <button className='submit-button ScrollingAnimation'>Add Transport</button>
       </form>
     </div>
   );

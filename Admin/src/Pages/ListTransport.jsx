@@ -1,8 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { assets, transportData } from '../Assets/assets';
 import './ListTransport.css';
 
 const ListTransport = () => {
+  // Scroll animation effect
+  useEffect(() => {
+    const elements = document.querySelectorAll('.ScrollingAnimation');
+
+    const handleScroll = () => {
+      elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.85) {
+          el.classList.add('show');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); 
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Calculate transport statistics
   const totalVehicles = transportData.length;
   const availableVehicles = transportData.filter(item => item.isAvailable).length;
@@ -17,11 +36,11 @@ const ListTransport = () => {
 
   return (
     <div className="listtransport-container">
-      <div className="listtransport-title">Transport Listing</div>
+      {/* Title */}
+      <div className="listtransport-title ScrollingAnimation">Transport Listing</div>
 
       {/* ------------ Transport Statistics Summary ------------ */}
-      <div className="dashboard-summary">
-        {/* Total Vehicles */}
+      <div className="dashboard-summary ScrollingAnimation">
         <div className="summary-box">
           <img src={assets.totalBookingIcon} alt="Total Vehicles" className="icon" />
           <div>
@@ -30,7 +49,6 @@ const ListTransport = () => {
           </div>
         </div>
 
-        {/* Available Vehicles */}
         <div className="summary-box">
           <img src={assets.totalBookingIcon} alt="Available Vehicles" className="icon" />
           <div>
@@ -39,7 +57,6 @@ const ListTransport = () => {
           </div>
         </div>
 
-        {/* Booked Vehicles */}
         <div className="summary-box">
           <img src={assets.totalBookingIcon} alt="Booked Vehicles" className="icon" />
           <div>
@@ -48,7 +65,6 @@ const ListTransport = () => {
           </div>
         </div>
 
-        {/* Average Price */}
         <div className="summary-box">
           <img src={assets.totalRevenueIcon} alt="Average Price" className="icon" />
           <div>
@@ -59,7 +75,7 @@ const ListTransport = () => {
       </div>
 
       {/* ------------ Vehicle Type Distribution ------------ */}
-      <div className="vehicle-type-distribution">
+      <div className="vehicle-type-distribution ScrollingAnimation">
         <h3 className="distribution-title">Vehicle Type Distribution</h3>
         <div className="distribution-grid">
           {Object.entries(vehicleTypeCounts).map(([type, count]) => (
@@ -78,7 +94,7 @@ const ListTransport = () => {
       </div>
 
       {/* ------------ Transport Table ------------ */}
-      <div className="transport-table-wrapper mt-3">
+      <div className="transport-table-wrapper mt-3 ScrollingAnimation">
         <table className="transport-table">
           <thead>
             <tr>

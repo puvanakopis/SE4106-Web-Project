@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { assets, roomsData } from '../Assets/assets';
 import './ListRoom.css';
 
 const ListRoom = () => {
   const [room] = useState(roomsData);
 
-  // Calculate room statistics
+  // Scroll animation effect
+  useEffect(() => {
+    const elements = document.querySelectorAll('.ScrollingAnimation');
+
+    const handleScroll = () => {
+      elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.85) {
+          el.classList.add('show');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll()
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Room statistics
   const totalRooms = room.length;
   const availableRooms = room.filter(item => item.isAvailable).length;
   const occupiedRooms = totalRooms - availableRooms;
@@ -13,10 +32,11 @@ const ListRoom = () => {
 
   return (
     <div className="listroom-container">
-      <div className="listroom-title">Room Listing</div>
+      {/* Title */}
+      <div className="listroom-title ScrollingAnimation">Room Listing</div>
 
       {/* ------------ Room Statistics Summary ------------ */}
-      <div className="dashboard-summary">
+      <div className="dashboard-summary ScrollingAnimation">
         {/* Total Rooms */}
         <div className="summary-box">
           <img src={assets.totalBookingIcon} alt="Total Rooms Icon" className="icon" />
@@ -54,13 +74,9 @@ const ListRoom = () => {
         </div>
       </div>
 
-
-
       {/* ------------ Room Listing Table ------------ */}
-
-      <div className="room-table-wrapper mt-3">
+      <div className="room-table-wrapper mt-3 ScrollingAnimation">
         <table className="room-table">
-
           {/* Table Headers */}
           <thead>
             <tr>

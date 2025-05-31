@@ -1,42 +1,57 @@
 import { useState } from "react";
-import { assets, dashboardAccommodationData, dashboardTransportData } from "../Assets/assets";
-import './Dashboard.css';
+import {
+  assets,
+  dashboardAccommodationData,
+  dashboardTransportData,
+} from "../Assets/assets";
+import "./Dashboard.css";
+import useScrollAnimation from "../hooks/useScrollAnimation";
 
 const Dashboard = () => {
   const [AccommodationData] = useState(dashboardAccommodationData);
   const [TransportData] = useState(dashboardTransportData);
 
+  const [accRef, accVisible] = useScrollAnimation();
+  const [transRef, transVisible] = useScrollAnimation();
+
   return (
     <div className="dashboard-container">
-
       {/* ------------------ Accommodation ------------------ */}
-      <div className="accommodation-container">
+      <div
+        ref={accRef}
+        className={`accommodation-container ScrollingAnimation ${accVisible ? "show" : ""}`}
+      >
         <div>
           <div className="dashboard-title">Accommodation</div>
           <div className="dashboard-summary">
-
-            {/* Total Booking */}
             <div className="summary-box">
-              <img src={assets.totalBookingIcon} alt="Total Booking Icon" className="icon" />
+              <img
+                src={assets.totalBookingIcon}
+                alt="Total Booking Icon"
+                className="icon"
+              />
               <div>
                 <p className="summary-title">Total Booking</p>
                 <p className="summary-value">{AccommodationData.totalBookings}</p>
               </div>
             </div>
 
-            {/* Total Revenue */}
             <div className="summary-box">
-              <img src={assets.totalRevenueIcon} alt="Total Revenue Icon" className="icon" />
+              <img
+                src={assets.totalRevenueIcon}
+                alt="Total Revenue Icon"
+                className="icon"
+              />
               <div>
                 <p className="summary-title">Total Revenue</p>
-                <p className="summary-value">Rs {AccommodationData.totalRevenue}.00</p>
+                <p className="summary-value">
+                  Rs {AccommodationData.totalRevenue}.00
+                </p>
               </div>
             </div>
-
           </div>
         </div>
 
-        {/* Recent Bookings */}
         <div className="recent-title">Recent Bookings</div>
         <div className="bookings-table-wrapper">
           <table className="bookings-table">
@@ -68,37 +83,44 @@ const Dashboard = () => {
         </div>
       </div>
 
-
-
-
       {/* ------------------ Transport ------------------ */}
-      <div className="transport-container">
+      <div
+        ref={transRef}
+        className={`transport-container ScrollingAnimation ${transVisible ? "show" : ""}`}
+      >
         <div>
           <div className="dashboard-title">Transport</div>
           <div className="dashboard-summary">
-
-            {/* Total Booking */}
             <div className="summary-box">
-              <img src={assets.totalBookingIcon} alt="Total Booking Icon" className="icon" />
+              <img
+                src={assets.totalBookingIcon}
+                alt="Total Booking Icon"
+                className="icon"
+              />
               <div>
                 <p className="summary-title">Total Booking</p>
-                <p className="summary-value">{dashboardTransportData.totalBookings}</p>
+                <p className="summary-value">
+                  {dashboardTransportData.totalBookings}
+                </p>
               </div>
             </div>
 
-            {/* Total Revenue */}
             <div className="summary-box">
-              <img src={assets.totalRevenueIcon} alt="Total Revenue Icon" className="icon" />
+              <img
+                src={assets.totalRevenueIcon}
+                alt="Total Revenue Icon"
+                className="icon"
+              />
               <div>
                 <p className="summary-title">Total Revenue</p>
-                <p className="summary-value">Rs {dashboardTransportData.totalRevenue}.00</p>
+                <p className="summary-value">
+                  Rs {dashboardTransportData.totalRevenue}.00
+                </p>
               </div>
             </div>
-
           </div>
         </div>
 
-        {/* Recent Bookings */}
         <div className="recent-title">Recent Bookings</div>
         <div className="bookings-table-wrapper">
           <table className="bookings-table">
