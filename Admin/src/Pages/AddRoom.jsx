@@ -22,10 +22,56 @@ const AddRoom = () => {
     }
   });
 
+  const roomStats = {
+    totalRooms: 24,
+    occupiedRooms: 18,
+    availableRooms: 6,
+    averagePrice: 12500
+  };
+
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container ">
       <form>
         <div className="dashboard-title">Add Room</div>
+
+        {/* ------------ Room Statistics Summary ------------ */}
+        <div className="dashboard-summary">
+          {/* Total Rooms */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Total Rooms Icon" className="icon" />
+            <div>
+              <p className="summary-title">Total Rooms</p>
+              <p className="summary-value">{roomStats.totalRooms}</p>
+            </div>
+          </div>
+
+          {/* Occupied Rooms */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Occupied Rooms Icon" className="icon" />
+            <div>
+              <p className="summary-title">Occupied Rooms</p>
+              <p className="summary-value">{roomStats.occupiedRooms}</p>
+            </div>
+          </div>
+
+          {/* Available Rooms */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Available Rooms Icon" className="icon" />
+            <div>
+              <p className="summary-title">Available Rooms</p>
+              <p className="summary-value">{roomStats.availableRooms}</p>
+            </div>
+          </div>
+
+          {/* Average Price */}
+          <div className="summary-box">
+            <img src={assets.totalRevenueIcon} alt="Average Price Icon" className="icon" />
+            <div>
+              <p className="summary-title">Average Price</p>
+              <p className="summary-value">Rs {roomStats.averagePrice}.00</p>
+            </div>
+          </div>
+        </div>
 
         {/* ------------ Uploading Images ------------ */}
         <p className='section-title'>Images</p>
@@ -52,7 +98,6 @@ const AddRoom = () => {
 
         {/* ------------ Room Info Inputs ------------ */}
         <div className='input-flex'>
-
           {/* Room Type */}
           <div className="input-group">
             <p className="label-text">Room Type</p>
@@ -102,8 +147,7 @@ const AddRoom = () => {
             ))}
           </div>
 
-
-        {/* ------------ Submit Button ------------ */}
+          {/* ------------ Submit Button ------------ */}
           <button className='submit-button'>Add Room</button>
         </div>
       </form>

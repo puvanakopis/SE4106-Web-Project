@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { assets } from '../Assets/assets';
+import { assets, transportData } from '../Assets/assets'; // Assuming you have transportData
 import './AddTransport.css';
 
 const AddTransport = () => {
@@ -21,10 +21,57 @@ const AddTransport = () => {
     }
   });
 
+  // Calculate transport statistics from transportData
+  const transportStats = {
+    totalVehicles: transportData.length,
+    availableVehicles: transportData.filter(v => v.isAvailable).length,
+    bookedVehicles: transportData.filter(v => !v.isAvailable).length,
+    averagePrice: transportData.reduce((sum, v) => sum + v.pricePerKm, 0) / transportData.length || 0
+  };
+
   return (
     <div className="dashboard-container">
       <form>
         <div className="dashboard-title">Add Transport</div>
+
+        {/* ------------ Transport Statistics Summary ------------ */}
+        <div className="dashboard-summary">
+          {/* Total Vehicles */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Total Vehicles Icon" className="icon" />
+            <div>
+              <p className="summary-title">Total Vehicles</p>
+              <p className="summary-value">{transportStats.totalVehicles}</p>
+            </div>
+          </div>
+
+          {/* Available Vehicles */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Available Vehicles Icon" className="icon" />
+            <div>
+              <p className="summary-title">Available</p>
+              <p className="summary-value">{transportStats.availableVehicles}</p>
+            </div>
+          </div>
+
+          {/* Booked Vehicles */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Booked Vehicles Icon" className="icon" />
+            <div>
+              <p className="summary-title">Booked</p>
+              <p className="summary-value">{transportStats.bookedVehicles}</p>
+            </div>
+          </div>
+
+          {/* Average Price */}
+          <div className="summary-box">
+            <img src={assets.totalRevenueIcon} alt="Average Price Icon" className="icon" />
+            <div>
+              <p className="summary-title">Avg. Price/Km</p>
+              <p className="summary-value">LKR {transportStats.averagePrice.toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
 
         {/* ------------ Uploading Image ------------ */}
         <p className='section-title'>Vehicle Image</p>
@@ -47,7 +94,6 @@ const AddTransport = () => {
 
         {/* ------------ Transport Info Inputs ------------ */}
         <div className='input-grid'>
-
           {/* Vehicle Type */}
           <div className="input-group">
             <p className="label-text">Vehicle Type</p>

@@ -1,10 +1,8 @@
-.transport-container{
-    margin-top: 10%;
-}
-
 .dashboard-container {
     padding: 4% 8%;
 }
+
+
 
 .dashboard-title {
     display: flex;
@@ -13,8 +11,26 @@
     width: 100%;
     font-size: 25px;
     font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 1rem;
 }
 
+/* ------------------ Accommodation , Transport ------------------ */
+.accommodation-container {
+    margin-bottom: 3rem;
+}
+
+.transport-container {
+    margin-top: 3rem;
+}
+.recent-title {
+    color: #1e3a8a;
+    font-weight: 500;
+    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
+}
+
+/* ------------------ Summary Cards ------------------ */
 .dashboard-summary {
     display: flex;
     gap: 1rem;
@@ -25,12 +41,13 @@
 .summary-box {
     display: flex;
     align-items: center;
-    background-color: rgba(59, 130, 246, 0.1);
+    background-color: rgba(59, 130, 246, 0.1) !important;
     padding: 1rem;
     padding-right: 2rem;
     border-radius: 0.5rem;
     flex: 1;
     min-width: 250px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .icon {
@@ -40,34 +57,37 @@
 
 .summary-title {
     color: #3b82f6;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
 }
 
 .summary-value {
-    color: #a3a3a3;
+    color: #1f2937;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
-.recent-title {
-    color: #1e3a8a;
-    font-weight: 500;
-    margin-bottom: 1.25rem;
-}
-
+/* Recent Bookings */
 .bookings-table-wrapper {
     width: 100%;
-    text-align: left;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
+    overflow-x: auto;
     max-height: 20rem;
-    overflow-y: scroll;
+    overflow-y: auto;
+    background-color: #fff;
 }
 
 .bookings-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px;
 }
 
 .bookings-table thead {
     background-color: #f9fafb;
+    position: sticky;
+    top: 0;
 }
 
 .bookings-table th,
@@ -77,26 +97,49 @@
     color: #374151;
 }
 
-.center {
-    text-align: center;
+.bookings-table th {
+    font-weight: 600;
+    color: #1f2937;
 }
 
+/* Paid status styling */
 .paid {
     color: #16a34a;
     font-weight: 500;
+    background-color: rgba(22, 163, 74, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
 }
 
 .pending {
     color: #dc2626;
     font-weight: 500;
+    background-color: rgba(220, 38, 38, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+
+/* ------------------ Utility Classes ------------------ */
+.center {
+    text-align: center;
 }
 
 .hide-on-sm {
     display: table-cell;
 }
 
+/* ------------------ Responsive Adjustments ------------------ */
 @media screen and (max-width: 640px) {
     .hide-on-sm {
         display: none;
+    }
+    
+    .summary-box {
+        min-width: 100%;
+    }
+    
+    .dashboard-container {
+        padding: 4% 5%;
     }
 }
