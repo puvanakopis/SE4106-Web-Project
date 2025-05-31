@@ -228,7 +228,7 @@ const Accommodation = () => {
 
                       <button
                         onClick={() => navigate(`/room/${room._id}`)}
-                        className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 text-sm transition duration-200"
+                        className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-xs hover:bg-blue-700 text-sm transition duration-200"
                       >
                         Book Now
                       </button>

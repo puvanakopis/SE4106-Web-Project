@@ -25,7 +25,7 @@ const RoomDetails = () => {
         <h1 className='text-3xl md:text-4xl font-serif'>
           {room.hotel.name} <span className='font-inter text-sm'>({room.roomType})</span>
         </h1>
-        <p className='text-xs font-semibold font-inter py-1.5 px-3 text-white bg-orange-500 rounded-full shadow-sm tracking-wide'>20% OFF</p>
+        <p className='text-xs font-semibold font-inter py-1.5 px-3 text-white bg-blue-500 rounded-full shadow-sm tracking-wide'>20% OFF</p>
       </div>
 
       {/* Room Rating */}
@@ -58,7 +58,7 @@ const RoomDetails = () => {
                 src={image}
                 alt="room-thumbnail"
                 className={`w-full rounded-xl shadow-md object-cover cursor-pointer transition-all duration-200 hover:scale-105 ${
-                  mainImage === image ? 'outline outline-4 outline-orange-500' : ''
+                  mainImage === image ? 'outline outline-4 outline-blue-500' : ''
                 }`}
                 loading="lazy"
               />
