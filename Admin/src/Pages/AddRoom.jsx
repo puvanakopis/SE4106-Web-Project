@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { assets } from '../Assets/assets';
 import './AddRoom.css';
 
@@ -22,14 +22,79 @@ const AddRoom = () => {
     }
   });
 
+  const roomStats = {
+    totalRooms: 24,
+    occupiedRooms: 18,
+    availableRooms: 6,
+    averagePrice: 12500
+  };
+
+  // Scroll Animation Effect
+  useEffect(() => {
+    const elements = document.querySelectorAll('.ScrollingAnimation');
+
+    const handleScroll = () => {
+      elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.85) {
+          el.classList.add('show');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="dashboard-container">
       <form>
-        <div className="dashboard-title">Add Room</div>
+        <div className="dashboard-title ScrollingAnimation">Add Room</div>
+
+        {/* ------------ Room Statistics Summary ------------ */}
+        <div className="dashboard-summary ScrollingAnimation">
+          {/* Total Rooms */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Total Rooms Icon" className="icon" />
+            <div>
+              <p className="summary-title">Total Rooms</p>
+              <p className="summary-value">{roomStats.totalRooms}</p>
+            </div>
+          </div>
+
+          {/* Occupied Rooms */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Occupied Rooms Icon" className="icon" />
+            <div>
+              <p className="summary-title">Occupied Rooms</p>
+              <p className="summary-value">{roomStats.occupiedRooms}</p>
+            </div>
+          </div>
+
+          {/* Available Rooms */}
+          <div className="summary-box">
+            <img src={assets.totalBookingIcon} alt="Available Rooms Icon" className="icon" />
+            <div>
+              <p className="summary-title">Available Rooms</p>
+              <p className="summary-value">{roomStats.availableRooms}</p>
+            </div>
+          </div>
+
+          {/* Average Price */}
+          <div className="summary-box">
+            <img src={assets.totalRevenueIcon} alt="Average Price Icon" className="icon" />
+            <div>
+              <p className="summary-title">Average Price</p>
+              <p className="summary-value">Rs {roomStats.averagePrice}.00</p>
+            </div>
+          </div>
+        </div>
 
         {/* ------------ Uploading Images ------------ */}
-        <p className='section-title'>Images</p>
-        <div className="image-upload-grid">
+        <p className='section-title ScrollingAnimation'>Images</p>
+        <div className="image-upload-grid ScrollingAnimation">
           {Object.keys(images).map((key) => (
             <label htmlFor={`roomImage${key}`} key={key}>
               <img
@@ -51,8 +116,7 @@ const AddRoom = () => {
         </div>
 
         {/* ------------ Room Info Inputs ------------ */}
-        <div className='input-flex'>
-
+        <div className='input-flex ScrollingAnimation'>
           {/* Room Type */}
           <div className="input-group">
             <p className="label-text">Room Type</p>
@@ -82,8 +146,8 @@ const AddRoom = () => {
           </div>
         </div>
 
-        {/* Amenities  */}
-        <div className="amenities-section">
+        {/* Amenities */}
+        <div className="amenities-section ScrollingAnimation">
           <p className='section-title'>Amenities</p>
           <div className='amenities-list'>
             {Object.keys(inputs.amenities).map((amenity, index) => (
@@ -102,8 +166,7 @@ const AddRoom = () => {
             ))}
           </div>
 
-
-        {/* ------------ Submit Button ------------ */}
+          {/* Submit Button */}
           <button className='submit-button'>Add Room</button>
         </div>
       </form>

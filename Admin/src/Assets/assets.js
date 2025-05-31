@@ -684,6 +684,18 @@ export const transportData = [
         contact: "+94774567890",
         amenities: ["Air Conditioning", "Music System", "GPS"],
         pricePerKm: 35
+    },
+    {
+        _id: "transport_5",
+        owner: transportOwnerData[3],
+        vehicleType: "Car",
+        vehicleName: "Toyota Corolla",
+        registrationNumber: "NP-GH-3456",
+        capacity: 4,
+        city: "Pambahinna",
+        contact: "+94774567890",
+        amenities: ["Air Conditioning", "Music System", "GPS"],
+        pricePerKm: 35
     }
 ];
 

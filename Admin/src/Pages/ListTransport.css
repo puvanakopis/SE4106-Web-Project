@@ -1,9 +1,9 @@
-/* Container */
+/* Main Container Styles */
 .listtransport-container {
     padding: 4% 10%;
 }
 
-/* Title */
+/* Title Styles */
 .listtransport-title {
     font-size: 25px;
     font-weight: bold;
@@ -12,7 +12,106 @@
     margin-bottom: 1rem;
 }
 
-/* Table Wrapper */
+/* ------------ Transport Statistics Summary ------------ */
+.dashboard-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-box {
+    flex: 1;
+    min-width: 200px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+}
+
+.summary-title {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.25rem;
+}
+
+.summary-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* ------------ Vehicle Type Distribution ------------ */
+.vehicle-type-distribution {
+
+    margin: 2rem 0;
+}
+
+.distribution-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 1.5rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.distribution-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.distribution-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.distribution-item:hover {
+    transform: translateY(-2px);
+}
+
+.type-label {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.type-count {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+}
+
+.type-bar {
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* ------------ Transport Table ------------ */
 .transport-table-wrapper {
     width: 100%;
     border: 1px solid #d1d5db;
@@ -21,9 +120,9 @@
     max-height: 20rem;
     overflow-y: auto;
     background-color: #fff;
+    margin-top: 0.75rem;
 }
 
-/* Table */
 .transport-table {
     width: 100%;
     border-collapse: collapse;
@@ -46,29 +145,40 @@
     color: #1f2937;
 }
 
-/* Align Center */
 .center {
     text-align: center;
 }
 
-/* Responsive Hide Column */
 .hide-on-sm {
     display: table-cell;
 }
 
-@media screen and (max-width: 640px) {
-    .hide-on-sm {
-        display: none;
-    }
-}
-
-/* Checkbox styling */
 input[type="checkbox"].peer {
     width: 1rem;
     height: 1rem;
     cursor: pointer;
 }
 
-.mt-3 {
-    margin-top: 0.75rem;
+@media screen and (max-width: 768px) {
+    .distribution-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .summary-box {
+        min-width: 150px;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .hide-on-sm {
+        display: none;
+    }
+
+    .distribution-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .listtransport-container {
+        padding: 4% 5%;
+    }
 }

@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ProfileInfo.css";
 
 const ProfileInfo = () => {
   const [activeSection, setActiveSection] = useState("account-info");
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    setAnimate(false);
+    const timer = setTimeout(() => setAnimate(true), 50); 
+    return () => clearTimeout(timer);
+  }, [activeSection]);
 
   return (
     <div className="profile">
@@ -35,13 +42,9 @@ const ProfileInfo = () => {
           </div>
         </div>
 
-
-
-
-
         {/* -------------- account info Section -------------- */}
         {activeSection === "account-info" && (
-          <div className="profile-form-section">
+          <div className={`profile-form-section ScrollingAnimation ${animate ? "show" : ""}`}>
             <form className="profile-form">
               <div className="form-group">
                 <label>Full Name</label>
@@ -82,22 +85,17 @@ const ProfileInfo = () => {
               </div>
             </form>
           </div>
-
         )}
-
-
-
 
         {/* -------------- delete Section -------------- */}
         {activeSection === "delete" && (
-          <div className="profile-form-section">
+          <div className={`profile-form-section ScrollingAnimation ${animate ? "show" : ""}`}>
             <form className="profile-form">
               <div className="form-group delete">
                 <label>⚠️  Delete Account Warning</label>
                 <div>
                   Deleting your account will permanently remove your data, cancel active bookings, and anonymize your reviews. This action cannot be undone. Make sure to cancel any ongoing bookings first.
                 </div>
-
               </div>
 
               <div className="form-group">
@@ -106,19 +104,15 @@ const ProfileInfo = () => {
               </div>
 
               <div className="form-group button-group">
-                <button type="submit" className="save-button">Delete Accountt</button>
+                <button type="submit" className="save-button">Delete Account</button>
               </div>
-
             </form>
-
           </div>
         )}
 
-
-
         {/* -------------- password Section -------------- */}
         {activeSection === "password" && (
-          <div className="profile-form-section">
+          <div className={`profile-form-section ScrollingAnimation ${animate ? "show" : ""}`}>
             <form className="profile-form">
               <div className="form-group">
                 <label>Current Password</label>
@@ -138,11 +132,10 @@ const ProfileInfo = () => {
               <div className="form-group button-group">
                 <button type="submit" className="save-button">Update Password</button>
               </div>
-
             </form>
-
           </div>
         )}
+
       </div>
     </div>
   );

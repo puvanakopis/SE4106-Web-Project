@@ -1,9 +1,7 @@
-/* Container */
 .listroom-container {
     padding: 4% 10%;
 }
 
-/* Title */
 .listroom-title {
     font-size: 25px;
     font-weight: bold;
@@ -12,7 +10,27 @@
     margin-bottom: 1rem;
 }
 
-/* Table Wrapper */
+/* ------------ Room Statistics Summary ------------ */
+.dashboard-summary {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.summary-box {
+    flex: 1;
+    min-width: 200px;
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* ------------ Room Listing Table ------------ */
 .room-table-wrapper {
     width: 100%;
     border: 1px solid #d1d5db;
@@ -23,7 +41,6 @@
     background-color: #fff;
 }
 
-/* Table */
 .room-table {
     width: 100%;
     border-collapse: collapse;
@@ -32,6 +49,8 @@
 
 .room-table thead {
     background-color: #f9fafb;
+    position: sticky;
+    top: 0;
 }
 
 .room-table th,
@@ -46,12 +65,10 @@
     color: #1f2937;
 }
 
-/* Align Center */
 .center {
     text-align: center;
 }
 
-/* Responsive Hide Column */
 .hide-on-sm {
     display: table-cell;
 }
@@ -60,4 +77,9 @@
     .hide-on-sm {
         display: none;
     }
+}
+
+input[type="checkbox"].peer {
+    cursor: not-allowed;
+    accent-color: #3b82f6;
 }
