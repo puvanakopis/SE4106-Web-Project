@@ -11,6 +11,7 @@ import Profile from "./Pages/ProfileInfo";
 import Saved from "./Pages/Saved";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
+import Transport from "./Pages/Transport";
 
 import Accommodation from "./Pages/Accommodation";
 import RoomDetails from "./Pages/RoomDetails";
@@ -33,6 +34,8 @@ function App() {
 
         <Route path="/accommodation" element={<Accommodation />} />
         <Route path="/room/:id" element={<RoomDetails />} />
+        
+        <Route path="/transport" element={<Transport />} />
       </Routes>
       <Footer />
     </AuthProvider>
