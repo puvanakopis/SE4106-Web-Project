@@ -57,7 +57,7 @@ const ListTransport = () => {
 
 
       {/* ------------------ Dashboard Summary ------------------ */}
-      <div className="dashboard-summary ScrollingAnimation">
+      <div className="four dashboard-summary ScrollingAnimation">
         {/* Total Vehicles */}
         <div className="summary-box">
           <img src={assets.totalBookingIcon} alt="Total Vehicles" className="icon" />
@@ -93,6 +93,10 @@ const ListTransport = () => {
             <p className="summary-value">{totalBookings}</p>
           </div>
         </div>
+      </div>
+
+
+      <div className="dashboard-summary ScrollingAnimation">
 
         {/* Total Revenue */}
         <div className="summary-box">
