@@ -71,6 +71,99 @@ export const assets = {
     totalRevenueIcon,
 }
 
+// ----------------- studentData -----------------
+export const studentData = [
+  {
+    _id: "student_1",
+    username: "Mr. Ruwan Jayasinghe",
+    phone: "+94771234567",
+    email: "ruwan@gmail.com",
+    role: "Student",
+    City: "Belihuloya",
+  },
+  {
+    _id: "student_2",
+    username: "Ms. Nadeesha Perera",
+    phone: "+94771239876",
+    email: "nadeesha.perera@gmail.com",
+    role: "Student",
+    City: "Colombo",
+  },
+  {
+    _id: "student_3",
+    username: "Mr. Kusal Fernando",
+    phone: "+94771233456",
+    email: "kusal.fernando@gmail.com",
+    role: "Student",
+    City: "Kandy",
+  },
+  {
+    _id: "student_4",
+    username: "Ms. Ishara Wijesinghe",
+    phone: "+94771236789",
+    email: "ishara.wijesinghe@gmail.com",
+    role: "Student",
+    City: "Galle",
+  },
+  {
+    _id: "student_5",
+    username: "Mr. Thilina Senanayake",
+    phone: "+94771231234",
+    email: "thilina.sena@gmail.com",
+    role: "Student",
+    City: "Jaffna",
+  },
+  {
+    _id: "student_6",
+    username: "Ms. Sanduni Perera",
+    phone: "+94771234512",
+    email: "sanduni.perera@gmail.com",
+    role: "Student",
+    City: "Matara",
+  },
+];
+
+// ----------------- lecturerData -----------------
+export const lecturerData = [
+  {
+    _id: "lecturer_1",
+    username: "Dr. Nimal Perera",
+    phone: "+94771239870",
+    email: "nimal.perera@university.edu",
+    role: "Lecturer",
+    Department: "Computer Science",
+    City: "Colombo",
+  },
+  {
+    _id: "lecturer_2",
+    username: "Prof. Kamala Wijeratne",
+    phone: "+94771235432",
+    email: "kamala.wijeratne@university.edu",
+    role: "Lecturer",
+    Department: "Electrical Engineering",
+    City: "Kandy",
+  },
+  {
+    _id: "lecturer_3",
+    username: "Dr. Sunil Gunasekara",
+    phone: "+94771236789",
+    email: "sunil.gunasekara@university.edu",
+    role: "Lecturer",
+    Department: "Mechanical Engineering",
+    City: "Galle",
+  },
+  {
+    _id: "lecturer_4",
+    username: "Prof. Ishani Jayawardena",
+    phone: "+94771230123",
+    email: "ishani.jayawardena@university.edu",
+    role: "Lecturer",
+    Department: "Civil Engineering",
+    City: "Jaffna",
+  },
+];
+
+
 
 
 // ----------------- User Data 
@@ -114,111 +207,9 @@ export const hotelOwnerData = [
         City: ["Belihuloya"]
     },
 ]
-export const studentData = [
-    // Students
-    {
-        _id: "student_1",
-        username: "Mr. Ruwan Jayasinghe",
-        email: "ruwan@gmail.com",
-        role: "Student",
-        City: ["Belihuloya"]
-    },
-    {
-        _id: "student_2",
-        username: "Ms. Nadeesha Perera",
-        email: "nadeesha.perera@student.sab.ac.lk",
-        role: "Student",
-        City: ["Pambahinna", "Colombo"]
-    },
-    {
-        _id: "student_3",
-        username: "Mr. Dilan Weerasinghe",
-        email: "dilan.w@student.sab.ac.lk",
-        role: "Student",
-        City: ["Kandy", "Balangoda"]
-    },
-    {
-        _id: "student_4",
-        username: "Ms. Hiruni Gunasekara",
-        email: "hiruni.gunasekara@student.sab.ac.lk",
-        role: "Student",
-        City: ["Pambahinna", "Ella"]
-    },
-    {
-        _id: "student_5",
-        username: "Mr. Sanjeewa Rathnayake",
-        email: "sanjeewa.r@student.sab.ac.lk",
-        role: "Student",
-        City: ["Nuwara Eliya"]
-    },
-    {
-        _id: "student_6",
-        username: "Ms. Nethmi Senanayake",
-        email: "nethmi.senanayake@student.sab.ac.lk",
-        role: "Student",
-        City: ["Colombo", "Galle"]
-    },
-    {
-        _id: "student_7",
-        username: "Mr. Tharindu Madushanka",
-        email: "tharindu.m@student.sab.ac.lk",
-        role: "Student",
-        City: ["Belihuloya", "Pambahinna"]
-    },
-    {
-        _id: "student_8",
-        username: "Ms. Oshadi Fernando",
-        email: "oshadi.fernando@student.sab.ac.lk",
-        role: "Student",
-        City: ["Matale", "Kandy"]
-    },
-    {
-        _id: "student_9",
-        username: "Mr. Yasiru Jayawardena",
-        email: "yasiru.j@student.sab.ac.lk",
-        role: "Student",
-        City: ["Colombo", "Rathnapura"]
-    },
-    {
-        _id: "student_10",
-        username: "Ms. Kalani Dissanayake",
-        email: "kalani.dissanayake@student.sab.ac.lk",
-        role: "Student",
-        City: ["Badulla", "Bandarawela"]
-    }
-];
 
-// ----------------- Transport User Data
-export const transportOwnerData = [
-    {
-        _id: "transportOwner_1",
-        username: "Mr. Lakshan Fernando",
-        email: "lakshan.fernando@gmail.com",
-        role: "transportOwner",
-        City: ["Pambahinna"]
-    },
-    {
-        _id: "transportOwner_2",
-        username: "Ms. Anjali Perera",
-        email: "anjali.perera@gmail.com",
-        role: "transportOwner",
-        City: ["Belihuloya"]
-    },
-    {
-        _id: "transportOwner_3",
-        username: "Mr. Nimal Jayawardena",
-        email: "nimal.jayawardena@gmail.com",
-        role: "transportOwner",
-        City: ["Kumbalgamuwa"]
-    },
-    {
-        _id: "transportOwner_4",
-        username: "Mrs. Chathurika Silva",
-        email: "chathurika.silva@gmail.com",
-        role: "transportOwner",
-        City: ["Pambahinna"]
-    }
-];
+
+
 
 // ----------------- Accomantation Data -----------------
 
@@ -338,231 +329,7 @@ export const roomsData = [
         images: [roomImg1, roomImg2, roomImg3, roomImg4],
         isAvailable: true
     },
-    {
-        _id: "room_6",
-        hotel: hotelData[1],
-        roomType: "Double Bed",
-        pricePerMonth: 5500,
-        amenities: ["Attached Bathroom", "Wi-Fi", "Wardrobe"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_7",
-        hotel: hotelData[1],
-        roomType: "Triple Sharing",
-        pricePerMonth: 9000,
-        amenities: ["Wi-Fi", "Study Table", "Shared Kitchen"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_8",
-        hotel: hotelData[2],
-        roomType: "Annexe",
-        pricePerMonth: 10000,
-        amenities: ["Private Bathroom", "Mini Fridge", "Wi-Fi"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_9",
-        hotel: hotelData[2],
-        roomType: "Single Bed",
-        pricePerMonth: 3000,
-        amenities: ["Wi-Fi", "Study Table", "Fan"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_10",
-        hotel: hotelData[2],
-        roomType: "Double Bed",
-        pricePerMonth: 6000,
-        amenities: ["Wi-Fi", "Wardrobe", "Attached Bathroom"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_11",
-        hotel: hotelData[2],
-        roomType: "Triple Sharing",
-        pricePerMonth: 10000,
-        amenities: ["Shared Kitchen", "Wi-Fi", "Study Table"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_12",
-        hotel: hotelData[3],
-        roomType: "Annexe",
-        pricePerMonth: 12000,
-        amenities: ["Private Entrance", "Mini Fridge", "Wi-Fi"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_13",
-        hotel: hotelData[3],
-        roomType: "Single Bed",
-        pricePerMonth: 2500,
-        amenities: ["Wi-Fi", "Study Lamp", "Fan"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_14",
-        hotel: hotelData[3],
-        roomType: "Double Bed",
-        pricePerMonth: 5500,
-        amenities: ["Wi-Fi", "Wardrobe", "Attached Bathroom"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_15",
-        hotel: hotelData[3],
-        roomType: "Triple Sharing",
-        pricePerMonth: 8500,
-        amenities: ["Shared Kitchen", "Wi-Fi", "Laundry"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_16",
-        hotel: hotelData[4],
-        roomType: "Annexe",
-        pricePerMonth: 10000,
-        amenities: ["Wi-Fi", "Mini Fridge", "Attached Bathroom"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_17",
-        hotel: hotelData[4],
-        roomType: "Single Bed",
-        pricePerMonth: 2500,
-        amenities: ["Wi-Fi", "Study Table", "Fan"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_18",
-        hotel: hotelData[4],
-        roomType: "Double Bed",
-        pricePerMonth: 6500,
-        amenities: ["Wi-Fi", "Wardrobe", "Attached Bathroom"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_19",
-        hotel: hotelData[4],
-        roomType: "Triple Sharing",
-        pricePerMonth: 8500,
-        amenities: ["Wi-Fi", "Study Table", "Shared Kitchen"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_20",
-        hotel: hotelData[5],
-        roomType: "Annexe",
-        pricePerMonth: 9000,
-        amenities: ["Wi-Fi", "Mini Fridge", "Private Entrance"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_21",
-        hotel: hotelData[5],
-        roomType: "Single Bed",
-        pricePerMonth: 3000,
-        amenities: ["Fan", "Wi-Fi", "Study Lamp"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_22",
-        hotel: hotelData[5],
-        roomType: "Double Bed",
-        pricePerMonth: 5000,
-        amenities: ["Wi-Fi", "Attached Bathroom", "Wardrobe"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_23",
-        hotel: hotelData[5],
-        roomType: "Triple Sharing",
-        pricePerMonth: 7500,
-        amenities: ["Wi-Fi", "Shared Kitchen", "Laundry"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_24",
-        hotel: hotelData[6],
-        roomType: "Annexe",
-        pricePerMonth: 9500,
-        amenities: ["Mini Fridge", "Wi-Fi", "Private Entrance"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_25",
-        hotel: hotelData[6],
-        roomType: "Single Bed",
-        pricePerMonth: 2500,
-        amenities: ["Fan", "Wi-Fi", "Study Table"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_26",
-        hotel: hotelData[6],
-        roomType: "Double Bed",
-        pricePerMonth: 6500,
-        amenities: ["Wi-Fi", "Wardrobe", "Attached Bathroom"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_27",
-        hotel: hotelData[6],
-        roomType: "Triple Sharing",
-        pricePerMonth: 7500,
-        amenities: ["Study Table", "Shared Kitchen", "Wi-Fi"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_28",
-        hotel: hotelData[7],
-        roomType: "Annexe",
-        pricePerMonth: 9500,
-        amenities: ["Private Bathroom", "Wi-Fi", "Mini Fridge"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_29",
-        hotel: hotelData[7],
-        roomType: "Single Bed",
-        pricePerMonth: 2500,
-        amenities: ["Wi-Fi", "Study Table", "Fan"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    },
-    {
-        _id: "room_30",
-        hotel: hotelData[7],
-        roomType: "Double Bed",
-        pricePerMonth: 6500,
-        amenities: ["Wi-Fi", "Attached Bathroom", "Wardrobe"],
-        images: [roomImg1, roomImg2, roomImg3, roomImg4],
-        isAvailable: true
-    }
+
 ]
 
 
@@ -585,7 +352,7 @@ export const accommodationBookingsData = [
     },
     {
         _id: "H_Book_2",
-        user: studentData[1],
+        user: studentData[0],
         room: roomsData[0],
         hotel: hotelData,
         checkInDate: "2025-04-27T00:00:00.000Z",
@@ -600,7 +367,7 @@ export const accommodationBookingsData = [
     },
     {
         _id: "H_Book_3",
-        user: studentData[3],
+        user: studentData[0],
         room: roomsData[3],
         hotel: hotelData,
         checkInDate: "2025-04-11T00:00:00.000Z",
@@ -632,131 +399,335 @@ export const dashboardAccommodationData = {
 
 
 
-// ----------------- Transport Data -----------------
 
 
-// Vehicle Dummy Data
-export const transportData = [
-    {
-        _id: "transport_1",
-        owner: transportOwnerData[0],
-        vehicleType: "Bus",
-        vehicleName: "City Express",
-        registrationNumber: "NP-AB-1234",
-        capacity: 40,
-        city: "Pambahinna",
-        contact: "+94771234567",
-        amenities: ["Air Conditioning", "Wi-Fi", "Comfort Seats"],
-        pricePerKm: 30
-    },
-    {
-        _id: "transport_2",
-        owner: transportOwnerData[1],
-        vehicleType: "Van",
-        vehicleName: "Shuttle Van",
-        registrationNumber: "NP-CD-5678",
-        capacity: 12,
-        city: "Belihuloya",
-        contact: "+94772345678",
-        amenities: ["Wi-Fi", "Music System", "Extra Luggage Space"],
-        pricePerKm: 25
-    },
-    {
-        _id: "transport_3",
-        owner: transportOwnerData[2],
-        vehicleType: "Motorbike",
-        vehicleName: "Yamaha Pulsar NS200",
-        registrationNumber: "NP-EF-9012",
-        capacity: 2,
-        city: "Kumbalgamuwa",
-        contact: "+94773456789",
-        amenities: ["Helmet Provided", "Fuel Included"],
-        pricePerKm: 15
-    },
-    {
-        _id: "transport_4",
-        owner: transportOwnerData[3],
-        vehicleType: "Car",
-        vehicleName: "Toyota Corolla",
-        registrationNumber: "NP-GH-3456",
-        capacity: 4,
-        city: "Pambahinna",
-        contact: "+94774567890",
-        amenities: ["Air Conditioning", "Music System", "GPS"],
-        pricePerKm: 35
-    },
-    {
-        _id: "transport_5",
-        owner: transportOwnerData[3],
-        vehicleType: "Car",
-        vehicleName: "Toyota Corolla",
-        registrationNumber: "NP-GH-3456",
-        capacity: 4,
-        city: "Pambahinna",
-        contact: "+94774567890",
-        amenities: ["Air Conditioning", "Music System", "GPS"],
-        pricePerKm: 35
-    }
+// ----------------- ownerData -----------------
+export const ownerData = [
+  {
+    owner_id: "Owner_1",
+    name: "Mr. Chamara Silva",
+    display_name: "Chamara Silva",
+    email: "chamara.silva@example.com",
+    phone: "+94771231234",
+    role: "Owner",
+    address: [
+      "No. 45, Main Street",
+      "Galle Fort",
+      "Galle",
+      "Sri Lanka",
+      "80000",
+    ],
+  },
+  {
+    owner_id: "Owner_2",
+    name: "Ms. Ishani Jayawardena",
+    display_name: "Ishani Jayawardena",
+    email: "ishani.jayawardena@example.com",
+    phone: "+94771237654",
+    role: "Owner",
+    address: [
+      "No. 12, Lake View Road",
+      "Peradeniya",
+      "Kandy",
+      "Sri Lanka",
+      "20000",
+    ],
+  },
+  {
+    owner_id: "Owner_3",
+    name: "Mr. Nimal Perera",
+    display_name: "Nimal Perera",
+    email: "nimal.perera@example.com",
+    phone: "+94771233445",
+    role: "Owner",
+    address: [
+      "No. 8, Hill Street",
+      "Colombo 7",
+      "Colombo",
+      "Sri Lanka",
+      "00700",
+    ],
+  },
+  {
+    owner_id: "Owner_4",
+    name: "Ms. Kamala Wijeratne",
+    display_name: "Kamala Wijeratne",
+    email: "kamala.wijeratne@example.com",
+    phone: "+94771234567",
+    role: "Owner",
+    address: [
+      "No. 78, Lake Road",
+      "Nuwara Eliya",
+      "Central Province",
+      "Sri Lanka",
+      "22200",
+    ],
+  },
+  {
+    owner_id: "Owner_5",
+    name: "Mr. Sunil Gunasekara",
+    display_name: "Sunil Gunasekara",
+    email: "sunil.gunasekara@example.com",
+    phone: "+94771239876",
+    role: "Owner",
+    address: [
+      "No. 33, Church Street",
+      "Jaffna",
+      "Northern Province",
+      "Sri Lanka",
+      "40000",
+    ],
+  },
+];
+
+// ----------------- Vehicle Data -----------------
+export const vehicleData = [
+  {
+    vehicle_id: "vehicle_1",
+    owner: ownerData[0],
+    vehicle_type: "Motorbike",
+    brand: "Honda",
+    model: "CBR 500R",
+    fuel_type: "Petrol",
+    seating_capacity: 2,
+    year: 2019,
+    registration_number: "WP-1234",
+    rental_price_per_day: 1500,
+    deposit_amount: 10000,
+    availability_status: true,
+    images: ["roomImg1"],
+    average_rating: 4.5,
+  },
+  {
+    vehicle_id: "vehicle_2",
+    owner: ownerData[1],
+    vehicle_type: "Car",
+    brand: "Toyota",
+    model: "Corolla",
+    fuel_type: "Petrol",
+    seating_capacity: 5,
+    year: 2018,
+    registration_number: "WP-5678",
+    rental_price_per_day: 3500,
+    deposit_amount: 25000,
+    availability_status: true,
+    images: ["roomImg2"],
+    average_rating: 4.8,
+  },
+  {
+    vehicle_id: "vehicle_3",
+    owner: ownerData[2],
+    vehicle_type: "Car",
+    brand: "Nissan",
+    model: "Sunny",
+    fuel_type: "Diesel",
+    seating_capacity: 5,
+    year: 2017,
+    registration_number: "WP-8765",
+    rental_price_per_day: 3000,
+    deposit_amount: 20000,
+    availability_status: false,
+    images: ["roomImg3"],
+    average_rating: 4.1,
+  },
+  {
+    vehicle_id: "vehicle_4",
+    owner: ownerData[3],
+    vehicle_type: "Van",
+    brand: "Suzuki",
+    model: "APV",
+    fuel_type: "Petrol",
+    seating_capacity: 7,
+    year: 2020,
+    registration_number: "WP-2345",
+    rental_price_per_day: 4000,
+    deposit_amount: 30000,
+    availability_status: true,
+    images: ["roomImg4"],
+    average_rating: 4.7,
+  },
+  {
+    vehicle_id: "vehicle_5",
+    owner: ownerData[4],
+    vehicle_type: "Motorbike",
+    brand: "Yamaha",
+    model: "R15",
+    fuel_type: "Petrol",
+    seating_capacity: 2,
+    year: 2021,
+    registration_number: "WP-3456",
+    rental_price_per_day: 1800,
+    deposit_amount: 12000,
+    availability_status: true,
+    images: ["roomImg5"],
+    average_rating: 4.3,
+  },
+  {
+    vehicle_id: "vehicle_6",
+    owner: ownerData[0],
+    vehicle_type: "Car",
+    brand: "Suzuki",
+    model: "Swift",
+    fuel_type: "Petrol",
+    seating_capacity: 5,
+    year: 2019,
+    registration_number: "WP-6543",
+    rental_price_per_day: 3200,
+    deposit_amount: 22000,
+    availability_status: false,
+    images: ["roomImg6"],
+    average_rating: 4.6,
+  },
+  {
+    vehicle_id: "vehicle_7",
+    owner: ownerData[1],
+    vehicle_type: "Car",
+    brand: "Honda",
+    model: "Civic",
+    fuel_type: "Petrol",
+    seating_capacity: 5,
+    year: 2022,
+    registration_number: "WP-7890",
+    rental_price_per_day: 3800,
+    deposit_amount: 28000,
+    availability_status: true,
+    images: ["roomImg7"],
+    average_rating: 4.9,
+  },
+   {
+    vehicle_id: "vehicle_8",
+    owner: ownerData[2],
+    vehicle_type: "Bus",
+    brand: "Tata",
+    model: "LP 407",
+    fuel_type: "Diesel",
+    seating_capacity: 30,
+    year: 2016,
+    registration_number: "WP-9988",
+    rental_price_per_day: 7500,
+    deposit_amount: 50000,
+    availability_status: true,
+    images: ["roomImg8"],
+    average_rating: 4.2,
+  },
+  {
+    vehicle_id: "vehicle_9",
+    owner: ownerData[3],
+    vehicle_type: "Bus",
+    brand: "Ashok Leyland",
+    model: "Viking",
+    fuel_type: "Diesel",
+    seating_capacity: 40,
+    year: 2021,
+    registration_number: "WP-7788",
+    rental_price_per_day: 9000,
+    deposit_amount: 60000,
+    availability_status: false,
+    images: ["roomImg9"],
+    average_rating: 4.4,
+  },
+];
+
+// ----------------- vehicle Bookings Data -----------------
+export const vehicleBookingsData = [
+  {
+    booking_id: "booking_1",
+    renter: studentData[0],
+    vehicle: vehicleData[0],
+    owner: ownerData[0],
+    booking_start: "2025-06-10T08:00:00",
+    booking_days: 3,
+    booking_status: "Confirmed",
+    isPaid: true,
+    totalPrice: 3 * 1500,
+  },
+  {
+    booking_id: "booking_2",
+    renter: studentData[2],
+    vehicle: vehicleData[1],
+    owner: ownerData[1],
+    booking_start: "2025-06-12T10:00:00",
+    booking_days: 5,
+    booking_status: "Confirmed",
+    isPaid: false,
+    totalPrice: 5 * 3500,
+  },
+  {
+    booking_id: "booking_3",
+    renter: studentData[4],
+    vehicle: vehicleData[4],
+    owner: ownerData[4],
+    booking_start: "2025-06-15T09:00:00",
+    booking_days: 2,
+    booking_status: "Pending",
+    isPaid: false,
+    totalPrice: 2 * 1800,
+  },
+  {
+    booking_id: "booking_4",
+    renter: studentData[5],
+    vehicle: vehicleData[6],
+    owner: ownerData[1],
+    booking_start: "2025-06-18T14:00:00",
+    booking_days: 4,
+    booking_status: "Confirmed",
+    isPaid: true,
+    totalPrice: 4 * 3800,
+  },
+  {
+    booking_id: "booking_5",
+    renter: studentData[3],
+    vehicle: vehicleData[3],
+    owner: ownerData[3],
+    booking_start: "2025-06-20T12:00:00",
+    booking_days: 1,
+    booking_status: "Cancelled",
+    isPaid: false,
+    totalPrice: 1 * 4000,
+  },
+  {
+    booking_id: "booking_6",
+    renter: studentData[1],
+    vehicle: vehicleData[5],
+    owner: ownerData[0],
+    booking_start: "2025-06-22T11:00:00",
+    booking_days: 6,
+    booking_status: "Confirmed",
+    isPaid: true,
+    totalPrice: 6 * 3200,
+  },
+  {
+  booking_id: "booking_7",
+  renter: lecturerData[1],
+  vehicle: vehicleData[7],
+  owner: ownerData[2],
+  booking_start: "2025-06-25T09:00:00",
+  booking_days: 3,
+  booking_status: "Confirmed",
+  isPaid: true,
+  totalPrice: 3 * 7500,
+},
+{
+  booking_id: "booking_8",
+  renter: lecturerData[0],
+  vehicle: vehicleData[8],
+  owner: ownerData[3],
+  booking_start: "2025-06-28T08:00:00",
+  booking_days: 2,
+  booking_status: "Pending",
+  isPaid: false,
+  totalPrice: 2 * 9000,
+}
+
+
 ];
 
 
-// Transport Bookings Dummy Data
-export const transportBookingsData = [
-    {
-        _id: "T_Book_1",
-        user: studentData[0],
-        transport: transportData[0],
-        pickupLocation: "Pambahinna Bus Stand",
-        dropoffLocation: "Sabaragamuwa University Main Entrance",
-        bookingDate: "2025-05-15T08:00:00.000Z",
-        travelDate: "2025-05-20T07:00:00.000Z",
-        distanceKm: 10,
-        totalPrice: 300,
-        status: "confirmed",
-        paymentMethod: "Stripe",
-        isPaid: true,
-        createdAt: "2025-05-10T06:00:00.000Z",
-        updatedAt: "2025-05-10T06:10:00.000Z"
-    },
-    {
-        _id: "T_Book_2",
-        user: studentData[1],
-        transport: transportData[1],
-        pickupLocation: "Belihuloya Town",
-        dropoffLocation: "Sabaragamuwa University Campus",
-        bookingDate: "2025-05-10T09:00:00.000Z",
-        travelDate: "2025-05-12T06:00:00.000Z",
-        distanceKm: 20,
-        totalPrice: 500,
-        status: "pending",
-        paymentMethod: "Pay At Vehicle",
-        isPaid: false,
-        createdAt: "2025-05-09T08:30:00.000Z",
-        updatedAt: "2025-05-09T08:30:00.000Z"
-    },
-    {
-        _id: "T_Book_3",
-        user: studentData[3],
-        transport: transportData[2],
-        pickupLocation: "Kumbalgamuwa Center",
-        dropoffLocation: "University Hostel",
-        bookingDate: "2025-05-05T07:30:00.000Z",
-        travelDate: "2025-05-07T07:30:00.000Z",
-        distanceKm: 8,
-        totalPrice: 120,
-        status: "cancelled",
-        paymentMethod: "Stripe",
-        isPaid: false,
-        createdAt: "2025-05-04T07:00:00.000Z",
-        updatedAt: "2025-05-04T08:00:00.000Z"
-    }
-];
-
-// Dashboard Dummy Data
+// Dashboard calculation:
 export const dashboardTransportData = {
-    totalBookings: transportBookingsData.length,
-    totalRevenue: transportBookingsData
+    totalBookings: vehicleBookingsData.length,
+    totalRevenue: vehicleBookingsData
         .filter(booking => booking.isPaid)
-        .reduce((sum, booking) => sum + booking.totalPrice, 0),
-    bookings: transportBookingsData
+        .reduce((sum, booking) => sum + (booking.totalPrice || 0), 0),
+    bookings: vehicleBookingsData,
 };

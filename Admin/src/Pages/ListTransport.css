@@ -14,8 +14,8 @@
 
 /* ------------ Transport Statistics Summary ------------ */
 .dashboard-summary {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
@@ -159,10 +159,21 @@ input[type="checkbox"].peer {
     cursor: pointer;
 }
 
+@media (max-width: 1000px) {
+    .dashboard-summary {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media screen and (max-width: 768px) {
     .distribution-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
+
+    .dashboard-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
 
     .summary-box {
         min-width: 150px;
