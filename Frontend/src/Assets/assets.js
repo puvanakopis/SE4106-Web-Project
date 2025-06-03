@@ -298,7 +298,7 @@ export const vehicleData = [
     rental_price_per_day: 1500,
     deposit_amount: 10000,
     availability_status: true,
-    images: ["roomImg1"],
+    images: [roomImg1],
     average_rating: 4.5,
   },
   {
@@ -314,7 +314,7 @@ export const vehicleData = [
     rental_price_per_day: 3500,
     deposit_amount: 25000,
     availability_status: true,
-    images: ["roomImg2"],
+    images: [roomImg1],
     average_rating: 4.8,
   },
   {
@@ -330,7 +330,7 @@ export const vehicleData = [
     rental_price_per_day: 3000,
     deposit_amount: 20000,
     availability_status: false,
-    images: ["roomImg3"],
+    images: [roomImg1],
     average_rating: 4.1,
   },
   {
@@ -346,7 +346,7 @@ export const vehicleData = [
     rental_price_per_day: 4000,
     deposit_amount: 30000,
     availability_status: true,
-    images: ["roomImg4"],
+    images: [roomImg1],
     average_rating: 4.7,
   },
   {
@@ -362,7 +362,7 @@ export const vehicleData = [
     rental_price_per_day: 1800,
     deposit_amount: 12000,
     availability_status: true,
-    images: ["roomImg5"],
+    images: [roomImg1],
     average_rating: 4.3,
   },
   {
@@ -378,7 +378,7 @@ export const vehicleData = [
     rental_price_per_day: 3200,
     deposit_amount: 22000,
     availability_status: false,
-    images: ["roomImg6"],
+    images: [roomImg1],
     average_rating: 4.6,
   },
   {
@@ -394,7 +394,7 @@ export const vehicleData = [
     rental_price_per_day: 3800,
     deposit_amount: 28000,
     availability_status: true,
-    images: ["roomImg7"],
+    images: [roomImg1],
     average_rating: 4.9,
   },
    {
@@ -410,7 +410,7 @@ export const vehicleData = [
     rental_price_per_day: 7500,
     deposit_amount: 50000,
     availability_status: true,
-    images: ["roomImg8"],
+    images: [roomImg1],
     average_rating: 4.2,
   },
   {
@@ -426,7 +426,23 @@ export const vehicleData = [
     rental_price_per_day: 9000,
     deposit_amount: 60000,
     availability_status: false,
-    images: ["roomImg9"],
+    images: [roomImg1],
+    average_rating: 4.4,
+  },
+  {
+    vehicle_id: "vehicle_10",
+    owner: ownerData[3],
+    vehicle_type: "Bus",
+    brand: "Ashok Leyland",
+    model: "Viking",
+    fuel_type: "Diesel",
+    seating_capacity: 40,
+    year: 2021,
+    registration_number: "WP-7788",
+    rental_price_per_day: 9000,
+    deposit_amount: 60000,
+    availability_status: false,
+    images: [roomImg1],
     average_rating: 4.4,
   },
 ];
