@@ -1,0 +1,214 @@
+.Navbar {
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 50;
+}
+
+/* ----------------- navbar container ----------------- */
+.navbar-container {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.logo .logo-text {
+  font-weight: 800 !important;
+  font-size: 35px;
+}
+
+/* List */
+.NavItem {
+  text-decoration: none;
+  color: black;
+  transition: all ease-in-out 0.2s;
+}
+
+.NavItem:hover {
+  color: var(--primary-color) !important;
+  cursor: pointer;
+}
+
+.NavItem.active {
+  color: var(--primary-color) !important;
+  cursor: pointer;
+}
+
+/* --------------- Desktop Navigation --------------- */
+/* Desktop Menu */
+.nav-links {
+  display: none;
+  gap: 2rem;
+  align-items: center;
+}
+
+/* Sign Up Link for Desktop  */
+.login-button {
+  border: 1px solid black;
+  border-radius: 9999px;
+  padding: 0.5rem 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  color: black;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Responsive Submenu For Desktop */
+.sub-menu {
+  display: none;
+  position: absolute;
+  top: 3.5rem;
+  right: 0;
+  background-color: #f9f9f9;
+  color: black;
+  padding: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 100;
+
+  /* Animate submenu */
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.sub-menu.open {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sub-menu .subItem {
+  padding: 5px 20px;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+.sub-menu .subItem:hover {
+  color: var(--primary-color);
+}
+
+.sub-menu .subItem.active {
+  color: var(--primary-color);
+}
+
+/* --------------- Mobile Navigation --------------- */
+/* Mobile Dropdown Menu */
+.custom-mobile-nav {
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1.5rem;
+
+  /* Initial hidden state for animation */
+  opacity: 0;
+  transform: translateY(-10px);
+
+  /* Animate in */
+  animation: slideDownFadeIn 0.8s forwards;
+}
+
+.custom-mobile-nav.closing {
+  /* Animate out */
+  animation: slideUpFadeOut 0.3s forwards;
+}
+
+.custom-mobile-nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mobile-hamburger {
+  display: flex;
+  cursor: pointer;
+  font-size: 28px;
+  background: none;
+  border: none;
+}
+
+/* Buttons */
+.sub-login-button {
+  margin-top: 1rem;
+  display: block;
+  width: 100%;
+  text-align: center;
+  border: 1px solid black;
+  border-radius: 9999px;
+  padding: 0.5rem 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  color: black;
+}
+
+.sub-login-button:hover {
+  background-color: #f3f4f6;
+}
+
+/* Animations for mobile menu */
+@keyframes slideDownFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpFadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive */
+@media (min-width: 900px) {
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .login-button {
+    display: flex;
+  }
+
+  .mobile-hamburger {
+    display: none;
+  }
+
+  .custom-mobile-nav {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .sub-menu {
+    display: none;
+  }
+}

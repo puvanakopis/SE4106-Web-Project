@@ -1,50 +1,40 @@
-import './PopularRooms.css'
-import PopularRoomsImg from "../../Assets/Home/Popular-Rooms.png";
-
-const rooms = [
-    {
-        id: 1,
-        title: 'Single Room near Sabaragamuwa Uni',
-        location: 'Belihuloya',
-        rating: 4.6,
-        price: 'Rs 5 000/=',
-        image: PopularRoomsImg,
-    },
-    {
-        id: 2,
-        title: 'Single Room near Sabaragamuwa Uni',
-        location: 'Belihuloya',
-        rating: 4.6,
-        price: 'Rs 5 000/=',
-        image: PopularRoomsImg,
-    },
-    {
-        id: 3,
-        title: 'Single Room near Sabaragamuwa Uni',
-        location: 'Belihuloya',
-        rating: 4.6,
-        price: 'Rs 5 000/=',
-        image: PopularRoomsImg,
-    },
-];
+import './PopularRooms.css';
+import { roomsDummyData } from '../../Assets/assets';
+import { useNavigate } from 'react-router-dom';
 
 const PopularRooms = () => {
+    const navigate = useNavigate();
+    const topRooms = [...roomsDummyData]
+        .sort((a, b) => a.pricePerMonth - b.pricePerMonth)
+        .slice(0, 3);
+
     return (
         <div className="combined-container">
-            {rooms.map((room) => (
-                // rooms container
-                <div key={room.id} className="card">
-                    {/* Room image */}
-                    <img src={room.image} alt={room.title} className="image" />
-                    
-                    {/* Room information section */}
+            {topRooms.map((room) => (
+                <div key={room._id} className="card">
+                    <img
+                        src={room.images[0]}
+                        alt={`${room.roomType} in ${room.hotel.name}`}
+                        className="image"
+                    />
+
                     <div className="room-info">
-                        <h3>{room.title}</h3>
-                        <p>Location – {room.location}</p>
-                        <div className="rating"><span>⭐</span>{room.rating}</div>
+                        <h3>{room.roomType} at {room.hotel.name}</h3>
+                        <p>Location – {room.hotel.city}</p>
+                        <div className="rating">
+                            <span>⭐</span>
+                            4.5
+                        </div>
                         <div className="price-action">
-                            <p>{room.price}</p>
-                            <button>View Details</button>
+                            <p>Rs {room.pricePerMonth.toLocaleString()}/= per month</p>
+                            <button
+                                onClick={() => {
+                                    navigate(`/room/${room._id}`);
+                                    window.scrollTo(0, 0);
+                                }}
+                            >
+                                View Details
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -1,17 +1,22 @@
-import './App.css'
+import "./App.css";
 import { Routes, Route } from "react-router-dom";
 
-import Navbar from './Components/Navbar/Navbar'
-import Footer from './Components/Footer/Footer';
+import Navbar from "./Components/Navbar/Navbar";
+import Footer from "./Components/Footer/Footer";
 
-import Home from "./Pages/Home"
-import LogIn from './Pages/LogIn';
-import SignUp from './Pages/SignUp';
-import Profile from './Pages/ProfileInfo';
-import Saved from './Pages/Saved';
-import About from './Pages/About';
+import Home from "./Pages/Home";
+import LogIn from "./Pages/LogIn";
+import SignUp from "./Pages/SignUp";
+import Profile from "./Pages/ProfileInfo";
+import Saved from "./Pages/Saved";
+import About from "./Pages/About";
+import Contact from "./Pages/Contact";
+import Transport from "./Pages/Transport";
 
-import { AuthProvider } from './Context/AuthContext';
+import Accommodation from "./Pages/Accommodation";
+import RoomDetails from "./Pages/RoomDetails";
+
+import { AuthProvider } from "./Context/AuthContext";
 
 
 function App() {
@@ -25,10 +30,16 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/saved" element={<Saved />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+
+        <Route path="/accommodation" element={<Accommodation />} />
+        <Route path="/room/:id" element={<RoomDetails />} />
+        
+        <Route path="/transport" element={<Transport />} />
       </Routes>
       <Footer />
     </AuthProvider>
-  )
+  );
 }
 
-export default App
+export default App;
