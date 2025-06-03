@@ -29,6 +29,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/accommodation" element={<Accommodation />} />
         <Route path="/room/:id" element={<RoomDetails />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
       </Routes>
       <Footer />
     </AuthProvider>
