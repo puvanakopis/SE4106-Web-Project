@@ -2,6 +2,8 @@ import starIconFilled from './Accommodation/starIconFilled.svg'
 import starIconOutlined from './Accommodation/starIconOutlined.svg'
 import locationFilledIcon from './Accommodation/locationFilledIcon.svg'
 import locationIcon from './Accommodation/locationIcon.svg'
+import emailIcon from './Accommodation/emailIcon.svg'
+import phoneIcon from './Accommodation/phoneIcon.svg'
 import roomImg1 from './Accommodation/roomImg1.png'
 import roomImg2 from './Accommodation/roomImg2.png'
 import roomImg3 from './Accommodation/roomImg3.png'
@@ -35,6 +37,8 @@ import studyLampIcon from './Accommodation/studyLamp.png'
 
 export const assets = {
     locationIcon,
+    emailIcon,
+    phoneIcon,
     starIconFilled,
     starIconOutlined,
     locationFilledIcon,
@@ -1140,7 +1144,6 @@ export const userBookingsDummyData = [
         "isPaid": false
     }
 ]
-=======
 
 // Add rooms to hotels
 hotelDummyData.forEach(hotel => {
