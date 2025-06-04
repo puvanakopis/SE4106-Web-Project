@@ -4,7 +4,7 @@
 }
 
 
-  /* ------------- Hero Section ------------- */
+/* ------------- Hero Section ------------- */
 .about-hero {
   background:
     linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
@@ -32,15 +32,16 @@
   margin: 0 auto;
 }
 
-  .about-section {
-    margin-bottom: 2rem;
-    margin-top: 2rem;
-    border: 1px solid var(--border-color);
-    background-color: var(--background-light);
-    padding: 2rem;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-  }
+.about-section {
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
 .about-page {
 
 
