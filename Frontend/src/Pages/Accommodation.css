@@ -294,6 +294,7 @@
 
 .room-card:hover {
     transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
 
 .room-image-container {

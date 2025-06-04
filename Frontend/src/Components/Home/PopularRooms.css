@@ -8,7 +8,7 @@
 }
 
 /* Section Header */
-.section-header {
+.PopularRooms .section-header {
   text-align: center;
   margin-bottom: 3rem;
   max-width: 800px;
@@ -16,13 +16,13 @@
   margin-right: auto;
 }
 
-.section-header h2 {
+.PopularRooms .section-header h2 {
   font-size: 2rem;
   color: var(--text-dark);
   margin-bottom: 0.75rem;
 }
 
-.section-header p {
+.PopularRooms .section-header p {
   color: var(--text-medium);
 }
 
@@ -54,7 +54,8 @@
 }
 
 .PopularRooms .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
 }
 
 .PopularRooms .card .image {

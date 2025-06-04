@@ -12,7 +12,6 @@ const Home = () => {
     <div>
       <Hero />
       <PopularRooms />
-      <Heading title="Why Choose Us?" />
       <WhyChooseUs />
       <Heading title="Our Popular Transport Options" />
       <PopularTransport/>
