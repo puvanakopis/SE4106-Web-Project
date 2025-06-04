@@ -27,6 +27,7 @@ const RoomDetails = () => {
           {room.hotel.name} <span className='font-inter text-sm'>({room.roomType})</span>
         </h1>
         <p className='text-xs font-semibold font-inter py-1.5 px-3 text-white bg-blue-500 rounded-full shadow-sm tracking-wide'>20% OFF</p>
+      </div>
 
   return (
     <div className="room-details">
