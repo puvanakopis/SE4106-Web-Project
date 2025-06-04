@@ -2,6 +2,8 @@ import starIconFilled from './Accommodation/starIconFilled.svg'
 import starIconOutlined from './Accommodation/starIconOutlined.svg'
 import locationFilledIcon from './Accommodation/locationFilledIcon.svg'
 import locationIcon from './Accommodation/locationIcon.svg'
+import emailIcon from './Accommodation/emailIcon.svg'
+import phoneIcon from './Accommodation/phoneIcon.svg'
 import roomImg1 from './Accommodation/roomImg1.png'
 import roomImg2 from './Accommodation/roomImg2.png'
 import roomImg3 from './Accommodation/roomImg3.png'
@@ -35,6 +37,8 @@ import studyLampIcon from './Accommodation/studyLamp.png'
 
 export const assets = {
     locationIcon,
+    emailIcon,
+    phoneIcon,
     starIconFilled,
     starIconOutlined,
     locationFilledIcon,
@@ -1097,6 +1101,49 @@ export const roomsDummyData = [
     isAvailable: false
   }
 ];
+
+// User Bookings Dummy Data
+export const userBookingsDummyData = [
+    {
+        "_id": "booking_1",
+        "user": userDummyData,
+        "room": roomsDummyData[1],
+        "hotel": hotelDummyData,
+        "checkInDate": "2025-04-30T00:00:00.000Z",
+        "checkOutDate": "2025-05-01T00:00:00.000Z",
+        "totalPrice": 299,
+        "guests": 1,
+        "status": "pending",
+        "paymentMethod": "Stripe",
+        "isPaid": true
+    },
+    {
+        "_id": "booking_2",
+        "user": userDummyData,
+        "room": roomsDummyData[0],
+        "hotel": hotelDummyData,
+        "checkInDate": "2025-04-27T00:00:00.000Z",
+        "checkOutDate": "2025-04-28T00:00:00.000Z",
+        "totalPrice": 399,
+        "guests": 1,
+        "status": "pending",
+        "paymentMethod": "Pay At Hotel",
+        "isPaid": false,
+    },
+    {
+        "_id": "booking_3",
+        "user": userDummyData,
+        "room": roomsDummyData[3],
+        "hotel": hotelDummyData,
+        "checkInDate": "2025-04-11T00:00:00.000Z",
+        "checkOutDate": "2025-04-12T00:00:00.000Z",
+        "totalPrice": 199,
+        "guests": 1,
+        "status": "pending",
+        "paymentMethod": "Pay At Hotel",
+        "isPaid": false
+    }
+]
 
 
 // Add rooms to hotels
