@@ -12,7 +12,7 @@ import Saved from "./Pages/Saved";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
 import Transport from "./Pages/Transport";
-
+import MyBookings from "./Pages/MyBookings";
 import Accommodation from "./Pages/Accommodation";
 import RoomDetails from "./Pages/RoomDetails";
 
