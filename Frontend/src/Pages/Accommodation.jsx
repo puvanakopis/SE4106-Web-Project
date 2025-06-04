@@ -275,12 +275,17 @@ const Accommodation = () => {
                         <p className="price-period">/ month</p>
                       </div>
                       <button
+
+                        onClick={() => navigate(`/room/${room._id}`)}
+                        className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-xs hover:bg-blue-700 text-sm transition duration-200"
+
                         className="view-details-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/room/${room._id}`);
                         }}
                         aria-label={`View details for ${room.roomType} room`}
+
                       >
                         View Details
                       </button>

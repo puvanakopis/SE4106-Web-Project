@@ -1145,7 +1145,6 @@ export const userBookingsDummyData = [
     }
 ]
 
-
 // Add rooms to hotels
 hotelDummyData.forEach(hotel => {
   hotel.rooms = roomsDummyData.filter(room => room.hotel._id === hotel._id);
