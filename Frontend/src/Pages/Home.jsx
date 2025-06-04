@@ -11,7 +11,6 @@ const Home = () => {
   return (
     <div>
       <Hero />
-      <Heading title="Our Popular Rooms" />
       <PopularRooms />
       <Heading title="Why Choose Us?" />
       <WhyChooseUs />
