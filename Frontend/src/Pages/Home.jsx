@@ -1,7 +1,6 @@
 import React from 'react'
 import Hero from "../Components/Home/Hero"
 import PopularRooms from '../Components/Home/PopularRooms'
-import Heading from '../Components/Home/Heading'
 import WhyChooseUs from '../Components/Home/WhyChooseUs'
 import PopularTransport from '../Components/Home/PopularTransport'
 import AboutSection from '../Components/Home/AboutSection'
@@ -15,7 +14,6 @@ const Home = () => {
       <WhyChooseUs />
       <PopularTransport/>
       <AboutSection/>
-      <Heading title="What Our Customers Say" />
       <TestimonialCarousel/>
     </div>
   )
