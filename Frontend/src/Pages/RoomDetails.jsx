@@ -20,6 +20,14 @@ const RoomDetails = () => {
 
   if (!room) return <div className="room-details">Loading room details...</div>;
 
+
+      {/* Room Title */}
+      <div className='flex flex-col md:flex-row items-start md:items-center gap-2'>
+        <h1 className='text-3xl md:text-4xl font-serif'>
+          {room.hotel.name} <span className='font-inter text-sm'>({room.roomType})</span>
+        </h1>
+        <p className='text-xs font-semibold font-inter py-1.5 px-3 text-white bg-blue-500 rounded-full shadow-sm tracking-wide'>20% OFF</p>
+
   return (
     <div className="room-details">
       {/* Room Title Section */}
@@ -54,6 +62,11 @@ const RoomDetails = () => {
               <img
                 key={`${image}-${index}`}
                 src={image}
+                alt="room-thumbnail"
+                className={`w-full rounded-xl shadow-md object-cover cursor-pointer transition-all duration-200 hover:scale-105 ${
+                  mainImage === image ? 'outline outline-4 outline-blue-500' : ''
+                }`}
+
                 alt={`Room view ${index + 1}`}
                 className={`thumbnail ${mainImage === image ? 'selected-thumbnail' : ''}`}
                 onClick={() => setMainImage(image)}
@@ -117,6 +130,11 @@ const RoomDetails = () => {
             </div>
           </div>
         </div>
+
+        <button className='px-6 py-2.5 mt-4 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-all duration-200 font-medium shadow hover:shadow-lg active:scale-95'>
+          Book Now
+        </button>
+
         <button className="contact-button">Contact Now</button>
       </div>
     </div>
