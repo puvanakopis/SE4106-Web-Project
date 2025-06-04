@@ -1,6 +1,8 @@
 import './PopularRooms.css';
 import { roomsDummyData } from '../../Assets/assets';
 import { useNavigate } from 'react-router-dom';
+import { FaArrowRight, FaStar } from 'react-icons/fa';
+
 
 const PopularRooms = () => {
     const navigate = useNavigate();
@@ -55,7 +57,7 @@ const PopularRooms = () => {
                     className="view-all-button"
                     onClick={() => navigate('/accommodation')}
                 >
-                    View All Accommodations <i className="fas fa-arrow-right"></i>
+                    View All Accommodations<FaArrowRight className="arrow-icon" />
                 </button>
             </section>
         </div>

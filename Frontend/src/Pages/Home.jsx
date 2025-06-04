@@ -13,7 +13,6 @@ const Home = () => {
       <Hero />
       <PopularRooms />
       <WhyChooseUs />
-      <Heading title="Our Popular Transport Options" />
       <PopularTransport/>
       <AboutSection/>
       <Heading title="What Our Customers Say" />
