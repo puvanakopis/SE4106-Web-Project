@@ -1,0 +1,101 @@
+.dashboard-container {
+    padding: 4% 10%;
+}
+
+.dashboard-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2d3748;
+}
+
+/* ------------ Uploading Image ------------ */
+.section-title {
+    color: #2d3748;
+    margin-top: 2.5rem;
+}
+
+.image-upload {
+    margin: 0.5rem 0;
+}
+
+.upload-image {
+    max-height: 8rem;
+    width: 8rem;
+    object-fit: cover;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+/* ------------ Transport Info Inputs ------------ */
+.input-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.input-group {
+    flex: 1 1 0%;
+    min-width: 16rem;
+}
+
+.label-text {
+    color: #2d3748;
+    margin-top: 1rem;
+}
+
+.input-select,
+.input-box {
+    width: 100%;
+    height: 2.5rem;
+    margin-top: 0.25rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    opacity: 0.7;
+}
+
+/* Amenities Section */
+.amenities-section {
+    margin-top: 1.5rem;
+}
+
+.amenities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: #4a5568;
+}
+
+@media (min-width: 640px) {
+    .amenities-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+.amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ------------ Submit Button ------------ */
+.submit-button {
+    margin-top: 2rem;
+    padding: 0.5rem 2rem;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .input-group {
+        min-width: 100%;
+    }
+}

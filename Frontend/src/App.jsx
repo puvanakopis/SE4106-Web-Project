@@ -10,6 +10,9 @@ import SignUp from "./Pages/SignUp";
 import Profile from "./Pages/ProfileInfo";
 import Saved from "./Pages/Saved";
 import About from "./Pages/About";
+import Contact from "./Pages/Contact";
+import Transport from "./Pages/Transport";
+
 import Accommodation from "./Pages/Accommodation";
 import RoomDetails from "./Pages/RoomDetails";
 
@@ -27,9 +30,14 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/saved" element={<Saved />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+
         <Route path="/accommodation" element={<Accommodation />} />
         <Route path="/room/:id" element={<RoomDetails />} />
+
         <Route path="/my-bookings" element={<MyBookings />} />
+        
+        <Route path="/transport" element={<Transport />} />
       </Routes>
       <Footer />
     </AuthProvider>

@@ -1,0 +1,85 @@
+.listroom-container {
+    padding: 4% 10%;
+}
+
+.listroom-title {
+    font-size: 25px;
+    font-weight: bold;
+    color: #1f2937;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+/* ------------ Room Statistics Summary ------------ */
+.dashboard-summary {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.summary-box {
+    flex: 1;
+    min-width: 200px;
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* ------------ Room Listing Table ------------ */
+.room-table-wrapper {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    max-height: 20rem;
+    overflow-y: auto;
+    background-color: #fff;
+}
+
+.room-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.room-table thead {
+    background-color: #f9fafb;
+    position: sticky;
+    top: 0;
+}
+
+.room-table th,
+.room-table td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.room-table th {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.center {
+    text-align: center;
+}
+
+.hide-on-sm {
+    display: table-cell;
+}
+
+@media screen and (max-width: 640px) {
+    .hide-on-sm {
+        display: none;
+    }
+}
+
+input[type="checkbox"].peer {
+    cursor: not-allowed;
+    accent-color: #3b82f6;
+}
