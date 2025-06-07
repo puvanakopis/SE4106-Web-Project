@@ -18,8 +18,7 @@
 
 
 .accommodation {
-    padding: 2rem 5%;
-    max-width: 1400px;
+    padding: 3% 8% 0% 8%;
     margin: 0 auto;
     color: var(--text-medium);
 }
@@ -28,7 +27,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
 }
 
 
@@ -294,6 +292,7 @@
 
 .room-card:hover {
     transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
 
 .room-image-container {

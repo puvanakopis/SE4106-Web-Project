@@ -1,109 +1,129 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import './Navbar.css';
-import { useContext } from 'react';
 import { AuthContext } from '../../Context/AuthContext';
 
 const Navbar = () => {
-    // Toggles the mobile menu visibility
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const closeMenu = () => setIsMenuOpen(false);
+    // State for mobile menu toggle 
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+    const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
+    // State for profile dropdown toggle 
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    const profileDropdownRef = useRef(null);
+    const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
+    const closeProfileDropdown = () => setIsProfileDropdownOpen(false);
 
+    // Close dropdown when clicking outside 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+                setIsProfileDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
-    // Get the current URL path
+    // Get current path for active link styling 
     const location = useLocation();
     const currentPath = location.pathname;
 
-
-
-    // Toggles the submenu visibility
-    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
-    const closeSubMenu = () => setIsSubMenuOpen(false);
-
-    const subMenuRef = useRef(null);
-
-    const toggleSubMenu = () => setIsSubMenuOpen(!isSubMenuOpen);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (subMenuRef.current && !subMenuRef.current.contains(event.target)) {
-                setIsSubMenuOpen(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
-
-
-    //Usecontext to check if the user is logged in
-    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-
-    const logout = () => {
+    // Authentication context 
+    const { isLoggedIn, setIsLoggedIn, validUser } = useContext(AuthContext);
+    const handleLogout = () => {
         setIsLoggedIn(false);
         localStorage.removeItem('token');
+        closeProfileDropdown();
+        closeMobileMenu();
     };
 
-
     return (
-        <nav className="Navbar">
-            <div className="navbar-container">
+        /* ----------------- Main Navbar container ----------------- */
+        <nav className="navbar">
+            <div className="navbar__container">
 
-                {/* Logo */}
-                <div className="logo">
-                    <Link to="/" className="logo-text">CampusEase</Link>
+                {/* ----------------- Logo Section ----------------- */}
+                <div className="navbar__logo">
+                    <Link to="/" className="navbar__logo-text">CampusEase</Link>
                 </div>
 
-                {/* --------------- Desktop Navigation --------------- */}
-                <ul className="nav-links">
+                {/* ----------------- Desktop Navigation ----------------- */}
+                <ul className="navbar__desktop-links">
                     <li>
-                        <Link className={`NavItem ${currentPath === "/" ? "active" : ""}`} to="/">Home</Link>
+                        <Link className={`navbar__link ${currentPath === "/" ? "navbar__link--active" : ""}`} to="/">Home</Link>
                     </li>
                     <li>
-                        <Link className={`NavItem ${currentPath === "/accommodation" ? "active" : ""}`} to="/accommodation">Accommodation</Link>
+                        <Link className={`navbar__link ${currentPath === "/accommodation" ? "navbar__link--active" : ""}`} to="/accommodation">Accommodation</Link>
                     </li>
                     <li>
-                        <Link className={`NavItem ${currentPath === "/transport" ? "active" : ""}`} to="/transport">Transport</Link>
+                        <Link className={`navbar__link ${currentPath === "/transport" ? "navbar__link--active" : ""}`} to="/transport">Transport</Link>
                     </li>
                     <li>
-                        <Link className={`NavItem ${currentPath === "/about" ? "active" : ""}`} to="/about">About</Link>
+                        <Link className={`navbar__link ${currentPath === "/about" ? "navbar__link--active" : ""}`} to="/about">About</Link>
                     </li>
                     <li>
-                        <Link className={`NavItem ${currentPath === "/contact" ? "active" : ""}`} to="/contact">Contact</Link>
+                        <Link className={`navbar__link ${currentPath === "/contact" ? "navbar__link--active" : ""}`} to="/contact">Contact</Link>
                     </li>
                 </ul>
 
-                {/* Sign Up and Submenu */}
-                <div className="relative">
-                    {isLoggedIn ?
-                        <><Link onClick={toggleSubMenu} className="login-button hidden">
-                            P
-                        </Link>
+                {/*  Profile Desktop */}
+                <div className="navbar__profile-section" ref={profileDropdownRef}>
+                    {isLoggedIn ? (
+                        <>
+                            <button
+                                onClick={toggleProfileDropdown}
+                                className="navbar__profile-button"
+                                aria-label="Profile menu"
+                                aria-expanded={isProfileDropdownOpen ? "true" : "false"}
+                            >
+                                {validUser?.dp && (
+                                    <img
+                                        src={validUser.dp}
+                                        alt="Profile"
+                                        className="navbar__profile-image"
+                                    />
+                                )}
+                            </button>
 
-                            <div ref={subMenuRef} className={`sub-menu ${isSubMenuOpen ? 'open' : ''}`}>
-                                <Link className={`subItem ${currentPath === "/profile" ? "active" : ""}`} to="/profile" onClick={closeSubMenu}>Profile</Link>
-                                <Link className={`subItem ${currentPath === "/saved" ? "active" : ""}`} to="/saved" onClick={closeSubMenu}>Saved</Link>
-                                <Link className='subItem' to="/" onClick={() => (closeSubMenu(), logout())}>Logout</Link>
+                            <div className={`navbar__profile-dropdown ${isProfileDropdownOpen ? 'navbar__profile-dropdown--open' : ''}`}>
+                                <Link
+                                    className={`navbar__dropdown-link ${currentPath === "/profile" ? "navbar__dropdown-link--active" : ""}`}
+                                    to="/profile"
+                                    onClick={closeProfileDropdown}
+                                >
+                                    Profile
+                                </Link>
+                                <Link
+                                    className={`navbar__dropdown-link ${currentPath === "/saved" ? "navbar__dropdown-link--active" : ""}`}
+                                    to="/saved"
+                                    onClick={closeProfileDropdown}
+                                >
+                                    Saved
+                                </Link>
+                                <Link
+                                    className="navbar__dropdown-link"
+                                    to="/"
+                                    onClick={handleLogout}
+                                >
+                                    Logout
+                                </Link>
                             </div>
                         </>
-                        : <Link to="/login" className="login-button hidden">
+                    ) : (
+                        <Link to="/login" className="navbar__auth-button">
                             Login
                         </Link>
-                    }
-
+                    )}
                 </div>
 
-
-                {/* Mobile Hamburger */}
+                {/* Mobile Menu Toggle Button */}
                 <button
-                    onClick={toggleMenu}
-                    className="mobile-hamburger"
+                    onClick={toggleMobileMenu}
+                    className="navbar__mobile-toggle"
                     aria-label="Toggle menu"
-                    aria-expanded={isMenuOpen ? "true" : "false"}
+                    aria-expanded={isMobileMenuOpen ? "true" : "false"}
                 >
                     ☰
                 </button>
@@ -112,47 +132,101 @@ const Navbar = () => {
 
 
 
-            {/* --------------- Mobile Navigation --------------- */}
-            {
-                isMenuOpen && (
-                    <div className="custom-mobile-nav">
-                        <ul className="flex flex-col gap-4 text">
-                            <li>
-                                <Link className={`NavItem ${currentPath === "/" ? "active" : ""}`} to="/" onClick={closeMenu}>Home</Link>
-                            </li>
-                            <li>
-                                <Link className={`NavItem ${currentPath === "/accommodation" ? "active" : ""}`} to="/accommodation" onClick={closeMenu}>Accommodation</Link>
-                            </li>
-                            <li>
-                                <Link className={`NavItem ${currentPath === "/transport" ? "active" : ""}`} to="/transport" onClick={closeMenu}>Transport</Link>
-                            </li>
-                            <li>
-                                <Link className={`NavItem ${currentPath === "/about" ? "active" : ""}`} to="/about" onClick={closeMenu}>About</Link>
-                            </li>
-                            <li>
-                                <Link className={`NavItem ${currentPath === "/contact" ? "active" : ""}`} to="/contact" onClick={closeMenu}>Contact</Link>
-                            </li>
-                            <li>
-                                <Link className={`NavItem ${currentPath === "/profile" ? "active" : ""}`} to="/profile" onClick={closeMenu}>Profile</Link>
-                            </li>
-                            <li>
-                                <Link className={`NavItem ${currentPath === "/saved" ? "active" : ""}`} to="/saved" onClick={closeMenu}>Saved</Link>
-                            </li>
-                        </ul>
 
+            {/* ----------------- Mobile Navigation Menu ----------------- */}
+            {isMobileMenuOpen && (
+                <div className="navbar__mobile-menu">
+                    <ul className="navbar__mobile-links">
+                        <li>
+                            <Link
+                                className={`navbar__mobile-link ${currentPath === "/" ? "navbar__mobile-link--active" : ""}`}
+                                to="/"
+                                onClick={closeMobileMenu}
+                            >
+                                Home
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className={`navbar__mobile-link ${currentPath === "/accommodation" ? "navbar__mobile-link--active" : ""}`}
+                                to="/accommodation"
+                                onClick={closeMobileMenu}
+                            >
+                                Accommodation
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className={`navbar__mobile-link ${currentPath === "/transport" ? "navbar__mobile-link--active" : ""}`}
+                                to="/transport"
+                                onClick={closeMobileMenu}
+                            >
+                                Transport
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className={`navbar__mobile-link ${currentPath === "/about" ? "navbar__mobile-link--active" : ""}`}
+                                to="/about"
+                                onClick={closeMobileMenu}
+                            >
+                                About
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                className={`navbar__mobile-link ${currentPath === "/contact" ? "navbar__mobile-link--active" : ""}`}
+                                to="/contact"
+                                onClick={closeMobileMenu}
+                            >
+                                Contact
+                            </Link>
+                        </li>
+                        {isLoggedIn && (
+                            <>
+                                <li>
+                                    <Link
+                                        className={`navbar__mobile-link ${currentPath === "/profile" ? "navbar__mobile-link--active" : ""}`}
+                                        to="/profile"
+                                        onClick={closeMobileMenu}
+                                    >
+                                        Profile
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className={`navbar__mobile-link ${currentPath === "/saved" ? "navbar__mobile-link--active" : ""}`}
+                                        to="/saved"
+                                        onClick={closeMobileMenu}
+                                    >
+                                        Saved
+                                    </Link>
+                                </li>
+                            </>
+                        )}
+                    </ul>
 
-                        {isLoggedIn ?
-                            <Link onClick={closeMenu} to="/" className="sub-login-button">
-                                Log Out
-                            </Link>
-                            : <Link onClick={closeMenu} to="/login" className="sub-login-button">
-                                Sign up
-                            </Link>
-                        }
-                    </div>
-                )
-            }
-        </nav >
+                    {/* Auth Button for Mobile  */}
+                    {isLoggedIn ? (
+                        <Link
+                            to="/"
+                            className="navbar__mobile-auth-button"
+                            onClick={handleLogout}
+                        >
+                            Log Out
+                        </Link>
+                    ) : (
+                        <Link
+                            to="/login"
+                            className="navbar__mobile-auth-button"
+                            onClick={closeMobileMenu}
+                        >
+                            Sign In
+                        </Link>
+                    )}
+                </div>
+            )}
+        </nav>
     );
 };
 
