@@ -1,7 +1,7 @@
 import './PopularTransport.css';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaStar } from 'react-icons/fa';
-import { assets, vehicleData } from '../../Assets/assets';
+import {  vehicleData } from '../../Assets/assets';
 
 const PopularTransport = () => {
   const navigate = useNavigate();
@@ -10,10 +10,10 @@ const PopularTransport = () => {
   const transportOptions = vehicleData.slice(0, 4).map(vehicle => ({
     id: vehicle.vehicle_id,
     title: `${vehicle.brand} ${vehicle.model}`,
-    location: vehicle.owner.address[2],
+    location: vehicle.address,
     rating: vehicle.average_rating,
     price: `Rs. ${vehicle.rental_price_per_day} / day`,
-    image: assets[vehicle.images[0]],
+    image: vehicle.vehicle_images[0],
     type: vehicle.vehicle_type,
     vehicleData: vehicle
   }));
