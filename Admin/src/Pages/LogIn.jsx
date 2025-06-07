@@ -1,11 +1,12 @@
 import './Login.css';
 import { AuthContext } from '../Context/AuthContext';
-import { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const { formData, setFormData, login, error, isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handle input change
   const handleChange = (e) => {
@@ -14,34 +15,42 @@ const Login = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login(); 
+    setIsLoading(true);
+    try {
+      await login();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // If logged in, redirect to home page
+  // Redirect if already logged in
   useEffect(() => {
     if (isLoggedIn) {
       navigate('/');
     }
   }, [isLoggedIn, navigate]);
 
-
-  //Show alert if login fails
+  // alert if login fails
   useEffect(() => {
     if (error) {
       alert(error);
     }
   }, [error]);
 
-
-  
   return (
-    <div className="form-container">
-      <div className="sub-container">
-        <form onSubmit={handleSubmit} className="login-form">
-          <h2 className="form-title">Log In</h2>
+    // --------------------- Main container ---------------------
+    <div className="login-container">
 
+      {/* --------------------- Sub-container --------------------- */}
+      <div className="sub-container">
+
+        {/* Login form */}
+        <form onSubmit={handleSubmit} className="login-form">
+          <h2 className="form-title">Login</h2>
+
+          {/* Email input field */}
           <div className="form-group full-width">
             <label>Email Address</label>
             <input
@@ -50,9 +59,11 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               required
+              placeholder="Enter your email"
             />
           </div>
 
+          {/* Password input field */}
           <div className="form-group full-width">
             <label>Password</label>
             <input
@@ -61,12 +72,20 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              placeholder="Enter your password"
             />
+
+            {/* Forgot password link */}
+            <div className="forgot-password">
+              <a href="/forgot-password">Forgot Password?</a>
+            </div>
           </div>
 
-
+          {/* Submit button */}
           <div className="form-action">
-            <button type="submit">Log In</button>
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Login'}
+            </button>
           </div>
         </form>
       </div>

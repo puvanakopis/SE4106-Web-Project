@@ -1,4 +1,5 @@
 import { createContext, useState } from 'react';
+import puvi from '../Assets/puvi.jpg'
 
 export const AuthContext = createContext();
 
@@ -9,7 +10,9 @@ export const AuthProvider = ({ children }) => {
 
   const validUser = {
     email: 'puvanakopis@gmail.com',
+    displayName: "Puvanakopis M",
     password: '123456',
+    dp: puvi,
   };
 
   const login = () => {
@@ -37,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, formData, setFormData, login, logout, error }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, formData, setFormData, login, logout, error, validUser }}>
       {children}
     </AuthContext.Provider>
   );

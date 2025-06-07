@@ -11,7 +11,7 @@ const Navbar = () => {
     const location = useLocation();
     const currentPath = location.pathname;
     const navigate = useNavigate();
-    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+    const { isLoggedIn, setIsLoggedIn, validUser } = useContext(AuthContext);
 
     const scrollNavigate = (to) => {
         navigate(to);
@@ -80,13 +80,21 @@ const Navbar = () => {
                 </ul>
 
                 {/* Sign Up and Submenu */}
-                <div className="relative">
+                <div className="relative" ref={subMenuRef}>
                     {isLoggedIn ? (
                         <>
-                            <span onClick={toggleSubMenu} className="login-button hidden cursor-pointer">
-                                P
-                            </span>
-                            <div ref={subMenuRef} className={`sub-menu ${isSubMenuOpen ? 'open' : ''}`}>
+                            <div onClick={toggleSubMenu} className="login-button hidden cursor-pointer">
+                                {validUser?.dp ? (
+                                    <img
+                                        src={validUser.dp}
+                                        alt="Profile"
+                                        className="profile-image"
+                                    />
+                                ) : (
+                                    <span>P</span>
+                                )}
+                            </div>
+                            <div className={`sub-menu ${isSubMenuOpen ? 'open' : ''}`}>
                                 <span onClick={() => { closeSubMenu(); scrollNavigate('/profile'); }} className={`subItem cursor-pointer ${currentPath === "/profile" ? "active" : ""}`}>Profile</span>
                                 <span onClick={() => { closeSubMenu(); logout(); }} className="subItem cursor-pointer">Logout</span>
                             </div>

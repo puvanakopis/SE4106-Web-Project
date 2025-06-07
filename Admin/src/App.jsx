@@ -11,6 +11,8 @@ import ListRoom from './Pages/ListRoom';
 import AddTransport from './Pages/AddTransport';
 import ListTransport from './Pages/ListTransport';
 import Profile from './Pages/ProfileInfo';
+import ForgotPassword from "./Pages/ForgotPassword";
+
 
 import { AuthProvider } from './Context/AuthContext';
 import PrivateRoute from './Components/PrivateRoute';
@@ -21,6 +23,8 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/login" element={<LogIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
         <Route
           path="/"
