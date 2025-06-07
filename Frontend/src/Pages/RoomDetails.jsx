@@ -20,21 +20,14 @@ const RoomDetails = () => {
 
   if (!room) return <div className="room-details">Loading room details...</div>;
 
-
+  return (
+    <div className="room-details">
       {/* Room Title */}
       <div className='flex flex-col md:flex-row items-start md:items-center gap-2'>
         <h1 className='text-3xl md:text-4xl font-serif'>
           {room.hotel.name} <span className='font-inter text-sm'>({room.roomType})</span>
         </h1>
         <p className='text-xs font-semibold font-inter py-1.5 px-3 text-white bg-blue-500 rounded-full shadow-sm tracking-wide'>20% OFF</p>
-
-  return (
-    <div className="room-details">
-      {/* Room Title Section */}
-      <div className="room-title-section">
-        <h3 className="room-main-title">
-          {room.hotel.name} <span className="room-type-badge">{room.roomType}</span>
-        </h3>
       </div>
 
       {/* Rating and Location */}
@@ -62,11 +55,6 @@ const RoomDetails = () => {
               <img
                 key={`${image}-${index}`}
                 src={image}
-                alt="room-thumbnail"
-                className={`w-full rounded-xl shadow-md object-cover cursor-pointer transition-all duration-200 hover:scale-105 ${
-                  mainImage === image ? 'outline outline-4 outline-blue-500' : ''
-                }`}
-
                 alt={`Room view ${index + 1}`}
                 className={`thumbnail ${mainImage === image ? 'selected-thumbnail' : ''}`}
                 onClick={() => setMainImage(image)}
@@ -79,8 +67,7 @@ const RoomDetails = () => {
       {/* Highlights Section */}
       <div className="highlights-section">
         <div>
-          <h2 className="highlights-title">Student PG Accommodation
-</h2>
+          <h2 className="highlights-title">Student PG Accommodation</h2>
           <div className="amenities-list">
             {room.amenities?.map((item, index) => (
               <div key={index} className="amenity-item">

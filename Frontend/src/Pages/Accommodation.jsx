@@ -276,8 +276,8 @@ const Accommodation = () => {
                       </div>
                       <button
 
-                        onClick={() => navigate(`/room/${room._id}`)}
-                        className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-xs hover:bg-blue-700 text-sm transition duration-200"
+                        // onClick={() => navigate(`/room/${room._id}`)}
+                        // className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-xs hover:bg-blue-700 text-sm transition duration-200"
 
                         className="view-details-btn"
                         onClick={(e) => {
