@@ -1,0 +1,215 @@
+.navbar {
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ----------------- Navbar Container ----------------- */
+.navbar__container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/*  -----------------Logo ----------------- */
+.navbar__logo-text {
+  font-weight: 800;
+  font-size: 1.75rem;
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+/* ----------------- Desktop Navigation Links ----------------- */
+.navbar__desktop-links {
+  display: none;
+  gap: 2rem;
+  align-items: center;
+}
+
+.navbar__link {
+  text-decoration: none;
+  color: var(--text-color);
+  transition: color 0.2s ease;
+  font-weight: 500;
+}
+
+.navbar__link:hover {
+  color: var(--primary-color);
+}
+
+.navbar__link--active {
+  color: var(--primary-color);
+}
+
+/* Auth Section Desktop */
+.navbar__profile-section {
+  position: relative;
+}
+
+.navbar__profile-button {
+  display: none;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.navbar__profile-image {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.navbar__profile-button:hover .navbar__profile-image {
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar__auth-button {
+  display: none;
+  border: 1px solid black;
+  border-radius: 9999px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.navbar__auth-button:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+/* Profile Dropdown Menu */
+.navbar__profile-dropdown {
+  display: none;
+  position: absolute;
+  top: 3.5rem;
+  right: 0;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 10rem;
+  z-index: 100;
+  padding: 0.5rem 0;
+  flex-direction: column;
+}
+
+.navbar__profile-dropdown--open {
+  display: flex;
+}
+
+.navbar__dropdown-link {
+  padding: 0.5rem 1.5rem;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.navbar__dropdown-link:hover {
+  color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb), 0.05);
+}
+
+.navbar__dropdown-link--active {
+  color: var(--primary-color);
+}
+
+/* Mobile Toggle Button */
+.navbar__mobile-toggle {
+  display: flex;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+
+
+
+/* ----------------- Mobile Navigation Menu ----------------- */
+.navbar__mobile-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem;
+  background-color: white;
+  border-top: 1px solid #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+/* Mobile Navigation Links */
+.navbar__mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.navbar__mobile-link {
+  display: block;
+  padding: 0.5rem 0;
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar__mobile-link--active {
+  color: var(--primary-color);
+}
+
+/* Mobile Auth Button */
+.navbar__mobile-auth-button {
+  display: block;
+  width: 100%;
+  text-align: center;
+  border: 1px solid var(--primary-color);
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.navbar__mobile-auth-button:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+
+
+/* ------------- Responsive Styles ------------- */
+@media (min-width: 900px) {
+  .navbar__desktop-links {
+    display: flex;
+  }
+
+  .navbar__profile-button,
+  .navbar__auth-button {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar__mobile-toggle {
+    display: none;
+  }
+
+  .navbar__mobile-menu {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .navbar__profile-section {
+    display: none;
+  }
+}
