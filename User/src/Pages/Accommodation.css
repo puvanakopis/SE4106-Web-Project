@@ -65,7 +65,7 @@
     width: 280px;
     min-width: 280px;
     padding: 1.5rem;
-    background-color: var(--background-light);
+    background-color: var(--background-white);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
     height: fit-content;

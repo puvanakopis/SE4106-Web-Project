@@ -25,6 +25,7 @@ CampusEase is a modern, responsive web platform designed to simplify accommodati
 
 ## 📷 Screenshots
 
-![Home](https://github.com/user-attachments/assets/0628e894-e0a3-4e73-927e-1401547b39f6)
+![image](https://github.com/user-attachments/assets/9c894101-89a1-427f-8572-c2e76be6793f)
+
 
 
