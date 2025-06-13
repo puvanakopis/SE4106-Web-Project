@@ -1,0 +1,150 @@
+:root {
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --text-dark: #111827;
+    --text-light: #6b7280;
+    --border-color: #e5e7eb;
+    --background-white: #ffffff;
+    --background-light: #f8f9fa;
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --radius-md: 0.5rem;
+}
+
+/* --------------------- Main Container --------------------- */
+.login-container {
+    padding-top: 5%;
+    padding-bottom: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background-color: var(--background-light);
+}
+
+/* --------------------- Sub Container --------------------- */
+.login-container .sub-container {
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 4rem;
+    box-shadow: var(--shadow-md);
+}
+
+/*  Login Form  */
+.login-container .login-form {
+    width: 100%;
+}
+
+/*  Form Title  */
+.login-container .form-title {
+    display: flex;
+    justify-self: center;
+    align-self: center;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: var(--text-dark);
+    font-size: 1.75rem;
+    font-weight: 700;
+    width: fit-content;
+    padding-left: 4rem;
+    padding-right: 4rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+/* Input Fields */
+.login-container .form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-container .form-group label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.login-container .form-group input {
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: border-color 0.2s;
+}
+
+.login-container .form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* Forgot Password Link  */
+.login-container .forgot-password {
+    text-align: right;
+    margin-top: 5px;
+}
+
+.login-container .forgot-password a {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.login-container .forgot-password a:hover {
+    color: var(--primary-hover);
+}
+
+/*  Link to signup page */
+.login-container .form-footer {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.login-container .form-footer a {
+    color: var(--primary-color);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.login-container .form-footer a:hover {
+    color: var(--primary-hover);
+}
+
+/*  Submit Button  */
+.login-container .form-action button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-container .form-action button:hover {
+    background-color: var(--primary-hover);
+}
+
+.login-container .form-action button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* --------------------- Responsive Design --------------------- */
+@media (max-width: 600px) {
+    .login-container .sub-container {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+
+    .login-container .form-title {
+        font-size: 22px;
+    }
+}

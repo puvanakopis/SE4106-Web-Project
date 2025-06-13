@@ -1,0 +1,81 @@
+ .home-hero {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)),
+      url('../../Assets/bg.png') center/cover no-repeat;
+    height: 700px;
+    display: flex ;
+    flex-direction: column ;
+    justify-content: end ;
+    align-items: center ;
+    text-align: center ;
+    color: white;
+    padding-bottom: 4rem !important;
+    margin-bottom: 4rem;
+  }
+
+.home-hero .hero-content{
+    display: flex ;
+    flex-direction: column ;
+    justify-content: end ;
+    align-items: center ;
+    text-align: center ;
+  }
+
+  .home-hero .hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    max-width: 800px;
+  }
+
+  .home-hero .hero-content p {
+    font-size: 1.5rem;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+  }
+
+  .home-hero .hero-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .home-hero .btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: var(--radius-md);
+    font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .home-hero .btn:hover {
+    color: black;
+  }
+
+  @media (max-width: 768px) {
+    .home-hero {
+      height: 600px;
+      padding: 0 1rem;
+    }
+    
+    .home-hero .hero-content h1 {
+      font-size: 2.2rem;
+    }
+    
+    .home-hero .hero-content p {
+      font-size: 1.2rem;
+    }
+    
+    .home-hero.hero-actions {
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 300px;
+    }
+  }
