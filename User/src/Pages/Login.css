@@ -12,8 +12,6 @@
 
 /* --------------------- Main Container --------------------- */
 .login-container {
-    padding-top: 5%;
-    padding-bottom: 5%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,6 +21,8 @@
 
 /* --------------------- Sub Container --------------------- */
 .login-container .sub-container {
+    margin-top: 5%;
+    margin-bottom: 5%;
     width: 100%;
     max-width: 500px;
     background-color: var(--background-white);
