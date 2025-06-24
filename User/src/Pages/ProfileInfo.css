@@ -82,8 +82,15 @@
     color: #6f7173;
     width: 70%;
     padding: 0.5rem;
-    border: 1px solid #9ca3af;
     border-radius: 4px;
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+}
+
+.profile .form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .profile .button-group {

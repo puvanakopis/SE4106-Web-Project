@@ -13,21 +13,17 @@ const StarRating = ({ rating, size = 'medium' }) => {
   return (
     <div className={`star-rating star-rating--${size}`}>
       {[...Array(fullStars)].map((_, i) => (
-        <span key={`full-${i}`} className="star-rating__star star-rating__star--full">
+        <span key={`full-${i}`} className="star-rating_star star-rating_star--full">
           ★
         </span>
       ))}
-      {hasHalfStar && (
-        <span className="star-rating__star star-rating__star--half">★</span>
-      )}
+      {hasHalfStar && <span className="star-rating_star star-rating_star--half">★</span>}
       {[...Array(emptyStars)].map((_, i) => (
-        <span key={`empty-${i}`} className="star-rating__star star-rating__star--empty">
+        <span key={`empty-${i}`} className="star-rating_star star-rating_star--empty">
           ★
         </span>
       ))}
-      {size === 'medium' && (
-        <span className="star-rating__value">{rating.toFixed(1)}</span>
-      )}
+      {size === 'medium' && <span className="star-rating__value">{rating.toFixed(1)}</span>}
     </div>
   );
 };
@@ -88,7 +84,6 @@ const TransportDetails = () => {
       setBookingError('End date must be after start date');
       return;
     }
-    
     console.log('Booking details:', {
       vehicleId: vehicle.vehicle_id,
       startDate,
@@ -132,22 +127,14 @@ const TransportDetails = () => {
         </div>
 
         <div className="transport-location">
-          <img 
-            src={assets.locationIcon} 
-            alt="Location" 
-            className="transport-location__icon" 
-          />
-          <span>{vehicle.address}</span>
+          <img src={assets.locationIcon} alt="Location icon" className="transport-location__icon" />
+          <span className="transport-location__text">{vehicle.address}</span>
         </div>
       </header>
 
       <section className="transport-gallery">
         <div className="transport-gallery__main">
-          <img 
-            src={images[selectedImageIndex]} 
-            alt={`${vehicle.brand} ${vehicle.model}`} 
-            className="transport-gallery__main-image" 
-          />
+          <img src={images[selectedImageIndex]} alt={`${vehicle.brand} ${vehicle.model}`} className="transport-gallery__main-image" />
         </div>
         <div className="transport-gallery__thumbnails">
           {images.slice(0, 4).map((img, index) => (
@@ -159,52 +146,46 @@ const TransportDetails = () => {
               onClick={() => setSelectedImageIndex(index)}
               aria-label={`View image ${index + 1}`}
             >
-              <img 
-                src={img} 
-                alt={`Thumbnail ${index + 1}`} 
-                className="transport-gallery__thumbnail-image" 
-              />
+              <img src={img} alt={`Thumbnail ${index + 1}`} className="transport-gallery__thumbnail-image" />
             </button>
           ))}
         </div>
       </section>
 
       <div className="transport-content">
-        <div className="transport-card">
-          <section className="transport-specs">
-            <h2 className="transport-section-title">Vehicle Specifications</h2>
-            <div className="specs-grid">
-              <div className="specs-item">
-                <span className="specs-label">Vehicle Type</span>
-                <span className="specs-value">{vehicle.vehicle_type}</span>
-              </div>
-              <div className="specs-item">
-                <span className="specs-label">Brand</span>
-                <span className="specs-value">{vehicle.brand}</span>
-              </div>
-              <div className="specs-item">
-                <span className="specs-label">Model</span>
-                <span className="specs-value">{vehicle.model}</span>
-              </div>
-              <div className="specs-item">
-                <span className="specs-label">Year</span>
-                <span className="specs-value">{vehicle.year}</span>
-              </div>
-              <div className="specs-item">
-                <span className="specs-label">Fuel Type</span>
-                <span className="specs-value">{vehicle.fuel_type}</span>
-              </div>
-              <div className="specs-item">
-                <span className="specs-label">Seating Capacity</span>
-                <span className="specs-value">{vehicle.seating_capacity}</span>
-              </div>
-              <div className="specs-item">
-                <span className="specs-label">Registration Number</span>
-                <span className="specs-value">{vehicle.registration_number}</span>
-              </div>
+        <section className="transport-specs">
+          <h2 className="transport-section-title">Vehicle Specifications</h2>
+          <div className="specs-grid">
+            <div className="specs-item">
+              <span className="specs-label">Vehicle Type</span>
+              <span className="specs-value">{vehicle.vehicle_type}</span>
             </div>
-          </section>
-        </div>
+            <div className="specs-item">
+              <span className="specs-label">Brand</span>
+              <span className="specs-value">{vehicle.brand}</span>
+            </div>
+            <div className="specs-item">
+              <span className="specs-label">Model</span>
+              <span className="specs-value">{vehicle.model}</span>
+            </div>
+            <div className="specs-item">
+              <span className="specs-label">Year</span>
+              <span className="specs-value">{vehicle.year}</span>
+            </div>
+            <div className="specs-item">
+              <span className="specs-label">Fuel Type</span>
+              <span className="specs-value">{vehicle.fuel_type}</span>
+            </div>
+            <div className="specs-item">
+              <span className="specs-label">Seating Capacity</span>
+              <span className="specs-value">{vehicle.seating_capacity}</span>
+            </div>
+            <div className="specs-item">
+              <span className="specs-label">Registration Number</span>
+              <span className="specs-value">{vehicle.registration_number}</span>
+            </div>
+          </div>
+        </section>
 
         <aside className="transport-booking">
           <div className="booking-card">
@@ -263,19 +244,14 @@ const TransportDetails = () => {
               </div>
               <div className="booking-summary__item booking-summary__item--total">
                 <span>Total Amount:</span>
-                <span>
-                  Rs {totalDays > 0
-                    ? (totalCost + vehicle.deposit_amount).toLocaleString()
-                    : 0}
-                </span>
+                <span>Rs {totalDays > 0 
+                  ? (totalCost + vehicle.deposit_amount).toLocaleString() 
+                  : 0 }</span>
               </div>
             </div>
 
             <div className="booking-deposit">
-              <span>
-                Security Deposit: Rs {vehicle.deposit_amount.toLocaleString()} 
-                (refundable when vehicle is returned)
-              </span>
+              <span>Security Deposit: Rs {vehicle.deposit_amount.toLocaleString()}  (refundable when vehicle is returned)</span>
             </div>
             <div className="booking-availability">
               {vehicle.availability_status ? (
@@ -289,8 +265,7 @@ const TransportDetails = () => {
             <button
               className="booking-button"
               onClick={handleBookNow}
-              disabled={!vehicle.availability_status || totalDays === 0}
-            >
+              disabled={!vehicle.availability_status || totalDays === 0}>
               {vehicle.availability_status ? 'Book Now' : 'Not Available'}
             </button>
           </div>
@@ -313,10 +288,8 @@ const TransportDetails = () => {
                   <div className="reviews-distribution__bar-container">
                     <div
                       className="reviews-distribution__bar"
-                      style={{ 
-                        width: `${((ratingDist[star] || 30) / 100) * 150}px` 
-                      }}
-                    />
+                      style={{ width: `${((ratingDist[star] || 30) / 100) * 150}px` }}
+                    ></div>
                   </div>
                   <span>{ratingDist[star] || 30}%</span>
                 </div>
