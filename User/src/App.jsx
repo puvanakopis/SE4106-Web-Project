@@ -18,13 +18,16 @@ import MyBookings from "./Pages/MyBookings";
 import Accommodation from "./Pages/Accommodation";
 import RoomDetails from "./Pages/RoomDetails";
 import ForgotPassword from "./Pages/ForgotPassword";
+import Booking from "./Pages/Booking";
 
 import { AuthProvider } from "./Context/AuthContext";
+import { BookingProvider } from "./Context/BookingContext";
 
 
 function App() {
   return (
     <AuthProvider>
+    <BookingProvider>
       <Navbar />
 
       <Routes>
@@ -49,11 +52,13 @@ function App() {
 
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/transport" element={<Transport />} />
-
+        <Route path="/booking" element={<Booking />} />
+        
         <Route path="/my-bookings" element={<MyBookings />} />
 
       </Routes>
       <Footer />
+    </BookingProvider>
     </AuthProvider>
   );
 }

@@ -1,22 +1,10 @@
-// React core hooks for component state and effects
 import React, { useState, useEffect } from 'react';
-
-// Navigation hook from React Router for page transitions
 import { useNavigate } from 'react-router-dom';
-
-// Custom component to render star-based rating
 import StarRating from '../Components/Rating/StarRating';
-
-// CSS specific to this Transport component
 import './Transport.css';
-
-// Vehicle data used for listing transport items (mocked or static)
 import { vehicleData } from '../Assets/assets';
-
-// Icons for heart (like/save), filter toggle, and close button
 import { FaHeart, FaRegHeart, FaTimes, FaFilter } from 'react-icons/fa';
 
-// Checkbox component used for filters (vehicle type and price)
 const CheckBox = ({ label, selected = false, onChange = () => {} }) => (
   <label className="filter-checkbox">
     <input
@@ -30,7 +18,7 @@ const CheckBox = ({ label, selected = false, onChange = () => {} }) => (
   </label>
 );
 
-// Radio button component used for sorting options
+// Radio button
 const RadioButton = ({ label, selected = false, onChange = () => {} }) => (
   <label className="filter-radio">
     <input
@@ -46,7 +34,7 @@ const RadioButton = ({ label, selected = false, onChange = () => {} }) => (
 );
 
 const Transport = () => {
-  const navigate = useNavigate(); // For navigating to detail page
+  const navigate = useNavigate();
 
   // Filter and UI states
   const [openFilters, setOpenFilters] = useState(false);
@@ -56,7 +44,7 @@ const Transport = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showSavedNotification, setShowSavedNotification] = useState(false);
 
-  const transportsPerPage = 9; // Number of vehicles shown per page
+  const transportsPerPage = 9;
 
   // Retrieve saved vehicles from local storage on load
   const [savedVehicles, setSavedVehicles] = useState(() => {
@@ -82,7 +70,7 @@ const Transport = () => {
     setSelectedVehicleTypes((prev) =>
       checked ? [...prev, label] : prev.filter((type) => type !== label)
     );
-    setCurrentPage(1); // Reset to first page after filter change
+    setCurrentPage(1);
   };
 
   // Handler for price range filter
@@ -101,7 +89,7 @@ const Transport = () => {
 
   // Toggle saving or removing a vehicle from saved list
   const toggleSaveVehicle = (vehicleId, e) => {
-    e.stopPropagation(); // Prevent card click event
+    e.stopPropagation(); 
     setSavedVehicles((prev) => {
       const isSaved = prev.includes(vehicleId);
       const newSaved = isSaved
