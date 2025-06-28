@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { assets, vehicleData } from '../Assets/assets';
+import { useBookings } from '../Context/BookingContext';
+import { AuthContext } from '../Context/AuthContext';
 import './TransportDetails.css';
 
 const StarRating = ({ rating, size = 'medium' }) => {
@@ -30,6 +32,10 @@ const StarRating = ({ rating, size = 'medium' }) => {
 
 const TransportDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { addBooking } = useBookings();
+  const { isLoggedIn } = useContext(AuthContext);
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -76,6 +82,11 @@ const TransportDetails = () => {
   };
 
   const handleBookNow = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
     if (!startDate || !endDate) {
       setBookingError('Please select both start and end dates');
       return;
@@ -84,15 +95,19 @@ const TransportDetails = () => {
       setBookingError('End date must be after start date');
       return;
     }
-    console.log('Booking details:', {
-      vehicleId: vehicle.vehicle_id,
-      startDate,
-      endDate,
-      totalDays,
-      totalCost,
-      deposit: vehicle.deposit_amount,
-      totalWithDeposit: totalCost + vehicle.deposit_amount,
-    });
+
+    const newBooking = {
+      id: `t-${Date.now()}`,
+      type: 'transport',
+      item: vehicle,
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      status: 'confirmed',
+      totalPrice: totalCost,
+      bookingDate: new Date().toISOString().split('T')[0]
+    };
+
+    addBooking(newBooking);
 
     alert(
       `Booking confirmed for ${vehicle.model} from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}. Total cost: Rs ${totalCost.toLocaleString()}`
@@ -140,9 +155,8 @@ const TransportDetails = () => {
           {images.slice(0, 4).map((img, index) => (
             <button
               key={index}
-              className={`transport-gallery__thumbnail ${
-                index === selectedImageIndex ? 'transport-gallery__thumbnail--active' : ''
-              }`}
+              className={`transport-gallery__thumbnail ${index === selectedImageIndex ? 'transport-gallery__thumbnail--active' : ''
+                }`}
               onClick={() => setSelectedImageIndex(index)}
               aria-label={`View image ${index + 1}`}
             >
@@ -244,14 +258,14 @@ const TransportDetails = () => {
               </div>
               <div className="booking-summary__item booking-summary__item--total">
                 <span>Total Amount:</span>
-                <span>Rs {totalDays > 0 
-                  ? (totalCost + vehicle.deposit_amount).toLocaleString() 
-                  : 0 }</span>
+                <span>Rs {totalDays > 0
+                  ? (totalCost + vehicle.deposit_amount).toLocaleString()
+                  : 0}</span>
               </div>
             </div>
 
             <div className="booking-deposit">
-              <span>Security Deposit: Rs {vehicle.deposit_amount.toLocaleString()}  (refundable when vehicle is returned)</span>
+              <span>Security Deposit: Rs {vehicle.deposit_amount.toLocaleString()} (refundable when vehicle is returned)</span>
             </div>
             <div className="booking-availability">
               {vehicle.availability_status ? (

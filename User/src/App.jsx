@@ -21,11 +21,13 @@ import ForgotPassword from "./Pages/ForgotPassword";
 import Booking from "./Pages/Booking";
 
 import { AuthProvider } from "./Context/AuthContext";
+import { BookingProvider } from "./Context/BookingContext";
 
 
 function App() {
   return (
     <AuthProvider>
+    <BookingProvider>
       <Navbar />
 
       <Routes>
@@ -56,6 +58,7 @@ function App() {
 
       </Routes>
       <Footer />
+    </BookingProvider>
     </AuthProvider>
   );
 }

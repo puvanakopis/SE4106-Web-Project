@@ -1,86 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { roomsDummyData, vehicleData } from '../Assets/assets';
+import { useBookings } from '../context/BookingContext';
+import { AuthContext } from '../context/AuthContext';
 import StarRating from '../Components/Rating/StarRating';
-import './Booking.css'; 
+import './Booking.css';
 
 const Booking = () => {
   const navigate = useNavigate();
+  const { bookings, loadBookings } = useBookings();
+  const { isLoggedIn } = useContext(AuthContext);
   
   const [activeTab, setActiveTab] = useState('upcoming');
-  
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  //  data for upcoming bookings
-  const upcomingBookings = [
-    {
-      id: 'b1',
-      type: 'room', 
-      item: roomsDummyData[0], 
-      startDate: '2023-11-15',
-      endDate: '2023-11-20',
-      status: 'confirmed',
-      totalPrice: 75000
-    },
-    {
-      id: 'b1',
-      type: 'room', 
-      item: roomsDummyData[0], 
-      startDate: '2023-11-15',
-      endDate: '2023-11-20',
-      status: 'confirmed',
-      totalPrice: 75000
-    },
-    {
-      id: 'b1',
-      type: 'room', 
-      item: roomsDummyData[0], 
-      startDate: '2023-11-15',
-      endDate: '2023-11-20',
-      status: 'confirmed',
-      totalPrice: 75000
-    },
-    {
-      id: 'b1',
-      type: 'room', 
-      item: roomsDummyData[0], 
-      startDate: '2023-11-15',
-      endDate: '2023-11-20',
-      status: 'confirmed',
-      totalPrice: 75000
-    },
-    {
-      id: 'b2',
-      type: 'transport',
-      item: vehicleData[1], 
-      startDate: '2023-11-18',
-      endDate: '2023-11-22',
-      status: 'confirmed',
-      totalPrice: 12000
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login');
     }
-  ];
+  }, [isLoggedIn, navigate, loadBookings]);
 
-  // data for past bookings
-  const pastBookings = [
-    {
-      id: 'b3',
-      type: 'room',
-      item: roomsDummyData[2],
-      startDate: '2023-09-10',
-      endDate: '2023-09-15',
-      status: 'completed',
-      totalPrice: 60000
-    }
-  ];
+  const upcomingBookings = bookings.upcoming || [];
+  const pastBookings = bookings.past || [];
 
-  const bookings = activeTab === 'upcoming' ? upcomingBookings : pastBookings;
+  const currentBookings = activeTab === 'upcoming' ? upcomingBookings : pastBookings;
 
-  // Pagination calculations
-  const totalPages = Math.ceil(bookings.length / itemsPerPage);
+  const totalPages = Math.ceil(currentBookings.length / itemsPerPage);
   
-  const paginatedBookings = bookings.slice(
+  const paginatedBookings = currentBookings.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -92,33 +39,30 @@ const Booking = () => {
     }
   };
 
-  // Format date 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Handle booking cancellation
+  const calculateDays = (startDate, endDate) => {
+    const diffTime = Math.abs(new Date(endDate) - new Date(startDate));
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
   const cancelBooking = (bookingId, e) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
+    // Implement cancellation logic here
     alert(`Booking ${bookingId} cancellation requested`);
   };
 
   return (
     <main className="booking-main-container">
-      {/* ----------------------------- Main booking container ----------------------------- */}
       <div className="booking-profile">
-        
-        {/* Page header */}
         <div className="booking-header">
           <div>Your Bookings</div>
         </div>
 
-      
-      
-        {/* Content area */}
         <div className="booking-container">
-          {/*----------------------------- Sidebar navigation tabs ----------------------------- */}
           <div className="booking-sidebar">
             <div
               onClick={() => {
@@ -132,7 +76,7 @@ const Booking = () => {
             <div
               onClick={() => {
                 setActiveTab('past');
-                setCurrentPage(1); 
+                setCurrentPage(1);
               }}
               className={`booking-title ${activeTab === 'past' ? 'active' : ''}`}
             >
@@ -140,12 +84,8 @@ const Booking = () => {
             </div>
           </div>
 
-
-
-          {/* ----------------------------- Main content area ----------------------------- */}
           <div className="booking-content">
-            {/* Empty state handling */}
-            {bookings.length === 0 ? (
+            {currentBookings.length === 0 ? (
               <div className="no-bookings">
                 <h3>No {activeTab === 'upcoming' ? 'upcoming' : 'past'} bookings</h3>
                 <p>
@@ -162,15 +102,13 @@ const Booking = () => {
               </div>
             ) : (
               <>
-                {/* Booking cards grid */}
                 <div className="booking-grid">
                   {paginatedBookings.map((booking) => (
                     <div
                       key={booking.id}
                       className={`card booking-card ${booking.type}`}
-                      onClick={() => navigate(`/${booking.type}/${booking.item._id || booking.item.vehicle_id}`)}
+                      onClick={() => navigate(`/${booking.type}/${booking.item.vehicle_id || booking.item._id}`)}
                     >
-                      {/* Booking image */}
                       <img
                         src={
                           booking.type === 'room'
@@ -179,38 +117,34 @@ const Booking = () => {
                         }
                         alt={
                           booking.type === 'room'
-                            ? `${booking.item.roomType} in ${booking.item.hotel.name}`
+                            ? booking.item.roomType
                             : `${booking.item.brand} ${booking.item.model}`
                         }
                         className="card-image"
                       />
                       
-                      {/* Property type badge */}
-                      <div className="property-badge">
+                      <div className={`property-badge ${booking.type}`}>
                         {booking.type === 'room'
                           ? booking.item.roomType
                           : booking.item.vehicle_type}
                       </div>
                       
-                      {/* Booking status badge */}
                       <div className={`status-badge ${booking.status}`}>
                         {booking.status}
                       </div>
                       
-                      {/* Booking details */}
                       <div className="card-info">
                         <h3>
                           {booking.type === 'room'
-                            ? `${booking.item.roomType} at ${booking.item.hotel.name}`
+                            ? `${booking.item.roomType} at ${booking.item.hotel?.name || 'Unknown'}`
                             : `${booking.item.brand} ${booking.item.model}`}
                         </h3>
                         <p className="location">
                           {booking.type === 'room'
-                            ? booking.item.hotel.city
+                            ? booking.item.hotel?.city || 'Unknown'
                             : `${booking.item.fuel_type} • ${booking.item.seating_capacity} seats`}
                         </p>
 
-                        {/* Booking dates */}
                         <div className="booking-dates">
                           <p>
                             <span>From:</span> {formatDate(booking.startDate)}
@@ -220,7 +154,6 @@ const Booking = () => {
                           </p>
                         </div>
 
-                        {/* Rating display */}
                         <div className="rating">
                           <StarRating
                             rating={
@@ -237,23 +170,15 @@ const Booking = () => {
                           </span>
                         </div>
 
-                        {/* Price and action buttons */}
                         <div className="price-action">
                           <div className="price-details">
                             <p className="total-price">Rs {booking.totalPrice.toLocaleString()}</p>
                             <p className="price-breakdown">
                               {booking.type === 'room'
-                                ? `for ${Math.floor(
-                                    (new Date(booking.endDate) - new Date(booking.startDate)) /
-                                      (1000 * 60 * 60 * 24)
-                                  )} nights`
-                                : `for ${Math.floor(
-                                    (new Date(booking.endDate) - new Date(booking.startDate)) /
-                                      (1000 * 60 * 60 * 24)
-                                  )} days`}
+                                ? `for ${calculateDays(booking.startDate, booking.endDate)} nights`
+                                : `for ${calculateDays(booking.startDate, booking.endDate)} days`}
                             </p>
                           </div>
-                          {/* Show cancel button only for upcoming bookings */}
                           {activeTab === 'upcoming' && (
                             <button
                               className="cancel-btn"
@@ -268,7 +193,6 @@ const Booking = () => {
                   ))}
                 </div>
 
-                {/* Pagination controls */}
                 {totalPages > 1 && (
                   <div className="pagination">
                     <button
