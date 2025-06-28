@@ -1,10 +1,42 @@
-import './PopularTransport.css';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowRight, FaStar } from 'react-icons/fa';
-import {  vehicleData } from '../../Assets/assets';
+import { FaArrowRight, FaStar, FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
+import { vehicleData } from '../../Assets/assets';
+import './PopularTransport.css';
 
 const PopularTransport = () => {
   const navigate = useNavigate();
+  const [savedVehicles, setSavedVehicles] = useState(() => {
+    const saved = localStorage.getItem('savedVehicles');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showSavedNotification, setShowSavedNotification] = useState(false);
+
+  const toggleSaveVehicle = (vehicleId, e) => {
+    e.stopPropagation();
+    setSavedVehicles((prev) => {
+      const isSaved = prev.includes(vehicleId);
+      const newSaved = isSaved
+        ? prev.filter((id) => id !== vehicleId)
+        : [...prev, vehicleId];
+      localStorage.setItem('savedVehicles', JSON.stringify(newSaved));
+      
+      if (!isSaved) {
+        setShowSavedNotification(true);
+      }
+      
+      return newSaved;
+    });
+  };
+
+  useEffect(() => {
+    if (showSavedNotification) {
+      const timer = setTimeout(() => {
+        setShowSavedNotification(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSavedNotification]);
 
   // Get 4 vehicles
   const transportOptions = vehicleData.slice(0, 4).map(vehicle => ({
@@ -20,6 +52,23 @@ const PopularTransport = () => {
 
   return (
     <div className="PopularTransport">
+      {/* Save Notification */}
+      {showSavedNotification && (
+        <div className="save-notification">
+          <div className="notification-content">
+            <FaHeart className="notification-icon" />
+            <span>Vehicle saved</span>
+          </div>
+          <button 
+            className="notification-close" 
+            onClick={() => setShowSavedNotification(false)}
+            aria-label="Close notification"
+          >
+            <FaTimes />
+          </button>
+        </div>
+      )}
+
       <section className="featured-transport">
         <div className="section-header">
           <h2>Transportation Options</h2>
@@ -37,8 +86,21 @@ const PopularTransport = () => {
                 src={option.image}
                 alt={option.title}
                 className="image"
+                loading="lazy"
               />
               <div className="transport-badge">{option.type}</div>
+              {/* Save Button */}
+              <button 
+                className={`save-button ${savedVehicles.includes(option.id) ? 'saved' : ''}`}
+                onClick={(e) => toggleSaveVehicle(option.id, e)}
+                aria-label={savedVehicles.includes(option.id) ? 'Remove from saved' : 'Save this vehicle'}
+              >
+                {savedVehicles.includes(option.id) ? (
+                  <FaHeart className="icon-heart-filled" />
+                ) : (
+                  <FaRegHeart className="icon-heart-outline" />
+                )}
+              </button>
               <div className="transport-info">
                 <h3>{option.title}</h3>
                 <p>Location – {option.location}</p>

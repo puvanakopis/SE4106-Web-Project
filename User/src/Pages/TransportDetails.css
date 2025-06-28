@@ -364,11 +364,12 @@
 .transport-details .transport-secondary {
   display: flex;
   gap: 2rem;
-  margin-top: 2rem;
+  margin-bottom: 3rem;
+  align-items: stretch;
 }
 
 .transport-details .transport-reviews {
-  flex: 2;
+  flex: 1;
   min-height: 350px;
 }
 
@@ -516,7 +517,7 @@
   .transport-details .transport-content {
     flex-direction: column;
   }
-  
+
   .transport-details .transport-booking {
     width: 100%;
   }
@@ -540,7 +541,7 @@
   .transport-details .transport-gallery__thumbnails {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .transport-details .reviews-summary {
     flex-direction: column;
     gap: 1.5rem;

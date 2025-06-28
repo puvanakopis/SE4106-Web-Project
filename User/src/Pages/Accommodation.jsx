@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { assets, roomsDummyData, facilityIcons } from '../Assets/assets';
 import StarRating from '../Components/Rating/StarRating';
+import { FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
 import './Accommodation.css';
 
 // Custom checkbox component for filters
@@ -37,6 +38,11 @@ const RadioButton = ({ label, selected = false, onChange = () => { } }) => (
 const Accommodation = () => {
   const navigate = useNavigate();
   const [openFilters, setOpenFilters] = useState(false);
+  const [savedRooms, setSavedRooms] = useState(() => {
+    const saved = localStorage.getItem('savedRooms');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showSavedNotification, setShowSavedNotification] = useState(false);
 
   // Filter options
   const roomTypes = ['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'];
@@ -82,6 +88,33 @@ const Accommodation = () => {
     setCurrentPage(1);
   };
 
+  // Toggle save room
+  const toggleSaveRoom = (roomId, e) => {
+    e.stopPropagation();
+    setSavedRooms((prev) => {
+      const isSaved = prev.includes(roomId);
+      const newSaved = isSaved
+        ? prev.filter((id) => id !== roomId)
+        : [...prev, roomId];
+      localStorage.setItem('savedRooms', JSON.stringify(newSaved));
+      
+      if (!isSaved) {
+        setShowSavedNotification(true);
+      }
+      
+      return newSaved;
+    });
+  };
+
+  useEffect(() => {
+    if (showSavedNotification) {
+      const timer = setTimeout(() => {
+        setShowSavedNotification(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSavedNotification]);
+
   // Apply filtering and sorting to the rooms data
   const filteredRooms = roomsDummyData
     .filter((room) => {
@@ -125,7 +158,24 @@ const Accommodation = () => {
 
   return (
     <div className="accommodation">
-      {/* Mobile filter toggle */}
+      {/* Save Notification */}
+      {showSavedNotification && (
+        <div className="save-notification">
+          <div className="notification-content">
+            <FaHeart className="notification-icon" />
+            <span>Room saved</span>
+          </div>
+          <button 
+            className="notification-close" 
+            onClick={() => setShowSavedNotification(false)}
+            aria-label="Close notification"
+          >
+            <FaTimes />
+          </button>
+        </div>
+      )}
+
+      {/* ---------------------- Mobile filter toggle ---------------------- */}
       <div className="accommodation-header">
         <button
           className="mobile-filter-toggle"
@@ -145,10 +195,10 @@ const Accommodation = () => {
       </div>
 
 
-      {/* -------------- Filter -------------- */}
+      
 
       <div className="accommodation-content">
-        {/* Room Types Filter */}
+        {/* ---------------------- Room Types Filter ---------------------- */}
         <aside className={`filters-sidebar ${openFilters ? 'open' : ''}`}>
           {/* Room Types Filter */}
           <div className="filter-section">
@@ -209,7 +259,9 @@ const Accommodation = () => {
 
 
 
-        {/* -------------- Main Room List -------------- */}
+
+
+        {/* ---------------------- Main Room List ---------------------- */}
         <main className="rooms-list">
           {/* No results message */}
           {paginatedRooms.length === 0 ? (
@@ -225,8 +277,6 @@ const Accommodation = () => {
             </div>
           ) : (
             <>
-
-
               {paginatedRooms.map((room) => (
                 <article
                   key={room._id}
@@ -242,6 +292,17 @@ const Accommodation = () => {
                       loading="lazy"
                     />
                     <span className="room-badge">{room.roomType}</span>
+                    <button 
+                      className={`save-button ${savedRooms.includes(room._id) ? 'saved' : ''}`}
+                      onClick={(e) => toggleSaveRoom(room._id, e)}
+                      aria-label={savedRooms.includes(room._id) ? 'Remove from saved' : 'Save this room'}
+                    >
+                      {savedRooms.includes(room._id) ? (
+                        <FaHeart className="icon-heart-filled" />
+                      ) : (
+                        <FaRegHeart className="icon-heart-outline" />
+                      )}
+                    </button>
                   </div>
 
                   {/* Room details */}
@@ -275,15 +336,12 @@ const Accommodation = () => {
                         <p className="price-period">/ month</p>
                       </div>
                       <button
-
-                        onClick={() => navigate(`/room/${room._id}`)}
-                        className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-xs hover:bg-blue-700 text-sm transition duration-200 view-details-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/room/${room._id}`);
                         }}
+                        className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-xs hover:bg-blue-700 text-sm transition duration-200 view-details-btn"
                         aria-label={`View details for ${room.roomType} room`}
-
                       >
                         View Details
                       </button>
@@ -292,7 +350,7 @@ const Accommodation = () => {
                 </article>
               ))}
 
-              {/* -------------- Pagination controls -------------- */}
+              {/* Pagination controls */}
               {totalPages > 1 && (
                 <div className="pagination">
                   <button

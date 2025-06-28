@@ -1,15 +1,62 @@
-import './PopularRooms.css';
-import { roomsDummyData } from '../../Assets/assets';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowRight, FaStar } from 'react-icons/fa';
-
+import { roomsDummyData } from '../../Assets/assets';
+import { FaArrowRight, FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
+import './PopularRooms.css';
 
 const PopularRooms = () => {
     const navigate = useNavigate();
+    const [savedRooms, setSavedRooms] = useState(() => {
+        const saved = localStorage.getItem('savedRooms');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [showSavedNotification, setShowSavedNotification] = useState(false);
 
+    const toggleSaveRoom = (roomId, e) => {
+        e.stopPropagation();
+        setSavedRooms((prev) => {
+            const isSaved = prev.includes(roomId);
+            const newSaved = isSaved
+                ? prev.filter((id) => id !== roomId)
+                : [...prev, roomId];
+            localStorage.setItem('savedRooms', JSON.stringify(newSaved));
+            
+            if (!isSaved) {
+                setShowSavedNotification(true);
+            }
+            
+            return newSaved;
+        });
+    };
+
+    useEffect(() => {
+        if (showSavedNotification) {
+            const timer = setTimeout(() => {
+                setShowSavedNotification(false);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [showSavedNotification]);
 
     return (
         <div className="PopularRooms">
+            {/* Save Notification */}
+            {showSavedNotification && (
+                <div className="save-notification">
+                    <div className="notification-content">
+                        <FaHeart className="notification-icon" />
+                        <span>Room saved</span>
+                    </div>
+                    <button 
+                        className="notification-close" 
+                        onClick={() => setShowSavedNotification(false)}
+                        aria-label="Close notification"
+                    >
+                        <FaTimes />
+                    </button>
+                </div>
+            )}
+
             <section className="featured-properties">
                 <div className="section-header">
                     <h2>Featured Accommodations</h2>
@@ -27,13 +74,25 @@ const PopularRooms = () => {
                                 src={room.images[0]}
                                 alt={`${room.roomType} in ${room.hotel.name}`}
                                 className="image"
+                                loading="lazy"
                             />
                             <div className="property-badge">{room.roomType}</div>
+                            <button 
+                                className={`save-button ${savedRooms.includes(room._id) ? 'saved' : ''}`}
+                                onClick={(e) => toggleSaveRoom(room._id, e)}
+                                aria-label={savedRooms.includes(room._id) ? 'Remove from saved' : 'Save this room'}
+                            >
+                                {savedRooms.includes(room._id) ? (
+                                    <FaHeart className="icon-heart-filled" />
+                                ) : (
+                                    <FaRegHeart className="icon-heart-outline" />
+                                )}
+                            </button>
                             <div className="room-info">
                                 <h3>{room.roomType} at {room.hotel.name}</h3>
                                 <p>Location – {room.hotel.city}</p>
                                 <div className="rating">
-                                    <span>⭐</span> 4.5
+                                    <span>{room.rating}</span>
                                 </div>
                                 <div className="price-action">
                                     <p>Rs {room.pricePerMonth.toLocaleString()}/= per month</p>
@@ -52,12 +111,11 @@ const PopularRooms = () => {
                     ))}
                 </div>
 
-
                 <button
                     className="view-all-button"
                     onClick={() => navigate('/accommodation')}
                 >
-                    View All Accommodations<FaArrowRight className="arrow-icon" />
+                    View All Accommodations <FaArrowRight className="arrow-icon" />
                 </button>
             </section>
         </div>

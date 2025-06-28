@@ -1,167 +1,348 @@
+:root {
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --text-dark: #111827;
+    --text-medium: #4b5563;
+    --text-light: #6b7280;
+    --border-color: #e5e7eb;
+    --background-light: #f9fafb;
+    --background-white: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --transition: all 0.2s ease;
+}
+
 /* Container */
 .PopularRooms {
-  margin: 0% 8%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 6rem;
+    margin: 0 8%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 6rem;
 }
 
 /* Section Header */
 .PopularRooms .section-header {
-  text-align: center;
-  margin-bottom: 3rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .PopularRooms .section-header h2 {
-  font-size: 2rem;
-  color: var(--text-dark);
-  margin-bottom: 0.75rem;
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
 }
 
 .PopularRooms .section-header p {
-  color: var(--text-medium);
+    color: var(--text-medium);
+    font-size: 1.1rem;
 }
 
 /* Featured Properties Section */
 .PopularRooms .featured-properties {
-  margin-top: 4rem;
-  width: 100%;
+    margin-top: 4rem;
+    width: 100%;
 }
 
 /* Grid Layout */
 .PopularRooms .properties-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  width: 100%;
-  margin: 0 auto 3rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    margin: 0 auto 3rem;
 }
 
 /* Card Styles */
 .PopularRooms .card {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  position: relative;
-  cursor: pointer;
+    background-color: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+    cursor: pointer;
 }
 
 .PopularRooms .card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
 
 .PopularRooms .card .image {
-  width: 100%;
-  height: 14rem;
-  object-fit: cover;
+    width: 100%;
+    height: 14rem;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.PopularRooms .card:hover .image {
+    transform: scale(1.03);
 }
 
 /* Badge */
 .PopularRooms .property-badge {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background-color: var(--primary-color);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  z-index: 10;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 10;
 }
 
 /* Room Info */
 .PopularRooms .room-info {
-  padding: 1.25rem;
+    padding: 1.25rem;
 }
 
 .PopularRooms .room-info h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-dark);
 }
 
 .PopularRooms .room-info p {
-  font-size: 0.875rem;
-  color: #4B5563;
-  margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--text-medium);
+    margin-bottom: 0.25rem;
 }
 
 /* Rating */
 .PopularRooms .room-info .rating {
-  display: flex;
-  align-items: center;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
 }
 
-.PopularRooms .room-info .rating span {
-  margin-right: 0.25rem;
+.PopularRooms .room-info .rating .star-icon {
+    color: #f59e0b;
+    font-size: 0.9rem;
 }
 
 /* Price & Button Section */
 .PopularRooms .room-info .price-action {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
 }
 
 .PopularRooms .room-info .price-action p {
-  font-size: 1rem;
-  font-weight: 500;
-  color: black;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
 .PopularRooms .room-info .price-action button {
-  background-color: var(--primary-color);
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
 }
 
 .PopularRooms .room-info .price-action button:hover {
-  color: black !important;
+    background-color: var(--primary-hover);
 }
 
 /* View All Button */
 .PopularRooms .view-all-button {
     display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 2rem auto 0;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem auto 0;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
 }
 
 .PopularRooms .view-all-button:hover {
-  color: black !important;
+    background-color: var(--primary-hover);
+}
+
+.PopularRooms .view-all-button .arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.PopularRooms .view-all-button:hover .arrow-icon {
+    transform: translateX(3px);
+}
+
+/* Save Notification */
+.save-notification {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1100;
+    max-width: 380px;
+    border: 1px solid var(--border-color);
+    transform: translateY(-30px);
+    opacity: 0;
+    animation: fadeSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fadeSlideIn {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-grow: 1;
+}
+
+.notification-icon {
+    font-size: 1.25rem;
+    min-width: 24px;
+}
+
+.save-notification span {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.7;
+    transition: var(--transition);
+    padding: 0.25rem;
+    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+}
+
+.notification-close:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-dark);
+}
+
+/* Save Button */
+.save-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-medium);
+}
+
+.save-button:hover {
+    background-color: var(--background-white);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.save-button.saved {
+    background-color: var(--primary-color);
+    color: var(--background-white);
+}
+
+.save-button:hover .icon-heart-outline {
+    color: var(--primary-color);
+}
+
+.save-button.saved:hover {
+    background-color: var(--primary-hover);
+}
+
+.icon-heart-filled,
+.icon-heart-outline {
+    font-size: 1rem;
+    transition: var(--transition);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .PopularRooms .featured-properties {
-    padding: 2rem 1rem;
-  }
+    .PopularRooms {
+        margin: 0 5% 4rem;
+    }
 
-  .PopularRooms .properties-grid {
-    grid-template-columns: 1fr;
-  }
+    .PopularRooms .section-header h2 {
+        font-size: 1.75rem;
+    }
+
+    .PopularRooms .section-header p {
+        font-size: 1rem;
+    }
+
+    .PopularRooms .properties-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .PopularRooms {
+        margin: 0 1rem 3rem;
+    }
+
+    .PopularRooms .section-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .PopularRooms .room-info .price-action {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .PopularRooms .room-info .price-action button {
+        width: 100%;
+    }
 }
