@@ -8,7 +8,6 @@
     display: flex;
     flex-direction: column;
     height: fit-content;
-
 }
 
 .profile .user_name {
@@ -97,7 +96,7 @@
     justify-content: flex-end;
 }
 
-.profile .save-button {
+.profile .save-button-div {
     background-color: var(--primary-color);
     color: white;
     padding: 0.5rem 1.5rem;
@@ -107,7 +106,7 @@
     transition: all 0.3s ease;
 }
 
-.profile .save-button:hover {
+.profile .save-button-div:hover {
     color: black;
 }
 

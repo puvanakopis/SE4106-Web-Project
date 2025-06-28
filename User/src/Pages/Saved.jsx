@@ -1,109 +1,110 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { assets } from '../Assets/assets';
+import { roomsDummyData, vehicleData } from '../Assets/assets';
 import StarRating from '../Components/Rating/StarRating';
 import './Saved.css';
 
-const savedAccommodations = [
-  {
-    _id: 'room_1',
-    images: [assets.roomImg1],
-    roomType: 'Double Bed',
-    title: 'Luxury Suites Double Room',
-    hotel: {
-      name: 'Luxury Suites',
-      city: 'Colombo',
-      address: '123 Beach Road'
-    },
-    rating: 4.5,
-    amenities: ['Wifi', 'AC', 'TV', 'Parking'],
-    pricePerMonth: 12000,
-    distance_to_university: 2.5,
-    review_count: 124
-  },
-  {
-    _id: 'room_2',
-    images: [assets.roomImg1],
-    roomType: 'Single Bed',
-    title: 'City View Single Room',
-    hotel: {
-      name: 'City View Hotel',
-      city: 'Kandy',
-      address: '45 Hill Street'
-    },
-    rating: 4.2,
-    amenities: ['Wifi', 'AC', 'Breakfast'],
-    pricePerMonth: 8000,
-    distance_to_university: 1.8,
-    review_count: 87
-  }
-];
-
-const savedTransports = [
-  {
-    vehicle_id: 'vehicle_1',
-    images: [assets.roomImg1],
-    vehicle_type: 'Car',
-    brand: 'Toyota',
-    model: 'Corolla',
-    average_rating: 4.7,
-    fuel_type: 'Petrol',
-    seating_capacity: 5,
-    rental_price_per_day: 4500,
-    review_count: 56
-  },
-  {
-    vehicle_id: 'vehicle_2',
-    images: [assets.roomImg1],
-    vehicle_type: 'Motorbike',
-    brand: 'Honda',
-    model: 'CBR 250',
-    average_rating: 4.3,
-    fuel_type: 'Petrol',
-    seating_capacity: 2,
-    rental_price_per_day: 1500,
-    review_count: 42
-  }
-];
-
 const Saved = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('transport');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
-  const [activeTab, setActiveTab] = useState('accommodation');
+  // Initialize saved items from localStorage
+  const [savedAccommodations, setSavedAccommodations] = useState(() => {
+    const saved = localStorage.getItem('savedRooms');
+    const savedIds = saved ? JSON.parse(saved) : [];
+    return roomsDummyData.filter(room => savedIds.includes(room._id));
+  });
+
+  const [savedTransports, setSavedTransports] = useState(() => {
+    const saved = localStorage.getItem('savedVehicles');
+    const savedIds = saved ? JSON.parse(saved) : [];
+    return vehicleData.filter(vehicle => savedIds.includes(vehicle.vehicle_id));
+  });
+
+  // Remove handlers
+  const removeSavedAccommodation = (roomId, e) => {
+    e.stopPropagation();
+    setSavedAccommodations(prev => prev.filter(r => r._id !== roomId));
+    const saved = JSON.parse(localStorage.getItem('savedRooms') || '[]');
+    const newSaved = saved.filter(id => id !== roomId);
+    localStorage.setItem('savedRooms', JSON.stringify(newSaved));
+  };
+
+  const removeSavedVehicle = (vehicleId, e) => {
+    e.stopPropagation();
+    setSavedTransports(prev => prev.filter(v => v.vehicle_id !== vehicleId));
+    const saved = JSON.parse(localStorage.getItem('savedVehicles') || '[]');
+    const newSaved = saved.filter(id => id !== vehicleId);
+    localStorage.setItem('savedVehicles', JSON.stringify(newSaved));
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(
+    activeTab === 'transport'
+      ? savedTransports.length / itemsPerPage
+      : savedAccommodations.length / itemsPerPage
+  );
+
+  const paginatedItems = activeTab === 'transport'
+    ? savedTransports.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
+    : savedAccommodations.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="saved-profile">
+      {/* Page wrapper for saved items */}
+
       <div className="saved-header">
-        {/* Page heading */}
+        {/* Top header section */}
         <div>Your Saved Items</div>
       </div>
 
       <div className="saved-container">
+        {/* Main container holds sidebar and content */}
 
-        {/* -------------- Sidebar --------------  */}
         <div className="saved-sidebar">
+          {/* Left sidebar for tabs */}
           <div
-            onClick={() => setActiveTab('accommodation')}
+            onClick={() => {
+              setActiveTab('accommodation');
+              setCurrentPage(1);
+            }}
             className={`saved-title ${activeTab === 'accommodation' ? 'active' : ''}`}
           >
             Accommodations
           </div>
           <div
-            onClick={() => setActiveTab('transport')}
+            onClick={() => {
+              setActiveTab('transport');
+              setCurrentPage(1);
+            }}
             className={`saved-title ${activeTab === 'transport' ? 'active' : ''}`}
           >
             Transport
           </div>
         </div>
 
-        {/* -------------- Main Content -------------- */}
         <div className="saved-content">
+          {/* Right content panel */}
           {activeTab === 'accommodation' ? (
             <>
-              {/* no accommodation saved */}
               {savedAccommodations.length === 0 ? (
                 <div className="no-saved">
-                  <img src={assets.emptyFavorites} alt="No saved accommodations" />
+                  {/* Message shown when no saved accommodations */}
                   <h3>No saved accommodations yet</h3>
                   <p>Save your favorite rooms by clicking the heart icon</p>
                   <button
@@ -114,50 +115,79 @@ const Saved = () => {
                   </button>
                 </div>
               ) : (
-                /* saved accommodation cards */
-                <div className="saved-grid">
-                  {savedAccommodations.map((accommodation) => (
-                    <div
-                      key={accommodation._id}
-                      className="card"
-                      onClick={() => navigate(`/room/${accommodation._id}`)}
-                    >
-                      <img
-                        src={accommodation.images[0]}
-                        alt={`${accommodation.roomType} in ${accommodation.hotel.name}`}
-                        className="image"
-                      />
-                      <div className="property-badge">{accommodation.roomType}</div>
-                      <div className="room-info">
-                        <h3>{accommodation.roomType} at {accommodation.hotel.name}</h3>
-                        <p>Location – {accommodation.hotel.city}</p>
-                        <div className="rating">
-                          <StarRating rating={accommodation.rating} />
-                          <span>{accommodation.review_count} reviews</span>
-                        </div>
-                        <div className="price-action">
-                          <p>Rs {accommodation.pricePerMonth.toLocaleString()}/= per month</p>
-                          <button
-                            className="remove-btn"
-                            onClick={(e) => {
-                              e.stopPropagation(); 
-                            }}
-                          >
-                            Remove
-                          </button>
+                <>
+                  <div className="saved-grid">
+                    {/* Grid layout for saved accommodation cards */}
+                    {paginatedItems.map((accommodation) => (
+                      <div
+                        key={accommodation._id}
+                        className="card accommodation-card"
+                        onClick={() => navigate(`/room/${accommodation._id}`)}
+                      >
+                        {/* Single accommodation card */}
+                        <img
+                          src={accommodation.images[0]}
+                          alt={`${accommodation.roomType} in ${accommodation.hotel.name}`}
+                          className="card-image"
+                        />
+                        <div className="property-badge">{accommodation.roomType}</div>
+                        <div className="card-info">
+                          <h3>{accommodation.roomType} at {accommodation.hotel.name}</h3>
+                          <p>Location – {accommodation.hotel.city}</p>
+                          <div className="rating">
+                            <StarRating rating={accommodation.rating} />
+                            <span>{accommodation.review_count || '200+'} reviews</span>
+                          </div>
+                          <div className="price-action">
+                            <p>Rs {accommodation.pricePerMonth.toLocaleString()}/= per month</p>
+                            <button
+                              className="remove-btn"
+                              onClick={(e) => removeSavedAccommodation(accommodation._id, e)}
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="pagination">
+                      {/* Pagination controls */}
+                      <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="pagination-arrow"
+                      >
+                        &lt;
+                      </button>
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                          key={i + 1}
+                          onClick={() => handlePageChange(i + 1)}
+                          className={`pagination-number ${currentPage === i + 1 ? 'active' : ''}`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="pagination-arrow"
+                      >
+                        &gt;
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </>
           ) : (
             <>
-              {/*no transport saved */}
               {savedTransports.length === 0 ? (
                 <div className="no-saved">
-                  <img src={assets.emptyFavorites} alt="No saved vehicles" />
+                  {/* Message shown when no saved transports */}
                   <h3>No saved vehicles yet</h3>
                   <p>Save your favorite vehicles by clicking the heart icon</p>
                   <button
@@ -168,45 +198,75 @@ const Saved = () => {
                   </button>
                 </div>
               ) : (
-                /*  saved transport cards */
-                <div className="saved-grid">
-                  {savedTransports.map((vehicle) => (
-                    <div
-                      key={vehicle.vehicle_id}
-                      className="card"
-                      onClick={() => navigate(`/transport/${vehicle.vehicle_id}`)}
-                    >
-                      <img
-                        src={vehicle.images[0]}
-                        alt={`${vehicle.brand} ${vehicle.model}`}
-                        className="image"
-                      />
-                      <div className="property-badge">{vehicle.vehicle_type}</div>
-                      <div className="room-info">
-                        <h3>{vehicle.brand} {vehicle.model}</h3>
-                        <div className="specs">
-                          <p>Fuel – {vehicle.fuel_type}</p>
-                          <p>Seats – {vehicle.seating_capacity}</p>
-                        </div>
-                        <div className="rating">
-                          <StarRating rating={vehicle.average_rating} />
-                          <span>{vehicle.review_count} reviews</span>
-                        </div>
-                        <div className="price-action">
-                          <p>Rs {vehicle.rental_price_per_day.toLocaleString()}/= per day</p>
-                          <button
-                            className="remove-btn"
-                            onClick={(e) => {
-                              e.stopPropagation(); 
-                            }}
-                          >
-                            Remove
-                          </button>
+                <>
+                  <div className="saved-grid">
+                    {/* Grid layout for saved transport cards */}
+                    {paginatedItems.map((vehicle) => (
+                      <div
+                        key={vehicle.vehicle_id}
+                        className={`card vehicle-card ${vehicle.vehicle_type.toLowerCase()}`}
+                        onClick={() => navigate(`/transport/${vehicle.vehicle_id}`)}
+                      >
+                        {/* Single vehicle card */}
+                        <img
+                          src={vehicle.vehicle_images[0]}
+                          alt={`${vehicle.brand} ${vehicle.model}`}
+                          className="card-image"
+                        />
+                        <div className="property-badge">{vehicle.vehicle_type}</div>
+                        <div className="card-info">
+                          <h3>{vehicle.brand} {vehicle.model}</h3>
+                          <div className="specs">
+                            <p>Fuel – {vehicle.fuel_type}</p>
+                            <p>Seats – {vehicle.seating_capacity}</p>
+                          </div>
+                          <div className="rating">
+                            <StarRating rating={vehicle.average_rating} />
+                            <span>{vehicle.review_count} reviews</span>
+                          </div>
+                          <div className="price-action">
+                            <p>Rs {vehicle.rental_price_per_day.toLocaleString()}/= per day</p>
+                            <button
+                              className="remove-btn"
+                              onClick={(e) => removeSavedVehicle(vehicle.vehicle_id, e)}
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="pagination">
+                      {/* Pagination controls */}
+                      <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="pagination-arrow"
+                      >
+                        &lt;
+                      </button>
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                          key={i + 1}
+                          onClick={() => handlePageChange(i + 1)}
+                          className={`pagination-number ${currentPage === i + 1 ? 'active' : ''}`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="pagination-arrow"
+                      >
+                        &gt;
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </>
           )}

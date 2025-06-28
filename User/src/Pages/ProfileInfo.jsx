@@ -78,7 +78,7 @@ const ProfileInfo = () => {
               </div>
 
               <div className="form-group button-group">
-                <button type="submit" className="save-button">Save</button>
+                <button type="submit" className="save-button-div">Save</button>
               </div>
             </form>
           </div>
@@ -106,7 +106,7 @@ const ProfileInfo = () => {
               </div>
 
               <div className="form-group button-group">
-                <button type="submit" className="save-button">Delete Accountt</button>
+                <button type="submit" className="save-button-div">Delete Accountt</button>
               </div>
 
             </form>
@@ -136,7 +136,7 @@ const ProfileInfo = () => {
               </div>
 
               <div className="form-group button-group">
-                <button type="submit" className="save-button">Update Password</button>
+                <button type="submit" className="save-button-div">Update Password</button>
               </div>
 
             </form>

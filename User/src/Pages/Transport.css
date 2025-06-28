@@ -1,43 +1,147 @@
+/* -------------------- CSS Variables -------------------- */
 :root {
-  --primary-color: #3b82f6;
-  --primary-hover: #2563eb;
-  --text-dark: #111827;
-  --text-medium: #4b5563;
-  --text-light: #6b7280;
-  --border-color: #e5e7eb;
-  --background-light: #f9fafb;
-  --background-white: #ffffff;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
-  --transition: all 0.2s ease;
+  /* Colors */
+  --primary-color: #3b82f6; /* Main brand color for buttons, badges */
+  --primary-hover: #2563eb; /* Darker shade for hover states */
+  --success-color: #10b981; /* Used for success states */
+  --success-hover: #059669; /* Darker success hover */
+  --text-dark: #111827; /* Primary text color */
+  --text-medium: #4b5563; /* Secondary text color */
+  --text-light: #6b7280; /* Tertiary text color */
+  --border-color: #e5e7eb; /* Border and divider colors */
+  --background-light: #f9fafb; /* Light background color */
+  --background-white: #ffffff; /* White background */
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Small shadow */
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* Medium shadow */
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* Large shadow */
+  
+  /* Border Radius */
+  --radius-sm: 0.25rem; /* Small radius (buttons, checkboxes) */
+  --radius-md: 0.5rem; /* Medium radius (cards) */
+  --radius-lg: 1rem; /* Large radius (badges) */
+  
+  /* Transitions */
+  --transition: all 0.2s ease; /* Default transition */
 }
 
+/* -------------------- Base Styles -------------------- */
+/* Main container for Transport component */
+.transport {
+  padding: 3% 8% 0% 8%;
+  margin: 0 auto;
+  color: var(--text-medium);
+}
 
+/* Header containing filter toggle button */
+.transport .transport-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
 
-/* -------------------- Mobile filter toggle button -------------------- */
+/* Main container holding sidebar and transport list */
+.transport .transport-container {
+  display: flex;
+  gap: 2rem;
+  position: relative;
+}
 
+/* -------------------- Notification Styles -------------------- */
+/* Saved vehicle notification popup */
+.transport .save-notification {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1100;
+  max-width: 380px;
+  transform: translateY(-30px);
+  opacity: 0;
+  animation: fadeSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Animation for notification entry */
+@keyframes fadeSlideIn {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Content inside notification */
+.transport .notification-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Heart icon in notification */
+.transport .notification-icon {
+  font-size: 1.25rem;
+  min-width: 24px;
+  color: white;
+}
+
+/* Close button in notification */
+.transport .notification-close {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.7;
+  transition: var(--transition);
+  padding: 0.25rem;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+}
+
+.transport .notification-close:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* -------------------- Mobile Filter Toggle -------------------- */
+/* Button to toggle filters on mobile */
 .transport .mobile-filter-toggle {
-   display: none;
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.75rem 1.25rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-weight: 500;
-    gap: 0.5rem;
-    align-items: center;
-    transition: var(--transition);
+  display: none !important;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  gap: 0.5rem;
+  align-items: center;
+  transition: var(--transition);
+  margin-bottom: 1rem;
 }
 
 .transport .mobile-filter-toggle:hover {
   background-color: var(--primary-hover);
 }
 
+/* Filter icon in toggle button */
+.transport .filter-icon {
+  font-size: 0.9rem;
+}
+
+/* Overlay when filters are open on mobile */
 .transport .filter-overlay {
   position: fixed;
   top: 0;
@@ -53,6 +157,7 @@
   display: block;
 }
 
+/* Close button for mobile filter sidebar */
 .transport .close-sidebar {
   display: none;
   position: absolute;
@@ -63,32 +168,14 @@
   font-size: 1.5rem;
   cursor: pointer;
   color: var(--text-medium);
+  z-index: 1;
 }
 
-/* --------------------  Main content container -------------------- */
-
-.transport {
-  padding: 3% 8% 0% 8%;
-  margin: 0 auto;
-  color: var(--text-medium);
-}
-
-.transport .transport-header {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.transport .transport-container {
-  display: flex;
-  gap: 2rem;
-  position: relative;
-}
-
-/* -------------------- Filters sidebar -------------------- */
+/* -------------------- Filter Sidebar -------------------- */
+/* Main sidebar container */
 .transport .filters-sidebar {
   border: 1px solid var(--border-color);
-  background-color: var(--background-light);
+  background-color: var(--background-white);
   padding: 2rem;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -101,6 +188,7 @@
   align-self: flex-start;
 }
 
+/* Each filter section (vehicle type, price range, sort) */
 .transport .filter-section {
   padding: 1rem 0;
   margin-bottom: 1rem;
@@ -111,6 +199,7 @@
   border-bottom: none;
 }
 
+/* Section titles */
 .transport .filter-section-title {
   font-size: 1.1rem;
   font-weight: 600;
@@ -118,12 +207,14 @@
   margin-bottom: 1rem;
 }
 
+/* Container for filter options */
 .transport .filter-options {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
+/* Custom Checkbox Styles */
 .transport .filter-checkbox,
 .transport .filter-radio {
   display: flex;
@@ -135,6 +226,7 @@
   user-select: none;
 }
 
+/* Hide default input */
 .transport .filter-checkbox input,
 .transport .filter-radio input {
   position: absolute;
@@ -144,39 +236,45 @@
   width: 0;
 }
 
+/* Filter option text */
 .transport .filter-label {
   font-size: 0.95rem;
+  color: var(--text-medium);
 }
 
+/* Custom checkbox */
 .transport .checkmark {
   position: absolute;
   left: 0;
   height: 1.2rem;
   width: 1.2rem;
-  background-color: var(--background-light);
+  background-color: var(--background-white);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
+  transition: var(--transition);
 }
 
-.transport .filter-checkbox:hover input~.checkmark {
+.transport .filter-checkbox:hover input ~ .checkmark {
   background-color: #e0e7ff;
 }
 
-.transport .filter-checkbox input:checked~.checkmark {
+.transport .filter-checkbox input:checked ~ .checkmark {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
 
+/* Checkmark indicator */
 .transport .checkmark:after {
   content: "";
   position: absolute;
   display: none;
 }
 
-.transport .filter-checkbox input:checked~.checkmark:after {
+.transport .filter-checkbox input:checked ~ .checkmark:after {
   display: block;
 }
 
+/* Checkmark shape */
 .transport .filter-checkbox .checkmark:after {
   left: 0.4rem;
   top: 0.1rem;
@@ -187,35 +285,39 @@
   transform: rotate(45deg);
 }
 
+/* Custom Radio Button */
 .transport .radiomark {
   position: absolute;
   left: 0;
   height: 1.2rem;
   width: 1.2rem;
-  background-color: var(--background-light);
+  background-color: var(--background-white);
   border: 1px solid var(--border-color);
   border-radius: 50%;
+  transition: var(--transition);
 }
 
-.transport .filter-radio:hover input~.radiomark {
+.transport .filter-radio:hover input ~ .radiomark {
   background-color: #e0e7ff;
 }
 
-.transport .filter-radio input:checked~.radiomark {
+.transport .filter-radio input:checked ~ .radiomark {
   background-color: var(--background-white);
   border-color: var(--primary-color);
 }
 
+/* Radio button indicator */
 .transport .radiomark:after {
   content: "";
   position: absolute;
   display: none;
 }
 
-.transport .filter-radio input:checked~.radiomark:after {
+.transport .filter-radio input:checked ~ .radiomark:after {
   display: block;
 }
 
+/* Radio button selected state */
 .transport .filter-radio .radiomark:after {
   top: 0.25rem;
   left: 0.25rem;
@@ -225,6 +327,7 @@
   background: var(--primary-color);
 }
 
+/* Reset All Filters Button */
 .transport .resetButton {
   width: 100%;
   background-color: var(--primary-color);
@@ -248,11 +351,8 @@
   cursor: not-allowed;
 }
 
-
-
-
-/* -------------------- Main transport listings -------------------- */
-
+/* -------------------- Transport Listings -------------------- */
+/* Grid container for transport cards */
 .transport .transports-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -260,6 +360,7 @@
   width: 100%;
 }
 
+/* No Results Message */
 .transport .no-results {
   display: flex;
   flex-direction: column;
@@ -285,6 +386,7 @@
   margin-bottom: 1.5rem;
 }
 
+/* Reset filters button in no results */
 .transport .reset-filters {
   background-color: transparent;
   color: var(--primary-color);
@@ -301,10 +403,7 @@
   background-color: #eff6ff;
 }
 
-
-
-/* Transport cards */
-
+/* Transport Card Styles */
 .transport .transport-card {
   border: 1px solid var(--border-color);
   background-color: var(--background-white);
@@ -320,8 +419,10 @@
 
 .transport .transport-card:hover {
   transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
 }
 
+/* Image Container */
 .transport .transport-image-container {
   position: relative;
   width: 100%;
@@ -329,6 +430,7 @@
   overflow: hidden;
 }
 
+/* Vehicle image */
 .transport .transport-image {
   width: 100%;
   height: 100%;
@@ -336,6 +438,58 @@
   transition: all 0.3s ease;
 }
 
+.transport .transport-card:hover .transport-image {
+  transform: scale(1.05);
+}
+
+/* Save Button (heart icon) */
+.transport .save-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-medium);
+}
+
+.transport .save-button:hover {
+  background-color: var(--background-white);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+/* Saved state for save button */
+.transport .save-button.saved {
+  background-color: var(--primary-color);
+  color: var(--background-white);
+}
+
+/* Heart icons */
+.transport .save-button .icon-heart-filled,
+.transport .save-button .icon-heart-outline {
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.transport .save-button:hover .icon-heart-outline {
+  color: var(--primary-color);
+}
+
+.transport .save-button.saved:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Vehicle Type Badge */
 .transport .transport-badge {
   position: absolute;
   top: 1rem;
@@ -349,6 +503,7 @@
   z-index: 1;
 }
 
+/* Card Content */
 .transport .transport-card-content {
   display: flex;
   flex-direction: column;
@@ -361,15 +516,18 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 1rem;
 }
 
 .transport .transport-header-info {
   display: flex;
-
   justify-content: space-between;
   align-items: flex-start;
+  width: 100%;
+  margin-bottom: 0.75rem;
 }
 
+/* Vehicle title */
 .transport .transport-title {
   font-size: 1rem;
   font-weight: 600;
@@ -378,25 +536,33 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin: 0;
+  line-height: 1.4;
 }
 
+/* Rating Styles */
 .transport .transport-rating {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
+/* Reviews text */
 .transport .reviews {
   font-size: 0.9rem;
   color: var(--text-light);
 }
 
+/* Specifications */
 .transport .transport-specs {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 0.1rem;
+  width: 100%;
 }
 
+/* Each spec item (fuel type, seating etc) */
 .transport .spec-item {
   display: flex;
   justify-content: space-between;
@@ -404,18 +570,25 @@
   border-bottom: 1px dashed var(--border-color);
 }
 
+.transport .spec-item:last-child {
+  border-bottom: none;
+}
+
+/* Spec labels */
 .transport .spec-label {
   font-weight: 500;
   color: var(--text-medium);
   font-size: 0.9rem;
 }
 
+/* Spec values */
 .transport .spec-value {
   color: var(--text-dark);
   font-weight: 600;
   font-size: 0.9rem;
 }
 
+/* Price Section */
 .transport .transport-price-section {
   display: flex;
   flex-direction: column;
@@ -431,17 +604,20 @@
   margin-bottom: 1rem;
 }
 
+/* Price text */
 .transport .price {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-dark);
 }
 
+/* "per day" text */
 .transport .price-per {
   font-size: 0.85rem;
   color: var(--text-light);
 }
 
+/* View Details Button */
 .transport .view-details-btn {
   width: 100%;
   background-color: var(--primary-color);
@@ -459,11 +635,7 @@
   background-color: var(--primary-hover);
 }
 
-
-
-
-/* -------------------- Pagination controls -------------------- */
-
+/* -------------------- Pagination -------------------- */
 .transport .pagination {
   display: flex;
   justify-content: center;
@@ -473,6 +645,7 @@
   grid-column: 1 / -1;
 }
 
+/* Pagination buttons */
 .transport .pagination-arrow,
 .transport .pagination-number {
   padding: 0.5rem 1rem;
@@ -481,6 +654,8 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: var(--transition);
+  min-width: 40px;
+  text-align: center;
 }
 
 .transport .pagination-arrow:hover,
@@ -488,37 +663,38 @@
   background-color: var(--background-light);
 }
 
+/* Active page number */
 .transport .pagination-number.active {
   background-color: var(--primary-color);
   color: white;
   border-color: var(--primary-color);
 }
 
+/* Disabled arrows */
 .transport .pagination-arrow:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-
-
-
-/*  -------------------- RESPONSIVE DESIGN -------------------- */
-
+/* -------------------- Responsive Design -------------------- */
+/* Tablet view */
 @media (max-width: 1024px) {
   .transport .transports-list {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  .transport .transport-card {
-    min-height: 460px;
-  }
 }
 
-@media (max-width: 768px) {
+/* Mobile view (small tablets) */
+@media (max-width: 900px) {
+  .transport {
+    padding: 1.5rem;
+  }
+
   .transport .transport-container {
     flex-direction: column;
   }
 
+  /* Mobile Filter Sidebar */
   .transport .filters-sidebar {
     width: 280px;
     position: fixed;
@@ -528,16 +704,19 @@
     z-index: 1000;
     overflow-y: auto;
     transition: transform 0.3s ease;
+    padding: 2rem 1.5rem;
   }
 
   .transport .filters-sidebar.open {
     transform: translateX(280px);
   }
 
+  /* Show mobile filter toggle */
   .transport .mobile-filter-toggle {
-    display: flex;
+    display: flex !important;
   }
 
+  /* Show close button */
   .transport .close-sidebar {
     display: block;
   }
@@ -555,11 +734,15 @@
     align-self: flex-start;
   }
 
-  .transport .transport-card {
-    min-height: 420px;
+  /* Mobile Notification */
+  .transport .save-notification {
+    max-width: calc(100% - 3rem);
+    right: 1.5rem;
+    left: 1.5rem;
   }
 }
 
+/* Small mobile view */
 @media (max-width: 480px) {
   .transport .transports-list {
     grid-template-columns: 1fr;
@@ -579,12 +762,23 @@
     gap: 0.5rem;
   }
 
+  /* Full width filter toggle */
   .transport .mobile-filter-toggle {
+    display: flex;
     width: 100%;
     justify-content: center;
   }
 
-  .transport .transport-card {
-    min-height: 400px;
+  /* Smaller Notification */
+  .transport .save-notification {
+    padding: 0.8rem 1rem;
+  }
+  
+  .transport .save-notification span {
+    font-size: 0.9rem;
+  }
+  
+  .transport .notification-icon {
+    font-size: 1.1rem;
   }
 }
