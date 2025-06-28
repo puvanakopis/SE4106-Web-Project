@@ -103,6 +103,13 @@ const Navbar = () => {
                                     Saved
                                 </Link>
                                 <Link
+                                    className={`navbar__dropdown-link ${currentPath === "/booking" ? "navbar__dropdown-link--active" : ""}`}
+                                    to="/booking"
+                                    onClick={closeProfileDropdown}
+                                >
+                                    Booking
+                                </Link>
+                                <Link
                                     className="navbar__dropdown-link"
                                     to="/"
                                     onClick={handleLogout}
