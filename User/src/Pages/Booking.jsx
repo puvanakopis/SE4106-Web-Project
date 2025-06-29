@@ -2,29 +2,34 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBookings } from '../context/BookingContext';
 import { AuthContext } from '../context/AuthContext';
-import StarRating from '../Components/Rating/StarRating';
+import Feedback from './Feedback';
 import './Booking.css';
 
 const Booking = () => {
   const navigate = useNavigate();
-  const { bookings, loadBookings } = useBookings();
+  const { bookings, updateBookingStatus } = useBookings();
   const { isLoggedIn } = useContext(AuthContext);
   
   const [activeTab, setActiveTab] = useState('upcoming');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showRatingPopup, setShowRatingPopup] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const itemsPerPage = 6;
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login');
-    }
-  }, [isLoggedIn, navigate, loadBookings]);
+useEffect(() => {
+  if (!isLoggedIn) {
+    navigate('/login');
+  }
+}, [isLoggedIn, navigate]);
+
 
   const upcomingBookings = bookings.upcoming || [];
   const pastBookings = bookings.past || [];
-
   const currentBookings = activeTab === 'upcoming' ? upcomingBookings : pastBookings;
-
   const totalPages = Math.ceil(currentBookings.length / itemsPerPage);
   
   const paginatedBookings = currentBookings.slice(
@@ -51,8 +56,34 @@ const Booking = () => {
 
   const cancelBooking = (bookingId, e) => {
     e.stopPropagation();
-    // Implement cancellation logic here
     alert(`Booking ${bookingId} cancellation requested`);
+  };
+
+  const handleCompleteClick = (booking, e) => {
+    e.stopPropagation();
+    setSelectedBooking(booking);
+    setRating(0);
+    setFeedback('');
+    setShowRatingPopup(true);
+  };
+
+  const handleRatingSubmit = async (ratingData) => {
+    setIsSubmitting(true);
+    try {
+      console.log('Submitting feedback for booking:', selectedBooking.id, ratingData);
+      await updateBookingStatus(selectedBooking.id, 'completed');
+      setShowRatingPopup(false);
+      alert('Thank you for your feedback!');
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert('Failed to submit feedback. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCloseFeedback = () => {
+    setShowRatingPopup(false);
   };
 
   return (
@@ -154,22 +185,6 @@ const Booking = () => {
                           </p>
                         </div>
 
-                        <div className="rating">
-                          <StarRating
-                            rating={
-                              booking.type === 'room'
-                                ? booking.item.rating
-                                : booking.item.average_rating
-                            }
-                          />
-                          <span>
-                            {booking.type === 'room'
-                              ? booking.item.review_count || '200+'
-                              : booking.item.review_count}{' '}
-                            reviews
-                          </span>
-                        </div>
-
                         <div className="price-action">
                           <div className="price-details">
                             <p className="total-price">Rs {booking.totalPrice.toLocaleString()}</p>
@@ -180,12 +195,20 @@ const Booking = () => {
                             </p>
                           </div>
                           {activeTab === 'upcoming' && (
-                            <button
-                              className="cancel-btn"
-                              onClick={(e) => cancelBooking(booking.id, e)}
-                            >
-                              Cancel
-                            </button>
+                            <div className="action-buttons">
+                              <button
+                                className="cancel-btn"
+                                onClick={(e) => cancelBooking(booking.id, e)}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                className="complete-btn"
+                                onClick={(e) => handleCompleteClick(booking, e)}
+                              >
+                                Complete
+                              </button>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -225,6 +248,19 @@ const Booking = () => {
           </div>
         </div>
       </div>
+
+      {showRatingPopup && (
+        <Feedback 
+          rating={rating}
+          editable={true}
+          onRatingChange={setRating}
+          onClose={handleCloseFeedback}
+          onSubmit={handleRatingSubmit}
+          feedback={feedback}
+          onFeedbackChange={setFeedback}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </main>
   );
 };
