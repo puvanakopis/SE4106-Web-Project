@@ -96,7 +96,7 @@ css
     object-position: top;
 }
 
-/* ---------- Property Badge (room type / vehicle type) ---------- */
+/* ---------- Property Badge (room type / vehicle type) ----------  */
 .booking-profile .property-badge {
     position: absolute;
     top: 1rem;
@@ -411,3 +411,4 @@ css
         font-size: 0.8rem;
     }
 }
+
