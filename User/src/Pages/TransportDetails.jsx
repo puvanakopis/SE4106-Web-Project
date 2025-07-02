@@ -2,118 +2,21 @@ import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import PropTypes from 'prop-types';
 import { assets, vehicleData } from '../Assets/assets';
 import { useBookings } from '../Context/BookingContext';
 import { AuthContext } from '../Context/AuthContext';
+import StarRating from '../Components/Rating/StarRating';
+import GoogleMapEmbed from '../Components/GoogleMap/GoogleMap';
+import PaymentPopup from '../Components/PaymentPopup/PaymentPopup';
+import OwnerDetails from './OwnerDetails';
 import './TransportDetails.css';
-
-const StarRating = ({ rating, size = 'medium' }) => {
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-  return (
-    <div className={`star-rating star-rating--${size}`}>
-      {[...Array(fullStars)].map((_, i) => (
-        <span key={`full-${i}`} className="star-rating_star star-rating_star--full">
-          ★
-        </span>
-      ))}
-      {hasHalfStar && <span className="star-rating_star star-rating_star--half">★</span>}
-      {[...Array(emptyStars)].map((_, i) => (
-        <span key={`empty-${i}`} className="star-rating_star star-rating_star--empty">
-          ★
-        </span>
-      ))}
-      {size === 'medium' && <span className="star-rating__value">{rating.toFixed(1)}</span>}
-    </div>
-  );
-};
-
-const OwnerDetails = ({ owner, onClose }) => {
-  if (!owner) return null;
-
-  return (
-    <div className="owner-modal-overlay">
-      <div className="owner-modal">
-        <div className="owner-modal-header">
-          <h2>Owner Details</h2>
-          <button className="close-button" onClick={onClose}>
-            <img src={assets.closeIcon} alt="Close" />
-          </button>
-        </div>
-
-        <div className="owner-profile-section">
-          <div className="owner-avatar-container">
-            <img 
-              src={owner.profile_pic || assets.defaultAvatar} 
-              alt={owner.username} 
-              className="owner-avatar"
-            />
-          </div>
-          <div className="owner-info">
-            <h3 className="owner-name">{owner.username}</h3>
-            <p className="owner-role">{owner.role}</p>
-            <div className="owner-rating">
-              <StarRating rating={4.5} size="small" />
-              <span className="rating-text">4.5 (50+ reviews)</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="owner-details-section">
-          <div className="detail-row">
-            <span className="detail-label">Email:</span>
-            <a href={`mailto:${owner.email}`} className="detail-value link">
-              {owner.email}
-            </a>
-          </div>
-
-          <div className="detail-row">
-            <span className="detail-label">Phone:</span>
-            <span className="detail-value">+94 76 123 4567</span>
-          </div>
-
-          <div className="detail-row">
-            <span className="detail-label">Location:</span>
-            <span className="detail-value">Colombo, Sri Lanka</span>
-          </div>
-
-          <div className="detail-row">
-            <span className="detail-label">Member Since:</span>
-            <span className="detail-value">January 2022</span>
-          </div>
-        </div>
-
-        <div className="recent-searches-section">
-          <h4>Recently Searched Cities</h4>
-          <div className="city-tags">
-            {owner.recentSearchedCities.map((city, index) => (
-              <span key={index} className="city-tag">{city}</span>
-            ))}
-          </div>
-        </div>
-
-        <div className="owner-actions">
-          <button className="action-button primary">
-            <img src={assets.messageIcon} alt="Message" />
-            Send Message
-          </button>
-          <button className="action-button secondary">
-            <img src={assets.phoneIcon} alt="Call" />
-            Call Owner
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const TransportDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addBooking } = useBookings();
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, user } = useContext(AuthContext);
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [startDate, setStartDate] = useState(null);
@@ -121,7 +24,10 @@ const TransportDetails = () => {
   const [totalDays, setTotalDays] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
   const [bookingError, setBookingError] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('credit_card');
+  const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
+
 
   const vehicle = vehicleData.find((v) => v.vehicle_id === id);
 
@@ -163,15 +69,22 @@ const TransportDetails = () => {
 
   const handleContactOwner = () => {
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
+    
+    if (!vehicle?.owner) {
+      console.warn('No owner data available for this vehicle');
+      alert('Owner information is not currently available. Please try again later.');
+      return;
+    }
+    
     setShowOwnerDetails(true);
   };
 
   const handleBookNow = () => {
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
 
@@ -184,6 +97,10 @@ const TransportDetails = () => {
       return;
     }
 
+    setShowPaymentPopup(true);
+  };
+
+  const handlePaymentSuccess = () => {
     const newBooking = {
       id: `t-${Date.now()}`,
       type: 'transport',
@@ -192,14 +109,30 @@ const TransportDetails = () => {
       endDate: endDate.toISOString().split('T')[0],
       status: 'confirmed',
       totalPrice: totalCost,
-      bookingDate: new Date().toISOString().split('T')[0]
+      bookingDate: new Date().toISOString().split('T')[0],
+      paymentMethod: paymentMethod,
+      userId: user.id
     };
 
     addBooking(newBooking);
+    setStartDate(null);
+    setEndDate(null);
+    setTotalDays(0);
+    setTotalCost(0);
+    setPaymentMethod('credit_card');
+    setShowPaymentPopup(false);
+  };
 
-    alert(
-      `Booking confirmed for ${vehicle.model} from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}. Total cost: Rs ${totalCost.toLocaleString()}`
-    );
+  const getBookingDetails = () => {
+    if (!vehicle) return null;
+
+    return {
+      type: 'transport',
+      itemName: `${vehicle.brand} ${vehicle.model}`,
+      duration: `${totalDays} day${totalDays !== 1 ? 's' : ''}`,
+      totalAmount: totalDays > 0 ? totalCost + vehicle.deposit_amount : 0,
+      bookingId: `T-${Date.now()}`
+    };
   };
 
   if (!vehicle) {
@@ -209,6 +142,12 @@ const TransportDetails = () => {
         <p className="transport-not-found__message">
           Please check the ID or go back to the transport list.
         </p>
+        <button 
+          className="back-button"
+          onClick={() => navigate('/transport')}
+        >
+          Browse Available Vehicles
+        </button>
       </div>
     );
   }
@@ -218,22 +157,33 @@ const TransportDetails = () => {
   const ratingDist = vehicle.rating_distribution || {};
 
   return (
-    <div className="transport-details">
+    <main className="transport-details">
       {showOwnerDetails && (
-        <OwnerDetails 
-          owner={vehicle.owner} 
+        <OwnerDetails
+          owner={owner}
           onClose={() => setShowOwnerDetails(false)}
         />
       )}
-      
+
+      {showPaymentPopup && (
+        <PaymentPopup
+          isOpen={showPaymentPopup}
+          onClose={() => setShowPaymentPopup(false)}
+          bookingDetails={getBookingDetails()}
+          onPaymentSuccess={handlePaymentSuccess}
+          paymentMethod={paymentMethod}
+        />
+      )}
+
       <header className="transport-header">
         <h1 className="transport-title">
-          {vehicle.model} <span className="transport-badge">{vehicle.vehicle_type}</span>
+          <div className='transport-name'>{vehicle.brand} {vehicle.model}</div>
+          <div className="transport-type">{vehicle.vehicle_type}</div>
         </h1>
 
         <div className="transport-meta">
           <StarRating rating={vehicle.average_rating} />
-          <span className="transport-review-count">200+ reviews</span>
+          <span className="transport-review-count">{vehicle.total_reviews || 200}+ reviews</span>
         </div>
 
         <div className="transport-location">
@@ -244,18 +194,27 @@ const TransportDetails = () => {
 
       <section className="transport-gallery">
         <div className="transport-gallery__main">
-          <img src={images[selectedImageIndex]} alt={`${vehicle.brand} ${vehicle.model}`} className="transport-gallery__main-image" />
+          <img 
+            src={images[selectedImageIndex]} 
+            alt={`${vehicle.brand} ${vehicle.model}`} 
+            className="transport-gallery__main-image" 
+            loading="lazy"
+          />
         </div>
         <div className="transport-gallery__thumbnails">
           {images.slice(0, 4).map((img, index) => (
             <button
               key={index}
-              className={`transport-gallery__thumbnail ${index === selectedImageIndex ? 'transport-gallery__thumbnail--active' : ''
-                }`}
+              className={`transport-gallery__thumbnail ${index === selectedImageIndex ? 'transport-gallery__thumbnail--active' : ''}`}
               onClick={() => setSelectedImageIndex(index)}
               aria-label={`View image ${index + 1}`}
             >
-              <img src={img} alt={`Thumbnail ${index + 1}`} className="transport-gallery__thumbnail-image" />
+              <img 
+                src={img} 
+                alt={`Thumbnail ${index + 1}`} 
+                className="transport-gallery__thumbnail-image" 
+                loading="lazy"
+              />
             </button>
           ))}
         </div>
@@ -292,6 +251,27 @@ const TransportDetails = () => {
             <div className="specs-item">
               <span className="specs-label">Registration Number</span>
               <span className="specs-value">{vehicle.registration_number}</span>
+            </div>
+            <div className="specs-item">
+              <span className="specs-label">Daily Rate</span>
+              <span className="specs-value">Rs {vehicle.rental_price_per_day.toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div className="description-section">
+            <h3 className="description-title">Description</h3>
+            <p className="description-text">
+              {vehicle.description || 'No description provided yet. Please check back later for more information.'}
+            </p>
+          </div>
+
+          <div className="map-section">
+            <h3 className="map-title">Location</h3>
+            <div className="map-container">
+              <GoogleMapEmbed 
+                address={vehicle.address}
+                city={vehicle.location || 'Colombo'}
+              />
             </div>
           </div>
         </section>
@@ -334,6 +314,21 @@ const TransportDetails = () => {
               {bookingError && <div className="booking-error">{bookingError}</div>}
             </div>
 
+            <div className="payment-method-section">
+              <label className="payment-method__label">Payment Method</label>
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="payment-method__select"
+              >
+                <option value="credit_card">Credit Card</option>
+                <option value="debit_card">Debit Card</option>
+                <option value="upi">UPI</option>
+                <option value="net_banking">Net Banking</option>
+                <option value="cash">Cash</option>
+              </select>
+            </div>
+
             <div className="booking-summary">
               <div className="booking-summary__item">
                 <span>Rental Days:</span>
@@ -362,19 +357,12 @@ const TransportDetails = () => {
             <div className="booking-deposit">
               <span>Security Deposit: Rs {vehicle.deposit_amount.toLocaleString()} (refundable when vehicle is returned)</span>
             </div>
-            <div className="booking-availability">
-              {vehicle.availability_status ? (
-                <span className="booking-availability__available">Available</span>
-              ) : (
-                <span className="booking-availability__unavailable">
-                  Currently Unavailable
-                </span>
-              )}
-            </div>
+
             <button
               className="booking-button"
               onClick={handleBookNow}
-              disabled={!vehicle.availability_status || totalDays === 0}>
+              disabled={!vehicle.availability_status || totalDays === 0}
+            >
               {vehicle.availability_status ? 'Book Now' : 'Not Available'}
             </button>
           </div>
@@ -388,7 +376,7 @@ const TransportDetails = () => {
             <div className="reviews-overview">
               <span className="reviews-average">{vehicle.average_rating}</span>
               <StarRating rating={vehicle.average_rating} />
-              <span>{vehicle.total_reviews || 200} reviews</span>
+              <span>{vehicle.total_reviews || 200}+ reviews</span>
             </div>
             <div className="reviews-distribution">
               {[5, 4, 3, 2, 1].map((star) => (
@@ -411,28 +399,37 @@ const TransportDetails = () => {
           <h2 className="transport-section-title">Vehicle Owner</h2>
           <div className="owner-profile">
             <img
-              src={owner.avatar || owner.profile_pic || "default-avatar.png"}
-              alt={owner.username || owner.display_name}
+              src={owner.profile_pic || assets.defaultAvatar}
+              alt={owner.username || 'Vehicle owner'}
               className="owner-avatar"
             />
             <div className="owner-info">
-              <h4 className="owner-name">{owner.username}</h4>
+              <h4 className="owner-name">Owned by {owner.username || 'Private Owner'}</h4>
               <div className="owner-rating">
                 <StarRating rating={vehicle.average_rating} size="small" />
                 <span>{vehicle.total_reviews} reviews</span>
               </div>
+              <div className="owner-response-info">
+                <span>Response rate: 98%</span>
+                <span>Response time: within an hour</span>
+              </div>
             </div>
           </div>
           <button 
-            className="owner-contact-button"
+            className="owner-contact-button" 
             onClick={handleContactOwner}
+            aria-label="Contact vehicle owner"
           >
             Contact Owner
           </button>
         </section>
       </div>
-    </div>
+    </main>
   );
+};
+
+TransportDetails.propTypes = {
+  id: PropTypes.string
 };
 
 export default TransportDetails;

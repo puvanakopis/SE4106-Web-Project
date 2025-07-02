@@ -596,6 +596,7 @@ export const roomsDummyData = [
   {
     _id: "room_1",
     hotel: hotelDummyData[0], // Landa Villa
+    owner: ownerData[0],
     roomType: "Single Bed",
     pricePerMonth: 3500,
     amenities: ["Wi-Fi", "Study Table", "Shared Kitchen"],
@@ -605,6 +606,7 @@ export const roomsDummyData = [
   {
     _id: "room_2",
     hotel: hotelDummyData[0], // Landa Villa
+    owner: ownerData[0],
     roomType: "Double Bed",
     pricePerMonth: 6000,
     amenities: ["Wi-Fi", "Attached Bathroom", "Balcony"],
@@ -616,6 +618,7 @@ export const roomsDummyData = [
   {
     _id: "room_3",
     hotel: hotelDummyData[1], // GreenHill Boarding
+    owner: ownerData[0],
     roomType: "Annexe",
     pricePerMonth: 8000,
     amenities: ["Private Entrance", "Wi-Fi", "Mini Fridge"],
@@ -625,6 +628,7 @@ export const roomsDummyData = [
   {
     _id: "room_4",
     hotel: hotelDummyData[1], // GreenHill Boarding
+    owner: ownerData[0],
     roomType: "Single Bed",
     pricePerMonth: 4500,
     amenities: ["Fan", "Wi-Fi", "Study Table"],
@@ -636,6 +640,7 @@ export const roomsDummyData = [
   {
     _id: "room_5",
     hotel: hotelDummyData[2], // Lakeview Residence
+    owner: ownerData[0],
     roomType: "Double Bed",
     pricePerMonth: 6500,
     amenities: ["Lake View", "Wi-Fi", "Hot Water"],
@@ -645,6 +650,7 @@ export const roomsDummyData = [
   {
     _id: "room_6",
     hotel: hotelDummyData[2], // Lakeview Residence
+    owner: ownerData[0],
     roomType: "Triple Sharing",
     pricePerMonth: 7000,
     amenities: ["Wi-Fi", "Study Table", "Shared Kitchen"],
@@ -656,6 +662,7 @@ export const roomsDummyData = [
   {
     _id: "room_7",
     hotel: hotelDummyData[3], // Mountain Breeze Inn
+    owner: ownerData[0],
     roomType: "Single Bed",
     pricePerMonth: 3800,
     amenities: ["Wi-Fi", "Fan", "Laundry"],
@@ -665,6 +672,7 @@ export const roomsDummyData = [
   {
     _id: "room_8",
     hotel: hotelDummyData[3], // Mountain Breeze Inn
+    owner: ownerData[0],
     roomType: "Double Bed",
     pricePerMonth: 6200,
     amenities: ["Wi-Fi", "Canteen Access", "Hot Water"],
@@ -676,6 +684,7 @@ export const roomsDummyData = [
   {
     _id: "room_9",
     hotel: hotelDummyData[4], // Riverside Stay
+    owner: ownerData[0],
     roomType: "Single Bed",
     pricePerMonth: 4000,
     amenities: ["River View", "Balcony", "Wi-Fi"],
@@ -685,6 +694,7 @@ export const roomsDummyData = [
   {
     _id: "room_10",
     hotel: hotelDummyData[4], // Riverside Stay
+    owner: ownerData[0],
     roomType: "Double Bed",
     pricePerMonth: 6900,
     amenities: ["Wi-Fi", "Study Table", "Attached Bathroom"],
@@ -696,6 +706,7 @@ export const roomsDummyData = [
   {
     _id: "room_11",
     hotel: hotelDummyData[5], // Hillside Guest House
+    owner: ownerData[0],
     roomType: "Single Bed",
     pricePerMonth: 3900,
     amenities: ["Hot Water", "Wi-Fi", "Quiet Study Area"],
@@ -705,6 +716,7 @@ export const roomsDummyData = [
   {
     _id: "room_12",
     hotel: hotelDummyData[5], // Hillside Guest House
+    owner: ownerData[0],
     roomType: "Double Bed",
     pricePerMonth: 6400,
     amenities: ["Attached Bathroom", "Wi-Fi", "Fan"],
@@ -716,6 +728,7 @@ export const roomsDummyData = [
   {
     _id: "room_13",
     hotel: hotelDummyData[6], // Forest Edge Lodge
+    owner: ownerData[0],
     roomType: "Triple Sharing",
     pricePerMonth: 6000,
     amenities: ["Shared Kitchen", "Study Table", "Wi-Fi"],
@@ -725,6 +738,7 @@ export const roomsDummyData = [
   {
     _id: "room_14",
     hotel: hotelDummyData[6], // Forest Edge Lodge
+    owner: ownerData[0],
     roomType: "Double Bed",
     pricePerMonth: 5800,
     amenities: ["Peaceful Environment", "Wi-Fi", "Fan"],
@@ -736,6 +750,7 @@ export const roomsDummyData = [
   {
     _id: "room_15",
     hotel: hotelDummyData[7], // Campus Corner
+    owner: ownerData[0],
     roomType: "Single Bed",
     pricePerMonth: 4200,
     amenities: ["Meal Plan", "Laundry", "Wi-Fi"],
@@ -745,6 +760,7 @@ export const roomsDummyData = [
   {
     _id: "room_16",
     hotel: hotelDummyData[7], // Campus Corner
+    owner: ownerData[0],
     roomType: "Annexe",
     pricePerMonth: 8500,
     amenities: ["Private Room", "Attached Bathroom", "Wi-Fi"],
@@ -756,6 +772,7 @@ export const roomsDummyData = [
   {
     _id: "room_17",
     hotel: hotelDummyData[8], // Vista Lodge
+    owner: ownerData[0],
     roomType: "Double Bed",
     pricePerMonth: 6700,
     amenities: ["Balcony View", "Wi-Fi", "Hot Water"],
@@ -765,6 +782,7 @@ export const roomsDummyData = [
   {
     _id: "room_18",
     hotel: hotelDummyData[8], // Vista Lodge
+    owner: ownerData[0],
     roomType: "Single Bed",
     pricePerMonth: 4000,
     amenities: ["Wi-Fi", "Study Table"],
@@ -775,6 +793,7 @@ export const roomsDummyData = [
   {
     _id: "room_19",
     hotel: hotelDummyData[9], // Sunrise Residence
+    owner: ownerData[0],
     roomType: "Single Bed",
     pricePerMonth: 4200,
     amenities: ["Shared Kitchen", "Wi-Fi", "Study Table"],
@@ -784,6 +803,7 @@ export const roomsDummyData = [
   {
     _id: "room_20",
     hotel: hotelDummyData[9], // Sunrise Residence
+    owner: ownerData[0],
     roomType: "Double Bed",
     pricePerMonth: 6600,
     amenities: ["24/7 Water", "Attached Bathroom", "Wi-Fi"],
@@ -793,45 +813,45 @@ export const roomsDummyData = [
 ];
 
 export const userBookingsDummyData = [
-    {
-        "_id": "booking_1",
-        "user": ownerData,
-        "room": roomsDummyData[1],
-        // "hotel": hotelDummyData,
-        "checkInDate": "2025-04-30T00:00:00.000Z",
-        "checkOutDate": "2025-05-01T00:00:00.000Z",
-        "totalPrice": 299,
-        "guests": 1,
-        "status": "pending",
-        "paymentMethod": "Stripe",
-        "isPaid": true
-    },
-    {
-        "_id": "booking_2",
-        "user": ownerData,
-        "room": roomsDummyData[0],
-        // "hotel": hotelDummyData,
-        "checkInDate": "2025-04-27T00:00:00.000Z",
-        "checkOutDate": "2025-04-28T00:00:00.000Z",
-        "totalPrice": 399,
-        "guests": 1,
-        "status": "pending",
-        "paymentMethod": "Pay At Hotel",
-        "isPaid": false,
-    },
-    {
-        "_id": "booking_3",
-        "user": ownerData,
-        "room": roomsDummyData[3],
-        // "hotel": hotelDummyData,
-        "checkInDate": "2025-04-11T00:00:00.000Z",
-        "checkOutDate": "2025-04-12T00:00:00.000Z",
-        "totalPrice": 199,
-        "guests": 1,
-        "status": "pending",
-        "paymentMethod": "Pay At Hotel",
-        "isPaid": false
-    }
+  {
+    "_id": "booking_1",
+    "user": ownerData,
+    "room": roomsDummyData[1],
+    // "hotel": hotelDummyData,
+    "checkInDate": "2025-04-30T00:00:00.000Z",
+    "checkOutDate": "2025-05-01T00:00:00.000Z",
+    "totalPrice": 299,
+    "guests": 1,
+    "status": "pending",
+    "paymentMethod": "Stripe",
+    "isPaid": true
+  },
+  {
+    "_id": "booking_2",
+    "user": ownerData,
+    "room": roomsDummyData[0],
+    // "hotel": hotelDummyData,
+    "checkInDate": "2025-04-27T00:00:00.000Z",
+    "checkOutDate": "2025-04-28T00:00:00.000Z",
+    "totalPrice": 399,
+    "guests": 1,
+    "status": "pending",
+    "paymentMethod": "Pay At Hotel",
+    "isPaid": false,
+  },
+  {
+    "_id": "booking_3",
+    "user": ownerData,
+    "room": roomsDummyData[3],
+    // "hotel": hotelDummyData,
+    "checkInDate": "2025-04-11T00:00:00.000Z",
+    "checkOutDate": "2025-04-12T00:00:00.000Z",
+    "totalPrice": 199,
+    "guests": 1,
+    "status": "pending",
+    "paymentMethod": "Pay At Hotel",
+    "isPaid": false
+  }
 ]
 
 hotelDummyData.forEach(hotel => {
@@ -877,7 +897,7 @@ export const vehicleData = [
     rental_price_per_day: 1500,
     deposit_amount: 10000,
     availability_status: true,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.5,
     address: "Ratnapura, Sabaragamuwa"
   },
@@ -894,7 +914,7 @@ export const vehicleData = [
     rental_price_per_day: 3500,
     deposit_amount: 25000,
     availability_status: true,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.8,
     address: "Balangoda, Sabaragamuwa"
   },
@@ -911,7 +931,7 @@ export const vehicleData = [
     rental_price_per_day: 3000,
     deposit_amount: 20000,
     availability_status: false,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.1,
     address: "Embilipitiya, Sabaragamuwa"
   },
@@ -928,7 +948,7 @@ export const vehicleData = [
     rental_price_per_day: 4000,
     deposit_amount: 30000,
     availability_status: true,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.7,
     address: "Kuruwita, Sabaragamuwa"
   },
@@ -945,7 +965,7 @@ export const vehicleData = [
     rental_price_per_day: 1800,
     deposit_amount: 12000,
     availability_status: true,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.3,
     address: "Pelmadulla, Sabaragamuwa"
   },
@@ -962,7 +982,7 @@ export const vehicleData = [
     rental_price_per_day: 3200,
     deposit_amount: 22000,
     availability_status: false,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.6,
     address: "Eheliyagoda, Sabaragamuwa"
   },
@@ -979,7 +999,7 @@ export const vehicleData = [
     rental_price_per_day: 3800,
     deposit_amount: 28000,
     availability_status: true,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.9,
     address: "Kegalle, Sabaragamuwa"
   },
@@ -996,7 +1016,7 @@ export const vehicleData = [
     rental_price_per_day: 7500,
     deposit_amount: 50000,
     availability_status: true,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.2,
     address: "Ruwanwella, Sabaragamuwa"
   },
@@ -1013,7 +1033,7 @@ export const vehicleData = [
     rental_price_per_day: 9000,
     deposit_amount: 60000,
     availability_status: false,
-    vehicle_images: [roomImg1, roomImg2, roomImg3 , roomImg4],
+    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
     average_rating: 4.4,
     address: "Deraniyagala, Sabaragamuwa"
   },
@@ -1087,35 +1107,35 @@ export const vehicleBookingsData = [
     totalPrice: 6 * 3200,
   },
   {
-  booking_id: "booking_7",
-  renter: lecturerData[1],
-  vehicle: vehicleData[7],
-  owner: ownerData[2],
-  booking_start: "2025-06-25T09:00:00",
-  booking_days: 3,
-  booking_status: "Confirmed",
-  isPaid: true,
-  totalPrice: 3 * 7500,
-},
-{
-  booking_id: "booking_8",
-  renter: lecturerData[0],
-  vehicle: vehicleData[8],
-  owner: ownerData[3],
-  booking_start: "2025-06-28T08:00:00",
-  booking_days: 2,
-  booking_status: "Pending",
-  isPaid: false,
-  totalPrice: 2 * 9000,
-}
+    booking_id: "booking_7",
+    renter: lecturerData[1],
+    vehicle: vehicleData[7],
+    owner: ownerData[2],
+    booking_start: "2025-06-25T09:00:00",
+    booking_days: 3,
+    booking_status: "Confirmed",
+    isPaid: true,
+    totalPrice: 3 * 7500,
+  },
+  {
+    booking_id: "booking_8",
+    renter: lecturerData[0],
+    vehicle: vehicleData[8],
+    owner: ownerData[3],
+    booking_start: "2025-06-28T08:00:00",
+    booking_days: 2,
+    booking_status: "Pending",
+    isPaid: false,
+    totalPrice: 2 * 9000,
+  }
 
 
 ];
 
 export const dashboardTransportData = {
-    totalBookings: vehicleBookingsData.length,
-    totalRevenue: vehicleBookingsData
-        .filter(booking => booking.isPaid)
-        .reduce((sum, booking) => sum + (booking.totalPrice || 0), 0),
-    bookings: vehicleBookingsData,
+  totalBookings: vehicleBookingsData.length,
+  totalRevenue: vehicleBookingsData
+    .filter(booking => booking.isPaid)
+    .reduce((sum, booking) => sum + (booking.totalPrice || 0), 0),
+  bookings: vehicleBookingsData,
 };
