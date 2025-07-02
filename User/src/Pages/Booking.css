@@ -217,6 +217,11 @@ css
     margin: 0;
 }
 
+.booking-profile .action-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
 .booking-profile .cancel-btn {
     background-color: transparent;
     color: #dc3545;
@@ -231,6 +236,23 @@ css
 
 .booking-profile .cancel-btn:hover {
     background-color: #dc3545;
+    color: white;
+}
+
+.booking-profile .complete-btn {
+    background-color: transparent;
+    color: #28a745;
+    border: 1px solid #28a745;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.booking-profile .complete-btn:hover {
+    background-color: #28a745;
     color: white;
 }
 
@@ -411,4 +433,3 @@ css
         font-size: 0.8rem;
     }
 }
-

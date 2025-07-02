@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useBookings } from '../context/BookingContext';
-import { AuthContext } from '../context/AuthContext';
+import { useBookings } from '../Context/BookingContext';
+import { AuthContext } from '../Context/AuthContext';
 import Feedback from './Feedback';
+import StarRating from '../Components/Rating/StarRating';
 import './Booking.css';
 
 const Booking = () => {
   const navigate = useNavigate();
   const { bookings, updateBookingStatus } = useBookings();
   const { isLoggedIn } = useContext(AuthContext);
-  
+
   const [activeTab, setActiveTab] = useState('upcoming');
   const [currentPage, setCurrentPage] = useState(1);
   const [showRatingPopup, setShowRatingPopup] = useState(false);
@@ -20,18 +21,18 @@ const Booking = () => {
 
   const itemsPerPage = 6;
 
-useEffect(() => {
-  if (!isLoggedIn) {
-    navigate('/login');
-  }
-}, [isLoggedIn, navigate]);
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    }
+  }, [isLoggedIn, navigate]);
 
 
   const upcomingBookings = bookings.upcoming || [];
   const pastBookings = bookings.past || [];
   const currentBookings = activeTab === 'upcoming' ? upcomingBookings : pastBookings;
   const totalPages = Math.ceil(currentBookings.length / itemsPerPage);
-  
+
   const paginatedBookings = currentBookings.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -137,7 +138,7 @@ useEffect(() => {
                   {paginatedBookings.map((booking) => (
                     <div
                       key={booking.id}
-                      className={`card booking-card ${booking.type}`}
+                      className={`card ${booking.type === 'room' ? 'accommodation-card' : 'vehicle-card'} ${booking.type === 'vehicle' ? booking.item.vehicle_type.toLowerCase() : ''}`}
                       onClick={() => navigate(`/${booking.type}/${booking.item.vehicle_id || booking.item._id}`)}
                     >
                       <img
@@ -148,34 +149,40 @@ useEffect(() => {
                         }
                         alt={
                           booking.type === 'room'
-                            ? booking.item.roomType
+                            ? `${booking.item.roomType} in ${booking.item.hotel?.name || 'Unknown'}`
                             : `${booking.item.brand} ${booking.item.model}`
                         }
                         className="card-image"
                       />
-                      
-                      <div className={`property-badge ${booking.type}`}>
+                      <div className="property-badge">
                         {booking.type === 'room'
                           ? booking.item.roomType
                           : booking.item.vehicle_type}
                       </div>
-                      
-                      <div className={`status-badge ${booking.status}`}>
-                        {booking.status}
-                      </div>
-                      
+                      <div className={`status-badge ${booking.status}`}>{booking.status}</div>
                       <div className="card-info">
-                        <h3>
-                          {booking.type === 'room'
-                            ? `${booking.item.roomType} at ${booking.item.hotel?.name || 'Unknown'}`
-                            : `${booking.item.brand} ${booking.item.model}`}
-                        </h3>
-                        <p className="location">
-                          {booking.type === 'room'
-                            ? booking.item.hotel?.city || 'Unknown'
-                            : `${booking.item.fuel_type} • ${booking.item.seating_capacity} seats`}
-                        </p>
-
+                        {booking.type === 'room' ? (
+                          <>
+                            <h3>{booking.item.roomType} at {booking.item.hotel?.name || 'Unknown'}</h3>
+                            <p>Location – {booking.item.hotel?.city || 'Unknown'}</p>
+                            <div className="rating">
+                              <StarRating rating={booking.item.rating} />
+                              <span>{booking.item.review_count || '200+'} reviews</span>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <h3>{booking.item.brand} {booking.item.model}</h3>
+                            <div className="specs">
+                              <p>Fuel – {booking.item.fuel_type}</p>
+                              <p>Seats – {booking.item.seating_capacity}</p>
+                            </div>
+                            <div className="rating">
+                              <StarRating rating={booking.item.average_rating} />
+                              <span>{booking.item.review_count || '200+'} reviews</span>
+                            </div>
+                          </>
+                        )}
                         <div className="booking-dates">
                           <p>
                             <span>From:</span> {formatDate(booking.startDate)}
@@ -184,16 +191,12 @@ useEffect(() => {
                             <span>To:</span> {formatDate(booking.endDate)}
                           </p>
                         </div>
-
                         <div className="price-action">
-                          <div className="price-details">
-                            <p className="total-price">Rs {booking.totalPrice.toLocaleString()}</p>
-                            <p className="price-breakdown">
-                              {booking.type === 'room'
-                                ? `for ${calculateDays(booking.startDate, booking.endDate)} nights`
-                                : `for ${calculateDays(booking.startDate, booking.endDate)} days`}
-                            </p>
-                          </div>
+                          <p>
+                            {booking.type === 'room'
+                              ? `Rs ${booking.totalPrice.toLocaleString()}/= for ${calculateDays(booking.startDate, booking.endDate)} nights`
+                              : `Rs ${booking.totalPrice.toLocaleString()}/= for ${calculateDays(booking.startDate, booking.endDate)} days`}
+                          </p>
                           {activeTab === 'upcoming' && (
                             <div className="action-buttons">
                               <button
@@ -250,7 +253,7 @@ useEffect(() => {
       </div>
 
       {showRatingPopup && (
-        <Feedback 
+        <Feedback
           rating={rating}
           editable={true}
           onRatingChange={setRating}

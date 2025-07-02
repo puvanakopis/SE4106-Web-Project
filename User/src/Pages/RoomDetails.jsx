@@ -28,18 +28,6 @@ const RoomDetails = () => {
           {room.hotel.name} <span className='font-inter text-sm'>({room.roomType})</span>
         </h1>
         <p className='text-xs font-semibold font-inter py-1.5 px-3 text-white bg-blue-500 rounded-full shadow-sm tracking-wide'>20% OFF</p>
-<<<<<<< HEAD
-      </div>
-
-  return (
-    <div className="room-details">
-      {/* Room Title Section */}
-      <div className="room-title-section">
-        <h3 className="room-main-title">
-          {room.hotel.name} <span className="room-type-badge">{room.roomType}</span>
-        </h3>
-=======
->>>>>>> 7efe36060bc0ced7cee2cca038c5cd91b3361989
       </div>
 
       {/* Rating and Location */}
