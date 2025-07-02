@@ -30,7 +30,7 @@ const RoomDetails = () => {
   // Router hooks
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   // Context hooks
   const { addBooking } = useBookings();
   const { isLoggedIn, user } = useContext(AuthContext);
@@ -55,7 +55,7 @@ const RoomDetails = () => {
       try {
         setIsLoading(true);
         const foundRoom = roomsDummyData.find(room => room._id === id);
-        
+
         if (foundRoom) {
           setRoom(foundRoom);
           setMainImage(foundRoom.images[0]);
@@ -164,13 +164,13 @@ const RoomDetails = () => {
       navigate('/login', { state: { from: `/rooms/${id}` } });
       return;
     }
-    
+
     if (!room?.owner) {
       console.warn('No owner data available for this property');
       alert('Owner information is not currently available. Please try again later.');
       return;
     }
-    
+
     setShowOwnerDetails(true);
   };
 
@@ -205,7 +205,7 @@ const RoomDetails = () => {
         <p className="room-not-found__message">
           Please check the ID or go back to the accommodation list.
         </p>
-        <button 
+        <button
           className="back-button"
           onClick={() => navigate('/rooms')}
         >
@@ -259,10 +259,10 @@ const RoomDetails = () => {
       {/* ---------------------------- Room Gallery Section ---------------------------- */}
       <section className="room-gallery">
         <div className="room-gallery__main">
-          <img 
-            src={mainImage} 
-            alt={`${room.roomType} at ${room.hotel.name}`} 
-            className="room-gallery__main-image" 
+          <img
+            src={mainImage}
+            alt={`${room.roomType} at ${room.hotel.name}`}
+            className="room-gallery__main-image"
             loading="lazy"
           />
         </div>
@@ -274,10 +274,10 @@ const RoomDetails = () => {
               onClick={() => setMainImage(img)}
               aria-label={`View image ${index + 1}`}
             >
-              <img 
-                src={img} 
-                alt={`Thumbnail ${index + 1}`} 
-                className="room-gallery__thumbnail-image" 
+              <img
+                src={img}
+                alt={`Thumbnail ${index + 1}`}
+                className="room-gallery__thumbnail-image"
                 loading="lazy"
               />
             </button>
@@ -337,7 +337,7 @@ const RoomDetails = () => {
           <div className="map-section">
             <h3 className="map-title">Location</h3>
             <div className="map-container">
-              <GoogleMapEmbed 
+              <GoogleMapEmbed
                 address={room.hotel.address}
                 city={room.hotel.city}
               />
@@ -455,10 +455,10 @@ const RoomDetails = () => {
 
         {/* Host Information Section */}
         <section className="room-host">
-          <h2 className="room-section-title">Host Information</h2>
+          <h2 className="room-section-title">Room Owner</h2>
           <div className="host-profile">
             <img
-              src={ownerData.avatar}
+              src={ownerData.profile_pic || assets.defaultAvatar}
               alt={`${ownerData.name}'s profile`}
               className="host-avatar"
             />
@@ -474,8 +474,8 @@ const RoomDetails = () => {
               </div>
             </div>
           </div>
-          <button 
-            className="host-contact-button" 
+          <button
+            className="host-contact-button"
             onClick={handleContactOwner}
             aria-label="Contact property owner"
           >

@@ -1,16 +1,12 @@
-:root {
-  --primary: #3b82f6;
-  --primary-dark: #2563eb;
-  --primary-light: #eff6ff;
+.transport-details {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
   --text-dark: #111827;
   --text-medium: #4b5563;
   --text-light: #6b7280;
-  --border: #e5e7eb;
-  --background: #f9fafb;
-  --white: #ffffff;
-  --success: #10b981;
-  --error: #ef4444;
-  --warning: #f59e0b;
+  --border-color: #e5e7eb;
+  --background-light: #f9fafb;
+  --background-white: #ffffff;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -25,29 +21,40 @@
   margin: 0 auto;
   padding: 2rem 5%;
   color: var(--text-medium);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
+/* -------------------- Transport Header -------------------- */
 .transport-details .transport-header {
   margin-bottom: 2rem;
 }
 
 .transport-details .transport-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+}
+
+.transport-details .transport-name {
   font-size: 1.75rem;
   color: var(--text-dark);
-  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
+  font-weight: 600;
 }
 
-.transport-details .transport-badge {
-  background-color: var(--primary);
-  color: var(--white);
+.transport-details .transport-type {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: var(--background-white);
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
   font-size: 0.9rem;
   font-weight: 500;
+  height: fit-content;
 }
 
 .transport-details .transport-meta {
@@ -74,44 +81,11 @@
   height: 16px;
 }
 
-.transport-details .star-rating {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+.transport-details .transport-location__text {
+  font-size: 0.95rem;
 }
 
-.transport-details .star-rating--small {
-  gap: 0.1rem;
-}
-
-.transport-details .star-rating--small .star-rating__star {
-  font-size: 0.9rem;
-}
-
-.transport-details .star-rating__star {
-  font-size: 1.2rem;
-  position: relative;
-  color: var(--warning);
-}
-
-.transport-details .star-rating__star--full {
-  opacity: 1;
-}
-
-.transport-details .star-rating__star--half {
-  opacity: 0.7;
-}
-
-.transport-details .star-rating__star--empty {
-  color: var(--border);
-}
-
-.transport-details .star-rating__value {
-  margin-left: 0.5rem;
-  font-weight: 600;
-  color: var(--text-dark);
-}
-
+/* -------------------- Transport Gallery -------------------- */
 .transport-details .transport-gallery {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -150,13 +124,13 @@
 }
 
 .transport-details .transport-gallery__thumbnail:hover {
-  border-color: var(--primary);
+  border-color: var(--primary-color);
   opacity: 0.9;
 }
 
 .transport-details .transport-gallery__thumbnail--active {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color);
 }
 
 .transport-details .transport-gallery__thumbnail-image {
@@ -165,11 +139,14 @@
   object-fit: cover;
 }
 
+/*--------------------  Transport Content -------------------- */
 .transport-details .transport-content {
+  padding: 0 !important;
   display: flex;
   gap: 2rem;
   margin-bottom: 3rem;
   align-items: stretch;
+  width: 100%;
 }
 
 .transport-details .transport-section-title {
@@ -178,13 +155,13 @@
   color: var(--text-dark);
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .transport-details .transport-specs {
   flex: 1;
-  background-color: var(--background);
-  border: 1px solid var(--border);
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 2rem;
   box-shadow: var(--shadow-sm);
@@ -197,67 +174,102 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .transport-details .specs-item {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  padding: 1rem;
-  background-color: var(--white);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
 }
 
 .transport-details .specs-label {
-  font-size: 0.9rem;
-  color: var(--text-medium);
+  font-size: 0.875rem;
+  color: var(--text-light);
+  font-weight: 500;
 }
 
 .transport-details .specs-value {
   font-size: 1rem;
-  font-weight: 500;
   color: var(--text-dark);
+  font-weight: 600;
 }
 
+/* Description Section */
+.transport-details .description-section {
+  margin-bottom: 2rem;
+}
+
+.transport-details .description-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.transport-details .description-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-medium);
+}
+
+/* Map Section */
+.transport-details .map-section {
+  margin-bottom: 2rem;
+}
+
+.transport-details .map-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.transport-details .map-container {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* -------------------- Transport Booking -------------------- */
 .transport-details .transport-booking {
-  flex: 1;
+  width: 350px;
+  flex-shrink: 0;
 }
 
 .transport-details .booking-card {
-  background-color: var(--background);
-  border: 1px solid var(--border);
+  flex: 1;
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 2rem;
   box-shadow: var(--shadow-sm);
-  position: sticky;
-  top: 1rem;
-  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .transport-details .booking-price {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .transport-details .booking-price__amount {
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--text-dark);
+  display: block;
 }
 
 .transport-details .booking-price__label {
-  font-size: 1rem;
-  color: var(--text-medium);
-  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  color: var(--text-light);
 }
 
 .transport-details .booking-dates {
-  margin: 1.5rem 0;
+  margin-bottom: 1.5rem;
 }
 
 .transport-details .booking-date-group {
@@ -270,191 +282,205 @@
 
 .transport-details .booking-dates__label {
   display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-dark);
   margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-medium);
 }
 
 .transport-details .booking-dates__input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
+  transition: var(--transition);
 }
 
-.transport-details .booking-summary {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background-color: var(--white);
+.transport-details .booking-dates__input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* -------------------- Payment Method Section -------------------- */
+.transport-details .payment-method-section {
+  margin-bottom: 1.5rem;
+}
+
+.transport-details .payment-method__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.transport-details .payment-method__select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  background-color: var(--background-white);
+  transition: var(--transition);
+}
+
+.transport-details .payment-method__select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* -------------------- Booking Summary -------------------- */
+.transport-details .booking-summary {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: var(--background-light);
+  border-radius: var(--radius-sm);
 }
 
 .transport-details .booking-summary__item {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
   font-size: 0.9rem;
+}
+
+.transport-details .booking-summary__item:last-child {
+  margin-bottom: 0;
 }
 
 .transport-details .booking-summary__item--subtotal {
-  margin-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
   padding-top: 0.75rem;
-  border-top: 1px dashed var(--border);
+  font-weight: 600;
 }
 
 .transport-details .booking-summary__item--total {
-  font-weight: 600;
-  color: var(--text-dark);
-  margin-top: 0.75rem;
+  border-top: 2px solid var(--border-color);
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-dark);
 }
 
 .transport-details .booking-deposit {
-  font-size: 0.9rem;
-  color: var(--text-medium);
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.transport-details .booking-availability {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-align: center;
   margin-bottom: 1.5rem;
-  font-weight: 500;
-}
-
-.transport-details .booking-availability__available {
-  color: var(--success);
-}
-
-.transport-details .booking-availability__unavailable {
-  color: var(--error);
+  padding: 0.75rem;
+  background-color: var(--background-light);
+  border-radius: var(--radius-sm);
 }
 
 .transport-details .booking-button {
   width: 100%;
-  background-color: var(--primary);
-  color: var(--white);
   padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--background-white);
   border: none;
-  border-radius: var(--radius-sm);
-  font-size: 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
 }
 
-.transport-details .booking-button:hover {
-  background-color: var(--primary-dark);
+.transport-details .booking-button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .transport-details .booking-button:disabled {
-  background-color: var(--border);
+  background-color: var(--text-light);
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .transport-details .booking-error {
-  color: var(--error);
-  font-size: 0.8rem;
+  color: #ef4444;
+  font-size: 0.875rem;
   margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
 }
 
+/* -------------------- Transport Secondary -------------------- */
 .transport-details .transport-secondary {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
-  margin-bottom: 3rem;
-  align-items: stretch;
-}
-
-.transport-details .transport-reviews {
-  flex: 1;
-  min-height: 350px;
-}
-
-.transport-details .transport-owner {
-  flex: 1;
-  min-height: 350px;
 }
 
 .transport-details .transport-reviews,
 .transport-details .transport-owner {
-  background-color: var(--background);
-  border: 1px solid var(--border);
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 2rem;
   box-shadow: var(--shadow-sm);
 }
 
 .transport-details .reviews-summary {
   display: flex;
-  gap: 3rem;
-  margin-bottom: 2rem;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .transport-details .reviews-overview {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  min-width: 120px;
+  gap: 1rem;
 }
 
 .transport-details .reviews-average {
-  font-size: 2.5rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--text-dark);
 }
 
 .transport-details .reviews-distribution {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 .transport-details .reviews-distribution__item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.transport-details .reviews-distribution__item span:first-child {
-  width: 60px;
-  font-size: 0.9rem;
-  color: var(--text-medium);
+  margin-bottom: 0.5rem;
 }
 
 .transport-details .reviews-distribution__bar-container {
   flex: 1;
   height: 8px;
-  background-color: var(--background);
-  border-radius: var(--radius-lg);
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  margin: 0 0.5rem;
 }
 
 .transport-details .reviews-distribution__bar {
   height: 100%;
-  background-color: var(--primary);
-  border-radius: var(--radius-lg);
+  background-color: var(--primary-color);
+  border-radius: 4px;
 }
 
-.transport-details .reviews-distribution__item span:last-child {
-  width: 40px;
-  font-size: 0.9rem;
-  color: var(--text-medium);
-  text-align: right;
-}
-
+/* -------------------- Owner Profile -------------------- */
 .transport-details .owner-profile {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .transport-details .owner-avatar {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -463,30 +489,33 @@
   flex: 1;
 }
 
+.transport-details .owner-response-info {
+  display: flex;
+  flex-direction: column;
+}
+
 .transport-details .owner-name {
-  font-size: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
   color: var(--text-dark);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .transport-details .owner-rating {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.transport-details .owner-rating span {
   font-size: 0.9rem;
   color: var(--text-medium);
 }
 
 .transport-details .owner-contact-button {
   width: 100%;
-  background-color: transparent;
-  color: var(--primary);
-  padding: 0.5rem;
-  border: 1px solid var(--primary);
-  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--background-white);
+  border: none;
+  border-radius: var(--radius-md);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -494,25 +523,44 @@
 }
 
 .transport-details .owner-contact-button:hover {
-  background-color: var(--primary-light);
+  background-color: var(--primary-hover);
 }
 
+/* -------------------- Transport Not Found -------------------- */
 .transport-details .transport-not-found {
   text-align: center;
   padding: 4rem 2rem;
 }
 
 .transport-details .transport-not-found__title {
-  font-size: 1.75rem;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--text-dark);
   margin-bottom: 1rem;
 }
 
 .transport-details .transport-not-found__message {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--text-medium);
 }
 
+.transport-details .back-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.transport-details .back-button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* -------------------- Responsive Design -------------------- */
 @media (max-width: 1024px) {
   .transport-details .transport-content {
     flex-direction: column;
@@ -520,6 +568,10 @@
 
   .transport-details .transport-booking {
     width: 100%;
+  }
+
+  .transport-details .booking-card {
+    position: static;
   }
 }
 
@@ -533,281 +585,61 @@
   }
 
   .transport-details .transport-secondary {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+  }
+
+  .transport-details .specs-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 480px) {
+  .transport-details {
+    padding: 1rem 3%;
+  }
+
+  .transport-details .transport-title {
+    font-size: 1.5rem;
+  }
+
   .transport-details .transport-gallery__thumbnails {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .transport-details .reviews-summary {
-    flex-direction: column;
-    gap: 1.5rem;
+  .transport-details .booking-summary__item {
+    font-size: 0.8rem;
   }
 }
 
+/* DatePicker Styles */
 .transport-details .react-datepicker-popper {
-  z-index: 10;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* TransportDetails.css */
-/* ... (keep all your existing TransportDetails styles) */
-
-/* Owner Modal Styles */
-.owner-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 1000;
-  padding: 20px;
 }
 
-.owner-modal {
-  background-color: white;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 450px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+.transport-details .react-datepicker {
+  font-family: 'Inter', sans-serif;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
 }
 
-.owner-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #eee;
+.transport-details .react-datepicker__header {
+  background-color: var(--primary-color);
+  border-bottom: 1px solid var(--primary-color);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
-.owner-modal-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  color: #333;
+.transport-details .react-datepicker__current-month,
+.transport-details .react-datepicker__day-name {
+  color: var(--background-white);
 }
 
-.close-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
+.transport-details .react-datepicker__day--selected {
+  background-color: var(--primary-color);
+  border-radius: var(--radius-sm);
 }
 
-.close-button img {
-  width: 20px;
-  height: 20px;
-  opacity: 0.7;
-}
-
-.owner-profile-section {
-  display: flex;
-  padding: 20px;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-}
-
-.owner-avatar-container {
-  margin-right: 16px;
-}
-
-.owner-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #f5f5f5;
-}
-
-.owner-info {
-  flex: 1;
-}
-
-.owner-name {
-  margin: 0 0 4px 0;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.owner-role {
-  margin: 0 0 8px 0;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.owner-rating {
-  display: flex;
-  align-items: center;
-}
-
-.rating-text {
-  margin-left: 8px;
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.owner-details-section {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.detail-row {
-  display: flex;
-  margin-bottom: 12px;
-}
-
-.detail-row:last-child {
-  margin-bottom: 0;
-}
-
-.detail-label {
-  width: 120px;
-  font-size: 0.9rem;
-  color: #666;
-  font-weight: 500;
-}
-
-.detail-value {
-  flex: 1;
-  font-size: 0.95rem;
-  color: #333;
-}
-
-.detail-value.link {
-  color: #0066cc;
-  text-decoration: none;
-}
-
-.detail-value.link:hover {
-  text-decoration: underline;
-}
-
-.recent-searches-section {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.recent-searches-section h4 {
-  margin: 0 0 12px 0;
-  font-size: 0.95rem;
-  color: #444;
-}
-
-.city-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.city-tag {
-  background-color: #f5f5f5;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  color: #555;
-}
-
-.owner-actions {
-  display: flex;
-  padding: 16px;
-  gap: 12px;
-}
-
-.action-button {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  gap: 8px;
-}
-
-.action-button img {
-  width: 18px;
-  height: 18px;
-}
-
-.action-button.primary {
-  background-color: #0066cc;
-  color: white;
-}
-
-.action-button.primary:hover {
-  background-color: #0052a3;
-}
-
-.action-button.secondary {
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.action-button.secondary:hover {
-  background-color: #e0e0e0;
-}
-
-/* Star Rating Styles */
-.star-rating {
-  display: inline-flex;
-  align-items: center;
-}
-
-.star-rating_star {
-  display: inline-block;
-  color: #ddd;
-}
-
-.star-rating_star--full {
-  color: #ffc107;
-}
-
-.star-rating_star--half {
-  position: relative;
-  color: #ddd;
-}
-
-.star-rating_star--half::before {
-  content: '★';
-  position: absolute;
-  left: 0;
-  width: 50%;
-  overflow: hidden;
-  color: #ffc107;
-}
-
-.star-rating--small {
-  font-size: 0.9rem;
-}
-
-.star-rating--medium {
-  font-size: 1.1rem;
-}
-
-.star-rating__value {
-  margin-left: 5px;
-  font-size: 0.9rem;
-  color: #666;
+.transport-details .react-datepicker__day--keyboard-selected {
+  background-color: var(--primary-hover);
+  border-radius: var(--radius-sm);
 }
