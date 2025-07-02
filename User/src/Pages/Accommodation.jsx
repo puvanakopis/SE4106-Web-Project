@@ -336,14 +336,6 @@ const Accommodation = () => {
                         <p className="price-period">/ month</p>
                       </div>
                       <button
-<<<<<<< HEAD:User/src/Pages/Accommodation.jsx
-=======
-
-                        // onClick={() => navigate(`/room/${room._id}`)}
-                        // className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-xs hover:bg-blue-700 text-sm transition duration-200"
-
-                        className="view-details-btn"
->>>>>>> Dhivanujan:Frontend/src/Pages/Accommodation.jsx
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/room/${room._id}`);
