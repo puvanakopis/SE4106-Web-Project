@@ -47,7 +47,9 @@ function App() {
         <Route path="/accommodation" element={<Accommodation />} />
         <Route path="/room/:id" element={<RoomDetails />} />
 
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        
+
         <Route path="/transport" element={<Transport />} />
 
         <Route path="/my-bookings" element={<MyBookings />} />
