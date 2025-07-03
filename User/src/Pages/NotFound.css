@@ -1,0 +1,115 @@
+
+/* Error Page Variables */
+:root {
+  --error-primary: #3b82f6;
+  --error-primary-hover: #2563eb;
+  --error-text-dark: #111827;
+  --error-text-medium: #4b5563;
+  --error-text-light: #6b7280;
+  --error-border: #e5e7eb;
+  --error-bg-light: #f9fafb;
+  --error-bg-white: #ffffff;
+  --error-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --error-radius-sm: 0.25rem;
+  --error-radius-md: 0.5rem;
+}
+
+/* Base Container */
+.not-found-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Error Content Section */
+.error-content {
+  background-color: var(--error-bg-white);
+  border-radius: var(--error-radius-md);
+  padding: 3rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--error-shadow-sm);
+  text-align: center;
+}
+
+.error-header {
+  margin-bottom: 2rem;
+}
+
+.error-code {
+  font-size: 5rem;
+  font-weight: 700;
+  color: var(--error-primary);
+  margin: 0;
+  line-height: 1;
+}
+
+.error-title {
+  font-size: 2rem;
+  color: var(--error-text-dark);
+  margin: 1rem 0 0.5rem;
+}
+
+.error-message {
+  font-size: 1.25rem;
+  color: var(--error-text-medium);
+  margin-bottom: 0;
+}
+
+.error-details {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-details p {
+  color: var(--error-text-medium);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Error Actions */
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.error-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--error-radius-sm);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.error-button.primary {
+  background-color: var(--error-primary);
+  color: white;
+}
+
+.error-button.primary:hover {
+  background-color: var(--error-primary-hover);
+  transform: translateY(-2px);
+}
+
+.error-button {
+  background-color: var(--error-bg-white);
+  color: var(--error-primary);
+  border: 1px solid var(--error-primary);
+}
+
+.error-button:hover {
+  background-color: var(--error-bg-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .error-code {
+    font-size: 4rem;
+  }
+  
+  .error-title {
+    font-size: 1.75rem;
+  }
+}

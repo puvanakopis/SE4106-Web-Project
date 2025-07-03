@@ -19,48 +19,52 @@ import Accommodation from "./Pages/Accommodation";
 import RoomDetails from "./Pages/RoomDetails";
 import ForgotPassword from "./Pages/ForgotPassword";
 import Booking from "./Pages/Booking";
+import NotFound from "./Pages/NotFound";
 
 import { AuthProvider } from "./Context/AuthContext";
 import { BookingProvider } from "./Context/BookingContext";
 
 
+
 function App() {
   return (
     <AuthProvider>
-    <BookingProvider>
-      <Navbar />
+      <BookingProvider>
+        <Navbar />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/transport" element={<Transport />} />
-        <Route path="/transport/:id" element={<TransportDetails />} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/transport" element={<Transport />} />
+          <Route path="/transport/:id" element={<TransportDetails />} />
 
-        <Route path="/login" element={<LogIn />} />
-        <Route path="/signup" element={<SignUp />} />
-          
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/saved" element={<Saved />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<LogIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/login" element={<LogIn />} />
+          <Route path="/signup" element={<SignUp />} />
 
-
-        <Route path="/accommodation" element={<Accommodation />} />
-        <Route path="/room/:id" element={<RoomDetails />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/saved" element={<Saved />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<LogIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
 
-        
+          <Route path="/accommodation" element={<Accommodation />} />
+          <Route path="/room/:id" element={<RoomDetails />} />
 
-        <Route path="/transport" element={<Transport />} />
-        <Route path="/booking" element={<Booking />} />
-        
-        <Route path="/my-bookings" element={<MyBookings />} />
 
-      </Routes>
-      <Footer />
-    </BookingProvider>
+
+
+          <Route path="/transport" element={<Transport />} />
+          <Route path="/booking" element={<Booking />} />
+
+          <Route path="/my-bookings" element={<MyBookings />} />
+
+           <Route path="*" element={<NotFound />} /> 
+
+        </Routes>
+        <Footer />
+      </BookingProvider>
     </AuthProvider>
   );
 }
