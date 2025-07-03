@@ -68,7 +68,6 @@ const ProfileInfo = () => {
                 <select>
                   <option>Student</option>
                   <option>Lecturer</option>
-                  <option>Admin</option>
                 </select>
               </div>
 

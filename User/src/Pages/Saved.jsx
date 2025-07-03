@@ -6,7 +6,7 @@ import './Saved.css';
 
 const Saved = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('transport');
+  const [activeTab, setActiveTab] = useState('accommodation');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 

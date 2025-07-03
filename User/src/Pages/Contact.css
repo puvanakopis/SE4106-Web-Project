@@ -24,17 +24,22 @@
 
 /* ------------- Hero Section Styles ------------- */
 .contact-hero {
-    background:
-        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
-        url('../Assets/bg.png') center/cover no-repeat;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: white;
-    margin-bottom: 6rem;
+      background:
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
+    url('../Assets/bg.png') center/cover no-repeat;
+  height: 600px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding-bottom: 10%;
+  margin: 0% 8% 0% 8%;
+  margin-bottom: 6rem;
+   
 }
 
 .hero-content {

@@ -1,19 +1,19 @@
 :root {
-    --primary-color: #3b82f6;
-    --primary-hover: #2563eb;
-    --text-dark: #111827;
-    --text-medium: #4b5563;
-    --text-light: #6b7280;
-    --border-color: #e5e7eb;
-    --background-light: #f9fafb;
-    --background-white: #ffffff;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --radius-sm: 0.25rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 1rem;
-    --transition: all 0.2s ease;
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --text-dark: #111827;
+  --text-medium: #4b5563;
+  --text-light: #6b7280;
+  --border-color: #e5e7eb;
+  --background-light: #f9fafb;
+  --background-white: #ffffff;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --transition: all 0.2s ease;
 }
 
 
@@ -33,10 +33,12 @@
   background-position: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: end;
   align-items: center;
   text-align: center;
   color: white;
+  padding-bottom: 10%;
+  margin: 0% 8% 0% 8%;
   margin-bottom: 6rem;
 }
 
@@ -46,9 +48,10 @@
 }
 
 .hero-content p {
-  font-size: 1.25rem;
-  max-width: 700px;
-  margin: 0 auto;
+     font-size: 1rem;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
 }
 
 .about-section {

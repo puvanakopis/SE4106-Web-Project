@@ -1,16 +1,17 @@
 css
+
 /* ---------- Main Container ---------- */
 .booking-main-container {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 /* ---------- Root Booking Container ---------- */
 .booking-profile {
-  padding: 3% 5%;
+    padding: 3% 5%;
 }
 
 /* ---------- Header Section ---------- */
@@ -56,7 +57,7 @@ css
 /* ---------- Right Content Display Area ---------- */
 .booking-profile .booking-content {
     flex: 3;
-    background-color: #ffffff;
+    background-color: #f9fafb;
     border: 1px solid #e5e7eb;
     border-radius: 0.375rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -66,6 +67,7 @@ css
 /* ---------- Card Styles ---------- */
 .booking-profile .card {
     position: relative;
+    background-color: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     overflow: hidden;
@@ -87,8 +89,8 @@ css
     height: 200px;
     object-fit: cover;
     object-position: center;
-    display: block; /* Added to remove gap */
-    margin: 0; /* Added to remove gap */
+    display: block;
+    margin: 0;
 }
 
 /* Special case: Vehicle images (motorbike) object position fix */

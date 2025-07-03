@@ -255,6 +255,7 @@
 /* Map Section */
 .room-details .map-section {
   margin-bottom: 2rem;
+  box-shadow: none !important;
 }
 
 .room-details .map-title {
