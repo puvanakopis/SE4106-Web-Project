@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ForgotPassword.css';
 
+
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');           
-  const [isSubmitted, setIsSubmitted] = useState(false); 
-  const [isLoading, setIsLoading] = useState(false);     
+  const [email, setEmail] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();                
+  const navigate = useNavigate();
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -62,8 +63,8 @@ const ForgotPassword = () => {
               </div>
 
               {/* Submit button */}
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="submit-button"
                 disabled={isLoading}
               >
@@ -92,7 +93,7 @@ const ForgotPassword = () => {
             <h2 className="success-title">Check Your Email</h2>
             <div className="success-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor"/>
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor" />
               </svg>
             </div>
             <p className="success-text">
@@ -101,16 +102,18 @@ const ForgotPassword = () => {
             <p className="success-note">
               If you don't see the email, check your spam folder.
             </p>
-            <button 
+            <button
               className="back-button"
-              onClick={() => navigate('/login')}
+              onClick={() => {
+                navigate('/login')
+              }}
             >
               Back to Log in
             </button>
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

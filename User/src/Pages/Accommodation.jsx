@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roomsDummyData } from '../Assets/assets';
 import { FaHeart, FaRegHeart, FaTimes, FaFilter } from 'react-icons/fa';
+import {scrollToTop } from './scrollToTop'
 import './Accommodation.css';
 
 // Reusable Components
@@ -106,6 +107,7 @@ const RoomCard = ({ room, saved, onSave, onClick }) => (
           onClick={(e) => {
             e.stopPropagation();
             onClick();
+            scrollToTop()
           }}
         >
           View Details
@@ -550,7 +552,10 @@ const Accommodation = () => {
                   room={room}
                   saved={savedRooms.includes(room._id)}
                   onSave={toggleSaveRoom}
-                  onClick={() => handleRoomClick(room._id)}
+                  onClick={() => {
+                    handleRoomClick(room._id);
+                    scrollToTop();
+                  }}
                 />
               ))}
 

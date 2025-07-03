@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import StarRating from '../Components/Rating/StarRating';
 import { vehicleData } from '../Assets/assets';
 import { FaHeart, FaRegHeart, FaTimes, FaFilter } from 'react-icons/fa';
+import { scrollToTop } from './scrollToTop'
 import './Transport.css';
 
 // Reusable Components
-const CheckBox = ({ label, selected = false, onChange = () => {} }) => (
+const CheckBox = ({ label, selected = false, onChange = () => { } }) => (
   <label className="filter-checkbox">
     <input
       type="checkbox"
@@ -19,7 +20,7 @@ const CheckBox = ({ label, selected = false, onChange = () => {} }) => (
   </label>
 );
 
-const RadioButton = ({ label, selected = false, onChange = () => {} }) => (
+const RadioButton = ({ label, selected = false, onChange = () => { } }) => (
   <label className="filter-radio">
     <input
       type="radio"
@@ -143,46 +144,46 @@ const Transport = () => {
   // Filter and sort vehicles
   const filteredTransports = useMemo(() => {
     let result = [...vehicleData];
-    
+
     if (searchName.trim()) {
-      result = result.filter(vehicle => 
+      result = result.filter(vehicle =>
         `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchName.toLowerCase())
       );
     }
-    
+
     if (searchType.trim()) {
-      result = result.filter(vehicle => 
+      result = result.filter(vehicle =>
         vehicle.vehicle_type.toLowerCase().includes(searchType.toLowerCase())
       );
     }
-    
+
     if (searchMinPrice) {
-      result = result.filter(vehicle => 
+      result = result.filter(vehicle =>
         vehicle.rental_price_per_day >= Number(searchMinPrice)
       );
     }
-    
+
     if (searchMaxPrice) {
-      result = result.filter(vehicle => 
+      result = result.filter(vehicle =>
         vehicle.rental_price_per_day <= Number(searchMaxPrice)
       );
     }
-    
+
     if (selectedVehicleTypes.length > 0) {
-      result = result.filter(vehicle => 
+      result = result.filter(vehicle =>
         selectedVehicleTypes.includes(vehicle.vehicle_type)
       );
     }
-    
+
     if (selectedPriceRanges.length > 0) {
-      result = result.filter(vehicle => 
+      result = result.filter(vehicle =>
         selectedPriceRanges.some(range => {
           const [min, max] = range.split(' to ').map(Number);
           return vehicle.rental_price_per_day >= min && vehicle.rental_price_per_day <= max;
         })
       );
     }
-    
+
     if (selectedSortOption === 'Price Low to High') {
       result.sort((a, b) => a.rental_price_per_day - b.rental_price_per_day);
     } else if (selectedSortOption === 'Price High to Low') {
@@ -190,7 +191,7 @@ const Transport = () => {
     } else if (selectedSortOption === 'Seating Capacity') {
       result.sort((a, b) => b.seating_capacity - a.seating_capacity);
     }
-    
+
     return result;
   }, [
     vehicleData,
@@ -381,7 +382,7 @@ const Transport = () => {
         </aside>
 
         {openFilters && (
-          <div 
+          <div
             className="filters-overlay"
             onClick={() => setOpenFilters(false)}
           />
@@ -410,7 +411,10 @@ const Transport = () => {
                 <article
                   key={vehicle.vehicle_id}
                   className="transport-card"
-                  onClick={() => handleVehicleClick(vehicle.vehicle_id)}
+                  onClick={() => {
+                    handleVehicleClick(vehicle.vehicle_id);
+                    scrollToTop();
+                  }}
                 >
                   <div className="transport-image-container">
                     <img
@@ -421,7 +425,11 @@ const Transport = () => {
                     <span className="transport-badge">{vehicle.vehicle_type}</span>
                     <button
                       className={`save-button ${savedVehicles.includes(vehicle.vehicle_id) ? 'saved' : ''}`}
-                      onClick={(e) => toggleSaveVehicle(vehicle.vehicle_id, e)}
+                      onClick={(e) => {
+                        toggleSaveVehicle(vehicle.vehicle_id, e)
+                        scrollToTop()
+                      }
+                      }
                     >
                       {savedVehicles.includes(vehicle.vehicle_id) ? (
                         <FaHeart className="icon-heart-filled" />
@@ -464,6 +472,7 @@ const Transport = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           handleVehicleClick(vehicle.vehicle_id);
+                          scrollToTop()
                         }}
                       >
                         View Details

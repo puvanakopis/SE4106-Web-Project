@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roomsDummyData } from '../../Assets/assets';
 import { FaArrowRight, FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
+import { scrollToTop } from '../../Pages/scrollToTop';
 import './PopularRooms.css';
 
 const PopularRooms = () => {
@@ -20,11 +21,11 @@ const PopularRooms = () => {
                 ? prev.filter((id) => id !== roomId)
                 : [...prev, roomId];
             localStorage.setItem('savedRooms', JSON.stringify(newSaved));
-            
+
             if (!isSaved) {
                 setShowSavedNotification(true);
             }
-            
+
             return newSaved;
         });
     };
@@ -47,8 +48,8 @@ const PopularRooms = () => {
                         <FaHeart className="notification-icon" />
                         <span>Room saved</span>
                     </div>
-                    <button 
-                        className="notification-close" 
+                    <button
+                        className="notification-close"
                         onClick={() => setShowSavedNotification(false)}
                         aria-label="Close notification"
                     >
@@ -68,7 +69,10 @@ const PopularRooms = () => {
                         <div
                             className="card"
                             key={room._id}
-                            onClick={() => navigate(`/room/${room._id}`)}
+                            onClick={() => {
+                                navigate(`/room/${room._id}`)
+                                scrollToTop()
+                            }}
                         >
                             <img
                                 src={room.images[0]}
@@ -77,7 +81,7 @@ const PopularRooms = () => {
                                 loading="lazy"
                             />
                             <div className="property-badge">{room.roomType}</div>
-                            <button 
+                            <button
                                 className={`save-button ${savedRooms.includes(room._id) ? 'saved' : ''}`}
                                 onClick={(e) => toggleSaveRoom(room._id, e)}
                                 aria-label={savedRooms.includes(room._id) ? 'Remove from saved' : 'Save this room'}
@@ -113,7 +117,10 @@ const PopularRooms = () => {
 
                 <button
                     className="view-all-button"
-                    onClick={() => navigate('/accommodation')}
+                    onClick={() => {
+                        navigate('/accommodation')
+                        scrollToTop()
+                    }}
                 >
                     View All Accommodations <FaArrowRight className="arrow-icon" />
                 </button>

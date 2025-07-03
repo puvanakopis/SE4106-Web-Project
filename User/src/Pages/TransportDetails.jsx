@@ -10,6 +10,7 @@ import StarRating from '../Components/Rating/StarRating';
 import GoogleMapEmbed from '../Components/GoogleMap/GoogleMap';
 import PaymentPopup from '../Components/PaymentPopup/PaymentPopup';
 import OwnerDetails from './OwnerDetails';
+import {scrollToTop} from './scrollToTop'
 import './TransportDetails.css';
 
 const TransportDetails = () => {
@@ -69,21 +70,23 @@ const TransportDetails = () => {
 
   const handleContactOwner = () => {
     if (!isLoggedIn) {
+      scrollToTop();
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
-    
+
     if (!vehicle?.owner) {
       console.warn('No owner data available for this vehicle');
       alert('Owner information is not currently available. Please try again later.');
       return;
     }
-    
+
     setShowOwnerDetails(true);
   };
 
   const handleBookNow = () => {
     if (!isLoggedIn) {
+      scrollToTop()
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
@@ -142,7 +145,7 @@ const TransportDetails = () => {
         <p className="transport-not-found__message">
           Please check the ID or go back to the transport list.
         </p>
-        <button 
+        <button
           className="back-button"
           onClick={() => navigate('/transport')}
         >
@@ -194,10 +197,10 @@ const TransportDetails = () => {
 
       <section className="transport-gallery">
         <div className="transport-gallery__main">
-          <img 
-            src={images[selectedImageIndex]} 
-            alt={`${vehicle.brand} ${vehicle.model}`} 
-            className="transport-gallery__main-image" 
+          <img
+            src={images[selectedImageIndex]}
+            alt={`${vehicle.brand} ${vehicle.model}`}
+            className="transport-gallery__main-image"
             loading="lazy"
           />
         </div>
@@ -209,10 +212,10 @@ const TransportDetails = () => {
               onClick={() => setSelectedImageIndex(index)}
               aria-label={`View image ${index + 1}`}
             >
-              <img 
-                src={img} 
-                alt={`Thumbnail ${index + 1}`} 
-                className="transport-gallery__thumbnail-image" 
+              <img
+                src={img}
+                alt={`Thumbnail ${index + 1}`}
+                className="transport-gallery__thumbnail-image"
                 loading="lazy"
               />
             </button>
@@ -268,7 +271,7 @@ const TransportDetails = () => {
           <div className="map-section">
             <h3 className="map-title">Location</h3>
             <div className="map-container">
-              <GoogleMapEmbed 
+              <GoogleMapEmbed
                 address={vehicle.address}
                 city={vehicle.location || 'Colombo'}
               />
@@ -415,16 +418,18 @@ const TransportDetails = () => {
               </div>
             </div>
           </div>
-          <button 
-            className="owner-contact-button" 
-            onClick={handleContactOwner}
+          <button
+            className="owner-contact-button"
+            onClick={
+              handleContactOwner            
+            }
             aria-label="Contact vehicle owner"
           >
             Contact Owner
           </button>
         </section>
       </div>
-    </main>
+    </main >
   );
 };
 

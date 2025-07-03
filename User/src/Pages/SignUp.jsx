@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './SignUp.css';
 import upload_area from '../Assets/upload_area.png';
 
+
 const SignUp = () => {
   const [image, setImage] = useState(false);
   const [formData, setFormData] = useState({
@@ -166,7 +167,7 @@ const SignUp = () => {
           {/*  Footer: Login Link  */}
           <div className="form-footer">
             <p>
-              Have An Account? <a href="/login">Log In</a>
+              Have An Account? <a href="/login" >Log In</a>
             </p>
           </div>
         </form>

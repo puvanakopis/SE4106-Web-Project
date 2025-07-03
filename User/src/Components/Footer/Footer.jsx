@@ -1,6 +1,8 @@
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import "./Footer.css";
 import { Link } from "react-router-dom";
+import { scrollToTop } from '../../Pages/scrollToTop';
+
 
 const Footer = () => {
     return (
@@ -10,7 +12,7 @@ const Footer = () => {
                 {/* Logo & Tagline */}
                 <div className="footer-logo">
                     <h1 className="font-bold text-gray-900">
-                        <Link className="logo-text" to="/">CampusEase</Link>
+                        <Link className="logo-text" to="/" onClick={scrollToTop}>CampusEase</Link>
                     </h1>
                     <p className="mt-3 text-sm text-gray-600">
                         CampusEase is your smart companion for finding trusted student accommodations and booking campus transport—efficiently and securely.
@@ -21,9 +23,9 @@ const Footer = () => {
                 <div className="footer-section about">
                     <h2 className="header">About</h2>
                     <ul className="space-y-1 text-gray-600">
-                        <li><Link to="/about">About Us</Link></li>
-                        <li><Link to="/contact">Contact Us</Link></li>
-                        <li><Link to="/login">Get Started</Link></li>
+                        <li><Link to="/about" onClick={scrollToTop}>About Us</Link></li>
+                        <li><Link to="/contact" onClick={scrollToTop}>Contact Us</Link></li>
+                        <li><Link to="/login" onClick={scrollToTop}>Get Started</Link></li>
                     </ul>
                 </div>
 
@@ -31,10 +33,10 @@ const Footer = () => {
                 <div className="footer-section services">
                     <h2 className="header">Services</h2>
                     <ul className="space-y-1 text-gray-600">
-                        <li><Link to="/accommodation">Find Accommodation</Link></li>
-                        <li><Link to="/transport">Book Transport</Link></li>
-                        <li><Link to="/profile">Manage Account</Link></li>
-                        <li><Link to="/saved">Saved Items</Link></li>
+                        <li><Link to="/accommodation" onClick={scrollToTop}>Find Accommodation</Link></li>
+                        <li><Link to="/transport" onClick={scrollToTop}>Book Transport</Link></li>
+                        <li><Link to="/profile" onClick={scrollToTop}>Manage Account</Link></li>
+                        <li><Link to="/saved" onClick={scrollToTop}>Saved Items</Link></li>
                     </ul>
                 </div>
 
