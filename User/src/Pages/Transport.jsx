@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarRating from '../Components/Rating/StarRating';
-import './Transport.css';
 import { vehicleData } from '../Assets/assets';
 import { FaHeart, FaRegHeart, FaTimes, FaFilter } from 'react-icons/fa';
+import './Transport.css';
 
+// Reusable Components
 const CheckBox = ({ label, selected = false, onChange = () => {} }) => (
   <label className="filter-checkbox">
     <input
@@ -18,7 +19,6 @@ const CheckBox = ({ label, selected = false, onChange = () => {} }) => (
   </label>
 );
 
-// Radio button
 const RadioButton = ({ label, selected = false, onChange = () => {} }) => (
   <label className="filter-radio">
     <input
@@ -33,122 +33,229 @@ const RadioButton = ({ label, selected = false, onChange = () => {} }) => (
   </label>
 );
 
+const NotificationToast = ({ message, onClose, isRemoved }) => (
+  <div className="toast-notification" role="alert">
+    <span className="toast-icon">
+      {isRemoved ? <FaRegHeart /> : <FaHeart />}
+    </span>
+    <span className="toast-message">{message}</span>
+    <button
+      className="toast-close"
+      onClick={onClose}
+      aria-label="Close notification"
+    >
+      <FaTimes />
+    </button>
+  </div>
+);
+
+const TransportBanner = ({
+  searchName,
+  setSearchName,
+  searchType,
+  setSearchType,
+  setSearchMinPrice,
+  setSearchMaxPrice,
+}) => (
+  <section className="transport-hero">
+    <div className="transport-hero-content container">
+      <h1 className="hero-title">Find Your Perfect Ride</h1>
+      <p className="hero-subtitle">
+        Quality vehicles. Flexible rentals. Hassle-free campus transportation.
+      </p>
+
+      <form className="transport-search-bar" onSubmit={(e) => e.preventDefault()}>
+        <input
+          type="text"
+          placeholder="Search by Vehicle Name"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          className="transport-search-input"
+          aria-label="Vehicle name"
+        />
+
+        <select
+          value={searchType}
+          onChange={(e) => setSearchType(e.target.value)}
+          className="transport-search-select"
+          aria-label="Vehicle Type"
+        >
+          <option value="">Vehicle Type</option>
+          <option value="Motorbike">Motorbike</option>
+          <option value="Car">Car</option>
+          <option value="Van">Van</option>
+          <option value="Bus">Bus</option>
+        </select>
+
+        <select
+          onChange={(e) => {
+            const [min, max] = e.target.value.split('-');
+            setSearchMinPrice(min);
+            setSearchMaxPrice(max);
+          }}
+          className="transport-search-select"
+          aria-label="Price Range"
+        >
+          <option value="">Price Range</option>
+          <option value="0-2000">0 - 2,000</option>
+          <option value="2000-4000">2,000 - 4,000</option>
+          <option value="4000-6000">4,000 - 6,000</option>
+        </select>
+
+        <button type="submit" className="transport-search-btn">
+          Search
+        </button>
+      </form>
+    </div>
+  </section>
+);
+
 const Transport = () => {
   const navigate = useNavigate();
-
-  // Filter and UI states
   const [openFilters, setOpenFilters] = useState(false);
-  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState([]);
-  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
-  const [selectedSortOption, setSelectedSortOption] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [showSavedNotification, setShowSavedNotification] = useState(false);
-
-  const transportsPerPage = 9;
-
-  // Retrieve saved vehicles from local storage on load
   const [savedVehicles, setSavedVehicles] = useState(() => {
     const saved = localStorage.getItem('savedVehicles');
     return saved ? JSON.parse(saved) : [];
   });
+  const [showSavedNotification, setShowSavedNotification] = useState(false);
+  const [notificationMsg, setNotificationMsg] = useState('');
+  const [isRemovedNotification, setIsRemovedNotification] = useState(false);
 
-  // Filter and sort options
+  // Search and filter states
+  const [searchName, setSearchName] = useState('');
+  const [searchType, setSearchType] = useState('');
+  const [searchMinPrice, setSearchMinPrice] = useState('');
+  const [searchMaxPrice, setSearchMaxPrice] = useState('');
+
+  // Filter options
   const vehicleTypes = ['Motorbike', 'Car', 'Van', 'Bus'];
   const priceRanges = ['0 to 2000', '2000 to 4000', '4000 to 6000'];
   const sortOptions = ['Price Low to High', 'Price High to Low', 'Seating Capacity'];
 
-  // Auto-hide "Saved" notification after 5 seconds
-  useEffect(() => {
-    if (showSavedNotification) {
-      const timer = setTimeout(() => setShowSavedNotification(false), 5000);
-      return () => clearTimeout(timer);
+  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState([]);
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+  const [selectedSortOption, setSelectedSortOption] = useState('');
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const transportsPerPage = 9;
+
+  // Filter and sort vehicles
+  const filteredTransports = useMemo(() => {
+    let result = [...vehicleData];
+    
+    if (searchName.trim()) {
+      result = result.filter(vehicle => 
+        `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchName.toLowerCase())
+      );
     }
-  }, [showSavedNotification]);
+    
+    if (searchType.trim()) {
+      result = result.filter(vehicle => 
+        vehicle.vehicle_type.toLowerCase().includes(searchType.toLowerCase())
+      );
+    }
+    
+    if (searchMinPrice) {
+      result = result.filter(vehicle => 
+        vehicle.rental_price_per_day >= Number(searchMinPrice)
+      );
+    }
+    
+    if (searchMaxPrice) {
+      result = result.filter(vehicle => 
+        vehicle.rental_price_per_day <= Number(searchMaxPrice)
+      );
+    }
+    
+    if (selectedVehicleTypes.length > 0) {
+      result = result.filter(vehicle => 
+        selectedVehicleTypes.includes(vehicle.vehicle_type)
+      );
+    }
+    
+    if (selectedPriceRanges.length > 0) {
+      result = result.filter(vehicle => 
+        selectedPriceRanges.some(range => {
+          const [min, max] = range.split(' to ').map(Number);
+          return vehicle.rental_price_per_day >= min && vehicle.rental_price_per_day <= max;
+        })
+      );
+    }
+    
+    if (selectedSortOption === 'Price Low to High') {
+      result.sort((a, b) => a.rental_price_per_day - b.rental_price_per_day);
+    } else if (selectedSortOption === 'Price High to Low') {
+      result.sort((a, b) => b.rental_price_per_day - a.rental_price_per_day);
+    } else if (selectedSortOption === 'Seating Capacity') {
+      result.sort((a, b) => b.seating_capacity - a.seating_capacity);
+    }
+    
+    return result;
+  }, [
+    vehicleData,
+    searchName,
+    searchType,
+    searchMinPrice,
+    searchMaxPrice,
+    selectedVehicleTypes,
+    selectedPriceRanges,
+    selectedSortOption
+  ]);
 
-  // Handler for vehicle type filter
+  // Pagination
+  const totalPages = Math.ceil(filteredTransports.length / transportsPerPage);
+  const paginatedTransports = useMemo(() => {
+    const startIdx = (currentPage - 1) * transportsPerPage;
+    return filteredTransports.slice(startIdx, startIdx + transportsPerPage);
+  }, [filteredTransports, currentPage, transportsPerPage]);
+
+  // Handlers
   const handleVehicleTypeChange = (checked, label) => {
-    setSelectedVehicleTypes((prev) =>
-      checked ? [...prev, label] : prev.filter((type) => type !== label)
+    setSelectedVehicleTypes(prev =>
+      checked ? [...prev, label] : prev.filter(type => type !== label)
     );
     setCurrentPage(1);
   };
 
-  // Handler for price range filter
   const handlePriceRangeChange = (checked, label) => {
-    setSelectedPriceRanges((prev) =>
-      checked ? [...prev, label] : prev.filter((range) => range !== label)
+    setSelectedPriceRanges(prev =>
+      checked ? [...prev, label] : prev.filter(range => range !== label)
     );
     setCurrentPage(1);
   };
 
-  // Handler for sort option
   const handleSortChange = (label) => {
     setSelectedSortOption(label);
     setCurrentPage(1);
   };
 
-  // Toggle saving or removing a vehicle from saved list
-  const toggleSaveVehicle = (vehicleId, e) => {
-    e.stopPropagation(); 
-    setSavedVehicles((prev) => {
-      const isSaved = prev.includes(vehicleId);
-      const newSaved = isSaved
-        ? prev.filter((id) => id !== vehicleId)
-        : [...prev, vehicleId];
-
-      localStorage.setItem('savedVehicles', JSON.stringify(newSaved));
-      if (!isSaved) setShowSavedNotification(true);
-      return newSaved;
-    });
-  };
-
-  // Reset all filters
   const resetAllFilters = () => {
     setSelectedVehicleTypes([]);
     setSelectedPriceRanges([]);
     setSelectedSortOption('');
+    setSearchName('');
+    setSearchType('');
+    setSearchMinPrice('');
+    setSearchMaxPrice('');
     setCurrentPage(1);
   };
 
-  // Filter and sort the vehicle data
-  const filteredTransports = vehicleData
-    .filter((vehicle) => {
-      const matchesType =
-        selectedVehicleTypes.length === 0 ||
-        selectedVehicleTypes.includes(vehicle.vehicle_type);
-
-      const matchesPrice =
-        selectedPriceRanges.length === 0 ||
-        selectedPriceRanges.some((range) => {
-          const [min, max] = range.split(' to ').map(Number);
-          return (
-            vehicle.rental_price_per_day >= min &&
-            vehicle.rental_price_per_day <= max
-          );
-        });
-
-      return matchesType && matchesPrice;
-    })
-    .sort((a, b) => {
-      switch (selectedSortOption) {
-        case 'Price Low to High':
-          return a.rental_price_per_day - b.rental_price_per_day;
-        case 'Price High to Low':
-          return b.rental_price_per_day - a.rental_price_per_day;
-        case 'Seating Capacity':
-          return b.seating_capacity - a.seating_capacity;
-        default:
-          return 0;
-      }
+  const toggleSaveVehicle = (vehicleId, e) => {
+    e.stopPropagation();
+    setSavedVehicles(prev => {
+      const isSaved = prev.includes(vehicleId);
+      const newSaved = isSaved
+        ? prev.filter(id => id !== vehicleId)
+        : [...prev, vehicleId];
+      localStorage.setItem('savedVehicles', JSON.stringify(newSaved));
+      setNotificationMsg(isSaved ? 'Vehicle removed from saved' : 'Vehicle saved!');
+      setIsRemovedNotification(isSaved);
+      setShowSavedNotification(true);
+      return newSaved;
     });
+  };
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredTransports.length / transportsPerPage);
-  const startIdx = (currentPage - 1) * transportsPerPage;
-  const endIdx = startIdx + transportsPerPage;
-  const paginatedTransports = filteredTransports.slice(startIdx, endIdx);
-
-  // Go to specified page
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -156,61 +263,72 @@ const Transport = () => {
     }
   };
 
+  const handleVehicleClick = (vehicleId) => {
+    navigate(`/transport/${vehicleId}`);
+  };
+
+  // Notification effect
+  useEffect(() => {
+    if (showSavedNotification) {
+      const timer = setTimeout(() => {
+        setShowSavedNotification(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSavedNotification]);
+
+  const canResetFilters = !(
+    selectedVehicleTypes.length === 0 &&
+    selectedPriceRanges.length === 0 &&
+    selectedSortOption === '' &&
+    !searchName &&
+    !searchType &&
+    !searchMinPrice &&
+    !searchMaxPrice
+  );
+
   return (
     <div className="transport">
-      {/* Saved transport notification popup */}
       {showSavedNotification && (
-        <div className="save-notification">
-          <div className="notification-content">
-            <FaHeart className="notification-icon" />
-            <span>Transport saved</span>
-          </div>
-          <button
-            className="notification-close"
-            onClick={() => setShowSavedNotification(false)}
-            aria-label="Close notification"
-          >
-            <FaTimes />
-          </button>
-        </div>
+        <NotificationToast
+          message={notificationMsg}
+          onClose={() => setShowSavedNotification(false)}
+          isRemoved={isRemovedNotification}
+        />
       )}
 
-      {/* Mobile filter toggle */}
+      <TransportBanner
+        searchName={searchName}
+        setSearchName={setSearchName}
+        searchType={searchType}
+        setSearchType={setSearchType}
+        setSearchMinPrice={setSearchMinPrice}
+        setSearchMaxPrice={setSearchMaxPrice}
+      />
+
       <div className="transport-header">
         <button
           className="mobile-filter-toggle"
           onClick={() => setOpenFilters(!openFilters)}
           aria-expanded={openFilters}
-          aria-label={openFilters ? 'Hide filters' : 'Show filters'}
         >
-          <FaFilter className="filter-icon" />
-          {openFilters ? 'Hide Filters' : 'Show Filters'}
+          {openFilters ? (
+            <>
+              <FaTimes className="icon-close" /> Hide Filters
+            </>
+          ) : (
+            <>
+              <FaFilter className="icon-filter" /> Show Filters
+            </>
+          )}
         </button>
       </div>
 
-      {/* Overlay for mobile filter sidebar */}
-      <div
-        className={`filter-overlay ${openFilters ? 'open' : ''}`}
-        onClick={() => setOpenFilters(false)}
-        aria-hidden="true"
-      />
-
-      {/* Main container layout */}
-      <div className="transport-container">
-        {/* Sidebar with filters */}
+      <div className="transport-content">
         <aside
           className={`filters-sidebar ${openFilters ? 'open' : ''}`}
           aria-label="Filters"
         >
-          <button
-            className="close-sidebar"
-            onClick={() => setOpenFilters(false)}
-            aria-label="Close filters"
-          >
-            &times;
-          </button>
-
-          {/* Vehicle type filter */}
           <div className="filter-section">
             <h2 className="filter-section-title">Vehicle Types</h2>
             <div className="filter-options">
@@ -225,7 +343,6 @@ const Transport = () => {
             </div>
           </div>
 
-          {/* Price range filter */}
           <div className="filter-section">
             <h2 className="filter-section-title">Price Range (per day)</h2>
             <div className="filter-options">
@@ -240,7 +357,6 @@ const Transport = () => {
             </div>
           </div>
 
-          {/* Sort option filter */}
           <div className="filter-section">
             <h2 className="filter-section-title">Sort By</h2>
             <div className="filter-options">
@@ -255,44 +371,46 @@ const Transport = () => {
             </div>
           </div>
 
-          {/* Reset filter button */}
           <button
             className="resetButton"
             onClick={resetAllFilters}
-            disabled={
-              selectedVehicleTypes.length === 0 &&
-              selectedPriceRanges.length === 0 &&
-              selectedSortOption === ''
-            }
-            aria-label="Reset all filters"
+            disabled={!canResetFilters}
           >
             Reset All Filters
           </button>
         </aside>
 
-        {/* Main transport cards list */}
+        {openFilters && (
+          <div 
+            className="filters-overlay"
+            onClick={() => setOpenFilters(false)}
+          />
+        )}
+
         <main className="transports-list">
+          <div className="results-header full-width">
+            <div className="results-header-content">
+              <p className="results-count">
+                Found <strong>{filteredTransports.length}</strong> Vehicles
+              </p>
+            </div>
+          </div>
+
           {paginatedTransports.length === 0 ? (
             <div className="no-results">
               <h3>No vehicles found matching your criteria</h3>
               <p>Try adjusting your filters to see more results</p>
-              <button
-                className="reset-filters"
-                onClick={resetAllFilters}
-                aria-label="Reset filters"
-              >
+              <button className="reset-filters" onClick={resetAllFilters}>
                 Reset All Filters
               </button>
             </div>
           ) : (
             <>
-              {/* Render transport cards */}
-              {paginatedTransports.map((vehicle) => (
+              {paginatedTransports.map(vehicle => (
                 <article
                   key={vehicle.vehicle_id}
                   className="transport-card"
-                  onClick={() => navigate(`/transport/${vehicle.vehicle_id}`)}
-                  aria-label={`${vehicle.brand} ${vehicle.model}`}
+                  onClick={() => handleVehicleClick(vehicle.vehicle_id)}
                 >
                   <div className="transport-image-container">
                     <img
@@ -304,11 +422,6 @@ const Transport = () => {
                     <button
                       className={`save-button ${savedVehicles.includes(vehicle.vehicle_id) ? 'saved' : ''}`}
                       onClick={(e) => toggleSaveVehicle(vehicle.vehicle_id, e)}
-                      aria-label={
-                        savedVehicles.includes(vehicle.vehicle_id)
-                          ? `Unsave ${vehicle.brand} ${vehicle.model}`
-                          : `Save ${vehicle.brand} ${vehicle.model}`
-                      }
                     >
                       {savedVehicles.includes(vehicle.vehicle_id) ? (
                         <FaHeart className="icon-heart-filled" />
@@ -350,9 +463,8 @@ const Transport = () => {
                         className="view-details-btn"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/transport/${vehicle.vehicle_id}`);
+                          handleVehicleClick(vehicle.vehicle_id);
                         }}
-                        aria-label={`View details for ${vehicle.brand} ${vehicle.model}`}
                       >
                         View Details
                       </button>
@@ -361,14 +473,12 @@ const Transport = () => {
                 </article>
               ))}
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="pagination" aria-label="Pagination">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className="pagination-arrow"
-                    aria-label="Previous page"
                   >
                     &lt;
                   </button>
@@ -377,8 +487,6 @@ const Transport = () => {
                       key={`page-${i + 1}`}
                       onClick={() => handlePageChange(i + 1)}
                       className={`pagination-number ${currentPage === i + 1 ? 'active' : ''}`}
-                      aria-label={`Page ${i + 1}`}
-                      aria-current={currentPage === i + 1 ? 'page' : undefined}
                     >
                       {i + 1}
                     </button>
@@ -387,7 +495,6 @@ const Transport = () => {
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className="pagination-arrow"
-                    aria-label="Next page"
                   >
                     &gt;
                   </button>
