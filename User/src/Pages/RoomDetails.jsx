@@ -11,34 +11,19 @@ import GoogleMapEmbed from '../Components/GoogleMap/GoogleMap';
 import PaymentPopup from '../Components/PaymentPopup/PaymentPopup';
 import OwnerDetails from './OwnerDetails';
 import { scrollToTop } from './scrollToTop';
+import { useInView } from 'react-intersection-observer';
 import './RoomDetails.css';
-
-// Default owner data structure
-const defaultOwner = {
-  name: 'Property Owner',
-  email: 'contact@example.com',
-  phone: '+1 (555) 123-4567',
-  joinDate: '2020-05-15',
-  avatar: assets.hostIcon,
-  rating: 4.8,
-  reviews: 42,
-  responseRate: '98%',
-  responseTime: 'within an hour'
-};
-
+import './Animation/animations.css';
 
 const RoomDetails = () => {
-  // Router hooks
+  // ------------------ Routing & Context ------------------
   const { id } = useParams();
   const navigate = useNavigate();
-
-  // Context hooks
   const { addBooking } = useBookings();
   const { isLoggedIn, user } = useContext(AuthContext);
 
-  // State management
-  const [room, setRoom] = useState(null);
-  const [mainImage, setMainImage] = useState(null);
+  // ------------------ State Management ------------------
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [totalDays, setTotalDays] = useState(0);
@@ -47,10 +32,18 @@ const RoomDetails = () => {
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
-  const [ownerData, setOwnerData] = useState(defaultOwner);
+  const [room, setRoom] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch room data on component mount
+  // ------------------ Animation Hooks ------------------
+  const [headerRef, headerInView] = useInView({ threshold: 0.1 });
+  const [galleryRef, galleryInView] = useInView({ threshold: 0.1 });
+  const [specsRef, specsInView] = useInView({ threshold: 0.1 });
+  const [bookingRef, bookingInView] = useInView({ threshold: 0.1 });
+  const [reviewsRef, reviewsInView] = useInView({ threshold: 0.1 });
+  const [ownerRef, ownerInView] = useInView({ threshold: 0.1 });
+
+  // ------------------ Data Fetching ------------------
   useEffect(() => {
     const fetchRoomData = async () => {
       try {
@@ -59,11 +52,6 @@ const RoomDetails = () => {
 
         if (foundRoom) {
           setRoom(foundRoom);
-          setMainImage(foundRoom.images[0]);
-          setOwnerData({
-            ...defaultOwner,
-            ...foundRoom.owner
-          });
         } else {
           throw new Error('Room not found');
         }
@@ -77,7 +65,7 @@ const RoomDetails = () => {
     fetchRoomData();
   }, [id]);
 
-  // Handle start date selection
+  // ------------------ Date Handling ------------------
   const handleStartDateChange = (date) => {
     setStartDate(date);
     setBookingError('');
@@ -93,7 +81,6 @@ const RoomDetails = () => {
     }
   };
 
-  // Handle end date selection
   const handleEndDateChange = (date) => {
     setEndDate(date);
     setBookingError('');
@@ -105,7 +92,6 @@ const RoomDetails = () => {
     }
   };
 
-  // Calculate total days and cost
   const calculateTotal = (start, end) => {
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
@@ -116,10 +102,27 @@ const RoomDetails = () => {
     }
   };
 
-  // Handle book now button click
+  // ------------------ Owner Interaction ------------------
+  const handleContactOwner = () => {
+    if (!isLoggedIn) {
+      scrollToTop();
+      navigate('/login', { state: { from: `/rooms/${id}` } });
+      return;
+    }
+
+    if (!room?.owner) {
+      console.warn('No owner data available for this property');
+      alert('Owner information is not currently available. Please try again later.');
+      return;
+    }
+
+    setShowOwnerDetails(true);
+  };
+
+  // ------------------ Booking Handling ------------------
   const handleBookNow = () => {
     if (!isLoggedIn) {
-      scrollToTop()
+      scrollToTop();
       navigate('/login', { state: { from: `/rooms/${id}` } });
       return;
     }
@@ -136,7 +139,6 @@ const RoomDetails = () => {
     setShowPaymentPopup(true);
   };
 
-  // Handle successful payment
   const handlePaymentSuccess = () => {
     const newBooking = {
       id: `r-${Date.now()}`,
@@ -152,6 +154,16 @@ const RoomDetails = () => {
     };
 
     addBooking(newBooking);
+    
+    // Show success animation
+    const bookingButton = document.querySelector('.booking-button');
+    if (bookingButton) {
+      bookingButton.classList.add('bounce');
+      setTimeout(() => {
+        bookingButton.classList.remove('bounce');
+      }, 1000);
+    }
+
     setStartDate(null);
     setEndDate(null);
     setTotalDays(0);
@@ -160,24 +172,6 @@ const RoomDetails = () => {
     setShowPaymentPopup(false);
   };
 
-  // Handle contact owner button click
-  const handleContactOwner = () => {
-    if (!isLoggedIn) {
-      scrollToTop()
-      navigate('/login', { state: { from: `/rooms/${id}` } });
-      return;
-    }
-
-    if (!room?.owner) {
-      console.warn('No owner data available for this property');
-      alert('Owner information is not currently available. Please try again later.');
-      return;
-    }
-
-    setShowOwnerDetails(true);
-  };
-
-  // Prepare booking details for payment popup
   const getBookingDetails = () => {
     if (!room) return null;
 
@@ -190,26 +184,25 @@ const RoomDetails = () => {
     };
   };
 
-  // Loading state
+  // ------------------ Loading States ------------------
   if (isLoading) {
     return (
-      <div className="room-loading">
+      <div className="room-loading fade-in">
         <div className="loading-spinner"></div>
         <p>Loading room details...</p>
       </div>
     );
   }
 
-  // Room not found state
   if (!room) {
     return (
-      <div className="room-not-found">
+      <div className="room-not-found fade-in">
         <h2 className="room-not-found__title">Room not found</h2>
         <p className="room-not-found__message">
           Please check the ID or go back to the accommodation list.
         </p>
         <button
-          className="back-button"
+          className="back-button pulse"
           onClick={() => navigate('/rooms')}
         >
           Browse Available Rooms
@@ -218,19 +211,22 @@ const RoomDetails = () => {
     );
   }
 
+  // ------------------ Data Preparation ------------------
   const images = room.images || [];
+  const owner = room.owner || {};
+  const ratingDist = room.rating_distribution || {};
 
   return (
     <main className="room-details">
-      {/* ---------------------------- Owner Details Modal ---------------------------- */}
+      {/* ------------------ Popup Modals ------------------ */}
       {showOwnerDetails && (
         <OwnerDetails
-          owner={ownerData}
+          owner={owner}
           onClose={() => setShowOwnerDetails(false)}
+          className={ownerInView ? 'scale-up' : ''}
         />
       )}
 
-      {/* ---------------------------- Payment Popup Modal ---------------------------- */}
       {showPaymentPopup && (
         <PaymentPopup
           isOpen={showPaymentPopup}
@@ -238,11 +234,15 @@ const RoomDetails = () => {
           bookingDetails={getBookingDetails()}
           onPaymentSuccess={handlePaymentSuccess}
           paymentMethod={paymentMethod}
+          className={bookingInView ? 'fade-in-up' : ''}
         />
       )}
 
-      {/* ---------------------------- Room Header Section ---------------------------- */}
-      <header className="room-header">
+      {/* ------------------ Header Section ------------------ */}
+      <header 
+        ref={headerRef}
+        className={`room-header ${headerInView ? 'slide-in-left' : ''}`}
+      >
         <h1 className="room-title">
           <div className='room-name'>{room.hotel.name}</div>
           <div className="room-type">{room.roomType}</div>
@@ -259,11 +259,14 @@ const RoomDetails = () => {
         </div>
       </header>
 
-      {/* ---------------------------- Room Gallery Section ---------------------------- */}
-      <section className="room-gallery">
+      {/* ------------------ Gallery Section ------------------ */}
+      <section 
+        ref={galleryRef}
+        className={`room-gallery ${galleryInView ? 'scale-up delay-100' : ''}`}
+      >
         <div className="room-gallery__main">
           <img
-            src={mainImage}
+            src={images[selectedImageIndex]}
             alt={`${room.roomType} at ${room.hotel.name}`}
             className="room-gallery__main-image"
             loading="lazy"
@@ -273,8 +276,8 @@ const RoomDetails = () => {
           {images.slice(0, 4).map((img, index) => (
             <button
               key={index}
-              className={`room-gallery__thumbnail ${mainImage === img ? 'room-gallery__thumbnail--active' : ''}`}
-              onClick={() => setMainImage(img)}
+              className={`room-gallery__thumbnail ${index === selectedImageIndex ? 'room-gallery__thumbnail--active' : ''}`}
+              onClick={() => setSelectedImageIndex(index)}
               aria-label={`View image ${index + 1}`}
             >
               <img
@@ -288,10 +291,13 @@ const RoomDetails = () => {
         </div>
       </section>
 
-      {/* ---------------------------- Main Content Area ---------------------------- */}
+      {/* ------------------ Main Content ------------------ */}
       <div className="room-content">
-        {/* ---------------------------- Room Specifications ---------------------------- */}
-        <section className="room-specs">
+        {/* ------------------ Specifications Section ------------------ */}
+        <section 
+          ref={specsRef}
+          className={`room-specs ${specsInView ? 'slide-in-left delay-200' : ''}`}
+        >
           <h2 className="room-section-title">Room Specifications</h2>
           <div className="specs-grid">
             <div className="specs-item">
@@ -316,7 +322,6 @@ const RoomDetails = () => {
             </div>
           </div>
 
-          {/* Amenities Section */}
           <div className="amenities-section">
             <h3 className="amenities-title">Amenities</h3>
             <div className="amenities-list">
@@ -328,7 +333,6 @@ const RoomDetails = () => {
             </div>
           </div>
 
-          {/*  Description Section  */}
           <div className="description-section">
             <h3 className="description-title">Description</h3>
             <p className="description-text">
@@ -336,7 +340,6 @@ const RoomDetails = () => {
             </p>
           </div>
 
-          {/* Map Section */}
           <div className="map-section">
             <h3 className="map-title">Location</h3>
             <div className="map-container">
@@ -348,14 +351,17 @@ const RoomDetails = () => {
           </div>
         </section>
 
-        {/* ---------------------------- Right Column - Booking Card ---------------------------- */}
-        <aside className="room-booking">
+        {/* ------------------ Booking Section ------------------ */}
+        <aside 
+          ref={bookingRef}
+          className={`room-booking ${bookingInView ? 'slide-in-right delay-200' : ''}`}
+        >
           <div className="booking-card">
             <div className="booking-price">
               <span className="booking-price__amount">
                 Rs {(room.pricePerMonth / 30).toLocaleString()}
               </span>
-              <span className="booking-price__label">Per day</span>
+              <span className="booking-price__label">per day</span>
             </div>
 
             <div className="booking-dates">
@@ -384,7 +390,7 @@ const RoomDetails = () => {
                   disabled={!startDate}
                 />
               </div>
-              {bookingError && <div className="booking-error">{bookingError}</div>}
+              {bookingError && <div className="booking-error fade-in">{bookingError}</div>}
             </div>
 
             <div className="payment-method-section">
@@ -442,10 +448,13 @@ const RoomDetails = () => {
         </aside>
       </div>
 
-      {/* ---------------------------- Reviews and Host Info ---------------------------- */}
+      {/* ------------------ Secondary Sections ------------------ */}
       <div className="room-secondary">
-        {/* Reviews Section */}
-        <section className="room-reviews">
+        {/* ------------------ Reviews Section ------------------ */}
+        <section 
+          ref={reviewsRef}
+          className={`room-reviews ${reviewsInView ? 'slide-in-left delay-300' : ''}`}
+        >
           <h2 className="room-section-title">Reviews</h2>
           <div className="reviews-summary">
             <div className="reviews-overview">
@@ -453,36 +462,53 @@ const RoomDetails = () => {
               <StarRating rating={room.rating} />
               <span>{room.reviews || 200}+ reviews</span>
             </div>
+            <div className="reviews-distribution">
+              {[5, 4, 3, 2, 1].map((star) => (
+                <div key={star} className="reviews-distribution__item fade-in-up" style={{ animationDelay: `${star * 100}ms` }}>
+                  <span>{star} star</span>
+                  <div className="reviews-distribution__bar-container">
+                    <div
+                      className="reviews-distribution__bar"
+                      style={{ width: `${((ratingDist[star] || 30) / 100) * 150}px` }}
+                    ></div>
+                  </div>
+                  <span>{ratingDist[star] || 30}%</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* Host Information Section */}
-        <section className="room-host">
+        {/* ------------------ Owner Section ------------------ */}
+        <section 
+          ref={ownerRef}
+          className={`room-owner ${ownerInView ? 'slide-in-right delay-300' : ''}`}
+        >
           <h2 className="room-section-title">Room Owner</h2>
-          <div className="host-profile">
+          <div className="owner-profile">
             <img
-              src={ownerData.profile_pic || assets.defaultAvatar}
-              alt={`${ownerData.name}'s profile`}
-              className="host-avatar"
+              src={owner.profile_pic || assets.defaultAvatar}
+              alt={owner.name || 'Room owner'}
+              className="owner-avatar"
             />
-            <div className="host-info">
-              <h4 className="host-name">Owned by {ownerData.name}</h4>
-              <div className="host-rating">
-                <StarRating rating={ownerData.rating} size="small" />
-                <span>{ownerData.reviews} reviews</span>
+            <div className="owner-info">
+              <h4 className="owner-name">Owned by {owner.name || 'Private Owner'}</h4>
+              <div className="owner-rating">
+                <StarRating rating={room.rating} size="small" />
+                <span>{room.reviews} reviews</span>
               </div>
-              <div className="host-response-info">
-                <span>Response rate: {ownerData.responseRate}</span>
-                <span>Response time: {ownerData.responseTime}</span>
+              <div className="owner-response-info">
+                <span>Response rate: 98%</span>
+                <span>Response time: within an hour</span>
               </div>
             </div>
           </div>
           <button
-            className="host-contact-button"
+            className="owner-contact-button"
             onClick={handleContactOwner}
-            aria-label="Contact property owner"
+            aria-label="Contact room owner"
           >
-            Contact Host
+            Contact Owner
           </button>
         </section>
       </div>

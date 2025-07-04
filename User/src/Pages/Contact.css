@@ -1,5 +1,5 @@
-/* ------------- Global Contact Page Styles ------------- */
-.contact-page {
+/* ------------- CSS Variables ------------- */
+:root {
     --primary-color: #3b82f6;
     --primary-hover: #2563eb;
     --text-dark: #111827;
@@ -17,29 +17,29 @@
     --transition: all 0.2s ease;
 }
 
+/* ------------- Base Styles ------------- */
 .contact-page {
     padding: 0% 8% 0% 8%;
     color: var(--text-medium);
 }
 
-/* ------------- Hero Section Styles ------------- */
+/* -----------------   HERO SECTION STYLES   ----------------- */
 .contact-hero {
-      background:
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
-    url('../Assets/bg.png') center/cover no-repeat;
-  height: 600px;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  align-items: center;
-  text-align: center;
-  color: white;
-  padding-bottom: 10%;
-  margin: 0% 8% 0% 8%;
-  margin-bottom: 6rem;
-   
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
+        url('../Assets/bg.png') center/cover no-repeat;
+    height: 600px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+    text-align: center;
+    color: white;
+    padding-bottom: 10%;
+    margin: 0% 8% 0% 8%;
+    margin-bottom: 6rem;
 }
 
 .hero-content {
@@ -60,7 +60,7 @@
     margin: 0 auto;
 }
 
-/*  Main Contact Container (Form + Info)  */
+/* -----------------   MAIN CONTACT CONTAINER ----------------- */
 .contact-page .contact-container {
     display: flex;
     gap: 2rem;
@@ -69,7 +69,7 @@
     padding-bottom: 2rem;
 }
 
-/* ------------- Contact Information ------------- */
+/* ------------- Contact Information Card ------------- */
 .contact-page .contact-info,
 .contact-page .contact-form {
     flex: 1;
@@ -125,7 +125,9 @@
     color: var(--text-medium);
 }
 
-/* ------------- Contact Form ------------- */
+
+
+/* -----------------  CONTACT FORM STYLES  ----------------- */
 .contact-page .success-message {
     background-color: #d1fae5;
     color: #065f46;
@@ -194,7 +196,9 @@
     background-color: var(--primary-hover);
 }
 
-/* ------------- Map Section Styles ------------- */
+
+
+/* -----------------  MAP SECTION STYLES  ----------------- */
 .contact-page .map-section {
     flex: 1;
     border: 1px solid var(--border-color);
@@ -272,7 +276,7 @@
     border: 0;
 }
 
-/* ------------- FAQ Section Styles ------------- */
+/* -----------------  FAQ SECTION STYLES  ----------------- */
 .contact-page .faq-section {
     border: 1px solid var(--border-color);
     flex: 1;
@@ -358,7 +362,8 @@
     transform: rotate(45deg);
 }
 
-/* ------------- Responsive Styles ------------- */
+
+/* -----------------  RESPONSIVE STYLES   ----------------- */
 @media (max-width: 1024px) {
     .contact-page .contact-container {
         flex-direction: column;

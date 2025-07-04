@@ -12,9 +12,9 @@ const Home = () => {
       <Hero />
       <PopularRooms />
       <WhyChooseUs />
-      <PopularTransport/>
-      <AboutSection/>
-      <TestimonialCarousel/>
+      <PopularTransport />
+      <AboutSection />
+      <TestimonialCarousel />
     </div>
   )
 }

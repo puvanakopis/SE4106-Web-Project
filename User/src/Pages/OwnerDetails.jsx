@@ -1,5 +1,7 @@
 import { assets } from '../Assets/assets';
 import './OwnerDetails.css';
+import './Animation/animations.css'; 
+import { useInView } from 'react-intersection-observer';
 
 const StarRating = ({ rating, size = 'medium' }) => {
   const fullStars = Math.floor(rating);
@@ -24,19 +26,35 @@ const StarRating = ({ rating, size = 'medium' }) => {
 };
 
 const OwnerDetails = ({ owner, onClose }) => {
+  // ------------------ Animation Hooks ------------------
+  const [modalRef, modalInView] = useInView({ threshold: 0.1 });
+  const [profileRef, profileInView] = useInView({ threshold: 0.1 });
+  const [detailsRef, detailsInView] = useInView({ threshold: 0.1 });
+  const [searchesRef, searchesInView] = useInView({ threshold: 0.1 });
+  const [actionsRef, actionsInView] = useInView({ threshold: 0.1 });
+
   if (!owner) return null;
 
   return (
-    <div className="owner-modal-overlay">
-      <div className="owner-modal">
-        <div className="owner-modal-header">
+    <div className="owner-details">
+      {/* --------------------------- Modal Container --------------------------- */}
+      <div 
+        ref={modalRef} 
+        className={`owner-modal ${modalInView ? 'fade-in' : ''}`}
+      >
+        {/* --------------------------- Modal Header --------------------------- */}
+        <div className={`owner-modal-header ${modalInView ? 'slide-in-down' : ''}`}>
           <h2>Owner Details</h2>
           <button className="close-button" onClick={onClose}>
             <img src={assets.closeIcon} alt="Close" />
           </button>
         </div>
 
-        <div className="owner-profile-section">
+        {/* --------------------------- Profile Section --------------------------- */}
+        <div 
+          ref={profileRef} 
+          className={`owner-profile-section ${profileInView ? 'slide-in-left' : ''}`}
+        >
           <div className="owner-avatar-container">
             <img 
               src={owner.profile_pic || assets.defaultAvatar} 
@@ -54,7 +72,11 @@ const OwnerDetails = ({ owner, onClose }) => {
           </div>
         </div>
 
-        <div className="owner-details-section">
+        {/* --------------------------- Details Section --------------------------- */}
+        <div 
+          ref={detailsRef} 
+          className={`owner-details-section ${detailsInView ? 'slide-in-right' : ''}`}
+        >
           <div className="detail-row">
             <span className="detail-label">Email:</span>
             <a href={`mailto:${owner.email}`} className="detail-value link">
@@ -78,16 +100,24 @@ const OwnerDetails = ({ owner, onClose }) => {
           </div>
         </div>
 
-        <div className="recent-searches-section">
+        {/* --------------------------- Recent Searches Section --------------------------- */}
+        <div 
+          ref={searchesRef} 
+          className={`recent-searches-section ${searchesInView ? 'slide-in-left' : ''}`}
+        >
           <h4>Recently Searched Cities</h4>
           <div className="city-tags">
-            {owner.recentSearchedCities.map((city, index) => (
+            {owner.recentSearchedCities?.map((city, index) => (
               <span key={index} className="city-tag">{city}</span>
             ))}
           </div>
         </div>
 
-        <div className="owner-actions">
+        {/* --------------------------- Action Buttons --------------------------- */}
+        <div 
+          ref={actionsRef} 
+          className={`owner-actions ${actionsInView ? 'slide-in-up' : ''}`}
+        >
           <button className="action-button primary">
             Send Message
           </button>

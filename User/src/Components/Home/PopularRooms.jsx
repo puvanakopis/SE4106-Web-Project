@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { roomsDummyData } from '../../Assets/assets';
 import { FaArrowRight, FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
 import { scrollToTop } from '../../Pages/scrollToTop';
+import { useInView } from 'react-intersection-observer';
 import './PopularRooms.css';
 
 const PopularRooms = () => {
@@ -12,6 +13,19 @@ const PopularRooms = () => {
         return saved ? JSON.parse(saved) : [];
     });
     const [showSavedNotification, setShowSavedNotification] = useState(false);
+
+    // Modified intersection observers without triggerOnce
+    const [headerRef, headerInView] = useInView({
+        threshold: 0.1
+    });
+
+    const [gridRef, gridInView] = useInView({
+        threshold: 0.1
+    });
+
+    const [buttonRef, buttonInView] = useInView({
+        threshold: 0.1
+    });
 
     const toggleSaveRoom = (roomId, e) => {
         e.stopPropagation();
@@ -59,12 +73,12 @@ const PopularRooms = () => {
             )}
 
             <section className="featured-properties">
-                <div className="section-header">
+                <div className={`section-header ${headerInView ? 'slide-in-left' : ''}`} ref={headerRef}>
                     <h2>Featured Accommodations</h2>
                     <p>Top-rated stays selected by our travel experts</p>
                 </div>
 
-                <div className="properties-grid">
+                <div className={`properties-grid ${gridInView ? 'slide-in-right' : ''}`} ref={gridRef}>
                     {roomsDummyData.slice(0, 3).map(room => (
                         <div
                             className="card"
@@ -116,11 +130,12 @@ const PopularRooms = () => {
                 </div>
 
                 <button
-                    className="view-all-button"
+                    className={`view-all-button ${buttonInView ? 'slide-in-bottom' : ''}`}
                     onClick={() => {
                         navigate('/accommodation')
                         scrollToTop()
                     }}
+                    ref={buttonRef}
                 >
                     View All Accommodations <FaArrowRight className="arrow-icon" />
                 </button>

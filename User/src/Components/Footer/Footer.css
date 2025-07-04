@@ -1,4 +1,4 @@
-.footer{
+.footer {
     background-color: #EFF0F2;
     margin-top: 5%;
     padding-top: 2%;
@@ -6,9 +6,9 @@
 
 
 /* Brand Description */
-.footer .footer-logo .logo-text{
+.footer .footer-logo .logo-text {
     font-family: "DM Serif Display", serif;
-    font-weight: 800 ;
+    font-weight: 800;
     font-style: normal;
     font-size: 35px;
     cursor: pointer;
@@ -17,15 +17,15 @@
 }
 
 
- /* About Us , Services , Contact Info */
-.footer .footer-section .header{
+/* About Us , Services , Contact Info */
+.footer .footer-section .header {
     color: var(--primary-color) !important;
     font-size: 25px;
     padding-bottom: 10px;
 }
 
 /* Contact Info */
-.footer .footer-section .social-media{
+.footer .footer-section .social-media {
     color: var(--primary-color) !important;
     font-size: 25px;
     cursor: pointer;
@@ -34,7 +34,20 @@
 
 /* For Responsive  */
 @media (max-width: 750px) {
-    .about , .services {
+
+    .about,
+    .services {
         display: none;
     }
+}
+
+
+
+.li-item a{
+    transition: all 0.25s ease-in-out !important;
+}
+
+
+.li-item a:hover {
+    margin-left: 10px !important;
 }

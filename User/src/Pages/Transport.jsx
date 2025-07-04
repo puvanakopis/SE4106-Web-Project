@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useInView } from 'react-intersection-observer';
 import StarRating from '../Components/Rating/StarRating';
 import { vehicleData } from '../Assets/assets';
 import { FaHeart, FaRegHeart, FaTimes, FaFilter } from 'react-icons/fa';
-import { scrollToTop } from './scrollToTop'
+import { scrollToTop } from './scrollToTop';
 import './Transport.css';
 
-// Reusable Components
-const CheckBox = ({ label, selected = false, onChange = () => { } }) => (
+/* ------------- Reusable Components ------------- */
+const CheckBox = ({ label, selected = false, onChange = () => {} }) => (
   <label className="filter-checkbox">
     <input
       type="checkbox"
@@ -20,7 +21,7 @@ const CheckBox = ({ label, selected = false, onChange = () => { } }) => (
   </label>
 );
 
-const RadioButton = ({ label, selected = false, onChange = () => { } }) => (
+const RadioButton = ({ label, selected = false, onChange = () => {} }) => (
   <label className="filter-radio">
     <input
       type="radio"
@@ -35,7 +36,7 @@ const RadioButton = ({ label, selected = false, onChange = () => { } }) => (
 );
 
 const NotificationToast = ({ message, onClose, isRemoved }) => (
-  <div className="toast-notification" role="alert">
+  <div className="toast-notification scale-up" role="alert">
     <span className="toast-icon">
       {isRemoved ? <FaRegHeart /> : <FaHeart />}
     </span>
@@ -50,68 +51,98 @@ const NotificationToast = ({ message, onClose, isRemoved }) => (
   </div>
 );
 
-const TransportBanner = ({
-  searchName,
-  setSearchName,
-  searchType,
-  setSearchType,
-  setSearchMinPrice,
-  setSearchMaxPrice,
-}) => (
-  <section className="transport-hero">
-    <div className="transport-hero-content container">
-      <h1 className="hero-title">Find Your Perfect Ride</h1>
-      <p className="hero-subtitle">
-        Quality vehicles. Flexible rentals. Hassle-free campus transportation.
-      </p>
+/* ------------- Transport Card Component ------------- */
+const TransportCard = ({ vehicle, index, savedVehicles, toggleSaveVehicle, handleVehicleClick }) => {
+  const [cardRef, cardInView] = useInView({
+    threshold: 0.1,
+    triggerOnce: false
+  });
 
-      <form className="transport-search-bar" onSubmit={(e) => e.preventDefault()}>
-        <input
-          type="text"
-          placeholder="Search by Vehicle Name"
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-          className="transport-search-input"
-          aria-label="Vehicle name"
+  return (
+    <article
+      ref={cardRef}
+      key={vehicle.vehicle_id}
+      className={`transport-card ${cardInView ? 'scale-up' : ''}`}
+      style={{ transitionDelay: `${index * 0.1}s` }}
+      onClick={() => {
+        handleVehicleClick(vehicle.vehicle_id);
+        scrollToTop();
+      }}
+    >
+      {/* Vehicle Image Section */}
+      <div className="transport-image-container">
+        <img
+          src={vehicle.vehicle_images[0]}
+          alt={`${vehicle.vehicle_type} - ${vehicle.brand} ${vehicle.model}`}
+          className="transport-image"
+          loading="lazy"
         />
-
-        <select
-          value={searchType}
-          onChange={(e) => setSearchType(e.target.value)}
-          className="transport-search-select"
-          aria-label="Vehicle Type"
-        >
-          <option value="">Vehicle Type</option>
-          <option value="Motorbike">Motorbike</option>
-          <option value="Car">Car</option>
-          <option value="Van">Van</option>
-          <option value="Bus">Bus</option>
-        </select>
-
-        <select
-          onChange={(e) => {
-            const [min, max] = e.target.value.split('-');
-            setSearchMinPrice(min);
-            setSearchMaxPrice(max);
+        <span className="transport-badge">{vehicle.vehicle_type}</span>
+        <button
+          className={`save-button ${savedVehicles.includes(vehicle.vehicle_id) ? 'saved' : ''}`}
+          onClick={(e) => {
+            toggleSaveVehicle(vehicle.vehicle_id, e);
+            scrollToTop();
           }}
-          className="transport-search-select"
-          aria-label="Price Range"
+          aria-label={savedVehicles.includes(vehicle.vehicle_id) ? 'Remove from saved' : 'Save this vehicle'}
         >
-          <option value="">Price Range</option>
-          <option value="0-2000">0 - 2,000</option>
-          <option value="2000-4000">2,000 - 4,000</option>
-          <option value="4000-6000">4,000 - 6,000</option>
-        </select>
-
-        <button type="submit" className="transport-search-btn">
-          Search
+          {savedVehicles.includes(vehicle.vehicle_id) ? (
+            <FaHeart className="icon-heart-filled" />
+          ) : (
+            <FaRegHeart className="icon-heart-outline" />
+          )}
         </button>
-      </form>
-    </div>
-  </section>
-);
+      </div>
 
+      {/* Vehicle Info Section */}
+      <div className="transport-card-content">
+        <div className="transport-info">
+          <div className="transport-header-info">
+            <h2 className="transport-title">{vehicle.brand} {vehicle.model}</h2>
+          </div>
+          <div className="transport-specs">
+            <div className="spec-item">
+              <div className="transport-rating">
+                <StarRating rating={vehicle.average_rating} />
+                <span className="reviews">50+ reviews</span>
+              </div>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Fuel:</span>
+              <span className="spec-value">{vehicle.fuel_type}</span>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Seats:</span>
+              <span className="spec-value">{vehicle.seating_capacity}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Price Section */}
+        <div className="transport-price-section">
+          <div className="price-info">
+            <p className="price">Rs {vehicle.rental_price_per_day.toLocaleString()}</p>
+            <p className="price-per">per day</p>
+          </div>
+          <button
+            className="view-details-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleVehicleClick(vehicle.vehicle_id);
+              scrollToTop();
+            }}
+          >
+            View Details
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+/* ------------- Main Transport Component ------------- */
 const Transport = () => {
+  /* ------------- State Management ------------- */
   const navigate = useNavigate();
   const [openFilters, setOpenFilters] = useState(false);
   const [savedVehicles, setSavedVehicles] = useState(() => {
@@ -121,60 +152,65 @@ const Transport = () => {
   const [showSavedNotification, setShowSavedNotification] = useState(false);
   const [notificationMsg, setNotificationMsg] = useState('');
   const [isRemovedNotification, setIsRemovedNotification] = useState(false);
-
-  // Search and filter states
   const [searchName, setSearchName] = useState('');
   const [searchType, setSearchType] = useState('');
   const [searchMinPrice, setSearchMinPrice] = useState('');
   const [searchMaxPrice, setSearchMaxPrice] = useState('');
+  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState([]);
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+  const [selectedSortOption, setSelectedSortOption] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const transportsPerPage = 9;
 
-  // Filter options
+  /* ------------- Intersection Observer Hooks ------------- */
+  const [heroRef, heroInView] = useInView({ threshold: 0.1, triggerOnce: false });
+  const [resultsRef, resultsInView] = useInView({ threshold: 0.1, triggerOnce: false });
+  const [filtersSidebarRef, filtersSidebarInView] = useInView({ threshold: 0.1, triggerOnce: false });
+  const [filtersButtonRef, filtersButtonInView] = useInView({ threshold: 0.1, triggerOnce: false });
+
+  /* ------------- Constants ------------- */
   const vehicleTypes = ['Motorbike', 'Car', 'Van', 'Bus'];
   const priceRanges = ['0 to 2000', '2000 to 4000', '4000 to 6000'];
   const sortOptions = ['Price Low to High', 'Price High to Low', 'Seating Capacity'];
 
-  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState([]);
-  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
-  const [selectedSortOption, setSelectedSortOption] = useState('');
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const transportsPerPage = 9;
-
-  // Filter and sort vehicles
+  /* ------------- Filter Logic ------------- */
   const filteredTransports = useMemo(() => {
     let result = [...vehicleData];
 
+    // Name filter
     if (searchName.trim()) {
       result = result.filter(vehicle =>
         `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchName.toLowerCase())
       );
     }
 
+    // Type filter
     if (searchType.trim()) {
       result = result.filter(vehicle =>
         vehicle.vehicle_type.toLowerCase().includes(searchType.toLowerCase())
       );
     }
 
+    // Price range filters
     if (searchMinPrice) {
       result = result.filter(vehicle =>
         vehicle.rental_price_per_day >= Number(searchMinPrice)
       );
     }
-
     if (searchMaxPrice) {
       result = result.filter(vehicle =>
         vehicle.rental_price_per_day <= Number(searchMaxPrice)
       );
     }
 
+    // Vehicle type filters
     if (selectedVehicleTypes.length > 0) {
       result = result.filter(vehicle =>
         selectedVehicleTypes.includes(vehicle.vehicle_type)
       );
     }
 
+    // Price range checkboxes
     if (selectedPriceRanges.length > 0) {
       result = result.filter(vehicle =>
         selectedPriceRanges.some(range => {
@@ -184,6 +220,7 @@ const Transport = () => {
       );
     }
 
+    // Sorting logic
     if (selectedSortOption === 'Price Low to High') {
       result.sort((a, b) => a.rental_price_per_day - b.rental_price_per_day);
     } else if (selectedSortOption === 'Price High to Low') {
@@ -194,7 +231,6 @@ const Transport = () => {
 
     return result;
   }, [
-    vehicleData,
     searchName,
     searchType,
     searchMinPrice,
@@ -204,14 +240,14 @@ const Transport = () => {
     selectedSortOption
   ]);
 
-  // Pagination
+  /* ------------- Pagination Logic ------------- */
   const totalPages = Math.ceil(filteredTransports.length / transportsPerPage);
   const paginatedTransports = useMemo(() => {
     const startIdx = (currentPage - 1) * transportsPerPage;
     return filteredTransports.slice(startIdx, startIdx + transportsPerPage);
-  }, [filteredTransports, currentPage, transportsPerPage]);
+  }, [filteredTransports, currentPage]);
 
-  // Handlers
+  /* ------------- Event Handlers ------------- */
   const handleVehicleTypeChange = (checked, label) => {
     setSelectedVehicleTypes(prev =>
       checked ? [...prev, label] : prev.filter(type => type !== label)
@@ -268,7 +304,7 @@ const Transport = () => {
     navigate(`/transport/${vehicleId}`);
   };
 
-  // Notification effect
+  /* ------------- Effects ------------- */
   useEffect(() => {
     if (showSavedNotification) {
       const timer = setTimeout(() => {
@@ -278,6 +314,7 @@ const Transport = () => {
     }
   }, [showSavedNotification]);
 
+  /* ------------- Helper Functions ------------- */
   const canResetFilters = !(
     selectedVehicleTypes.length === 0 &&
     selectedPriceRanges.length === 0 &&
@@ -288,8 +325,10 @@ const Transport = () => {
     !searchMaxPrice
   );
 
+  /* ------------- Render Section ------------- */
   return (
     <div className="transport">
+      {/* Notification Toast */}
       {showSavedNotification && (
         <NotificationToast
           message={notificationMsg}
@@ -298,18 +337,72 @@ const Transport = () => {
         />
       )}
 
-      <TransportBanner
-        searchName={searchName}
-        setSearchName={setSearchName}
-        searchType={searchType}
-        setSearchType={setSearchType}
-        setSearchMinPrice={setSearchMinPrice}
-        setSearchMaxPrice={setSearchMaxPrice}
-      />
+      {/* Hero Section */}
+      <section
+        ref={heroRef}
+        className={`transport-hero ${heroInView ? 'slide-in-bottom' : ''}`}
+      >
+        <div className="transport-hero-content container">
+          <h1 className={`hero-title ${heroInView ? 'slide-in-left' : ''}`}>
+            Find Your Perfect Ride
+          </h1>
+          <p className={`hero-subtitle ${heroInView ? 'slide-in-right' : ''}`}>
+            Quality vehicles. Flexible rentals. Hassle-free campus transportation.
+          </p>
 
+          {/* Search Bar */}
+          <form 
+            className={`transport-search-bar ${heroInView ? 'scale-up' : ''}`}
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <input
+              type="text"
+              placeholder="Search by Vehicle Name"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="transport-search-input"
+              aria-label="Vehicle name"
+            />
+
+            <select
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value)}
+              className="transport-search-select"
+              aria-label="Vehicle Type"
+            >
+              <option value="">Vehicle Type</option>
+              {vehicleTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+
+            <select
+              onChange={(e) => {
+                const [min, max] = e.target.value.split('-');
+                setSearchMinPrice(min);
+                setSearchMaxPrice(max);
+              }}
+              className="transport-search-select"
+              aria-label="Price Range"
+            >
+              <option value="">Price Range</option>
+              <option value="0-2000">0 - 2,000</option>
+              <option value="2000-4000">2,000 - 4,000</option>
+              <option value="4000-6000">4,000 - 6,000</option>
+            </select>
+
+            <button type="submit" className="transport-search-btn">
+              Search
+            </button>
+          </form>
+        </div>
+      </section>
+
+      {/* Filter Toggle Button */}
       <div className="transport-header">
         <button
-          className="mobile-filter-toggle"
+          ref={filtersButtonRef}
+          className={`mobile-filter-toggle ${filtersButtonInView ? 'slide-in-left' : ''}`}
           onClick={() => setOpenFilters(!openFilters)}
           aria-expanded={openFilters}
         >
@@ -325,17 +418,20 @@ const Transport = () => {
         </button>
       </div>
 
+      {/* Main Content Area */}
       <div className="transport-content">
-        <aside
-          className={`filters-sidebar ${openFilters ? 'open' : ''}`}
-          aria-label="Filters"
+        {/* Filters Sidebar */}
+        <aside 
+          ref={filtersSidebarRef}
+          className={`filters-sidebar ${openFilters || window.innerWidth > 768 ? 'open' : ''} ${filtersSidebarInView ? 'slide-in-left' : ''}`}
         >
-          <div className="filter-section">
+          {/* Vehicle Type Filters */}
+          <div className={`filter-section ${filtersSidebarInView ? 'scale-up' : ''}`}>
             <h2 className="filter-section-title">Vehicle Types</h2>
             <div className="filter-options">
-              {vehicleTypes.map((vehicle, i) => (
+              {vehicleTypes.map((vehicle) => (
                 <CheckBox
-                  key={`vehicle-type-${i}`}
+                  key={`vehicle-type-${vehicle}`}
                   label={vehicle}
                   selected={selectedVehicleTypes.includes(vehicle)}
                   onChange={handleVehicleTypeChange}
@@ -344,12 +440,13 @@ const Transport = () => {
             </div>
           </div>
 
-          <div className="filter-section">
+          {/* Price Range Filters */}
+          <div className={`filter-section ${filtersSidebarInView ? 'scale-up' : ''}`}>
             <h2 className="filter-section-title">Price Range (per day)</h2>
             <div className="filter-options">
-              {priceRanges.map((range, i) => (
+              {priceRanges.map((range) => (
                 <CheckBox
-                  key={`price-range-${i}`}
+                  key={`price-range-${range}`}
                   label={range}
                   selected={selectedPriceRanges.includes(range)}
                   onChange={handlePriceRangeChange}
@@ -358,12 +455,13 @@ const Transport = () => {
             </div>
           </div>
 
-          <div className="filter-section">
+          {/* Sort Options */}
+          <div className={`filter-section ${filtersSidebarInView ? 'scale-up' : ''}`}>
             <h2 className="filter-section-title">Sort By</h2>
             <div className="filter-options">
-              {sortOptions.map((option, i) => (
+              {sortOptions.map((option) => (
                 <RadioButton
-                  key={`sort-option-${i}`}
+                  key={`sort-option-${option}`}
                   label={option}
                   selected={selectedSortOption === option}
                   onChange={handleSortChange}
@@ -372,8 +470,9 @@ const Transport = () => {
             </div>
           </div>
 
+          {/* Reset Button */}
           <button
-            className="resetButton"
+            className={`resetButton ${filtersSidebarInView ? 'scale-up' : ''}`}
             onClick={resetAllFilters}
             disabled={!canResetFilters}
           >
@@ -381,15 +480,18 @@ const Transport = () => {
           </button>
         </aside>
 
-        {openFilters && (
-          <div
+        {/* Filters Overlay (Mobile) */}
+        {openFilters && window.innerWidth <= 768 && (
+          <div 
             className="filters-overlay"
             onClick={() => setOpenFilters(false)}
           />
         )}
 
-        <main className="transports-list">
-          <div className="results-header full-width">
+        {/* Vehicles List */}
+        <main className="transports-list" ref={resultsRef}>
+          {/* Results Header */}
+          <div className={`results-header full-width ${resultsInView ? 'slide-in-right' : ''}`}>
             <div className="results-header-content">
               <p className="results-count">
                 Found <strong>{filteredTransports.length}</strong> Vehicles
@@ -397,8 +499,9 @@ const Transport = () => {
             </div>
           </div>
 
+          {/* Results List or Empty State */}
           {paginatedTransports.length === 0 ? (
-            <div className="no-results">
+            <div className={`no-results ${resultsInView ? 'scale-up' : ''}`}>
               <h3>No vehicles found matching your criteria</h3>
               <p>Try adjusting your filters to see more results</p>
               <button className="reset-filters" onClick={resetAllFilters}>
@@ -407,103 +510,47 @@ const Transport = () => {
             </div>
           ) : (
             <>
-              {paginatedTransports.map(vehicle => (
-                <article
+              {/* Vehicle Cards */}
+              {paginatedTransports.map((vehicle, index) => (
+                <TransportCard
                   key={vehicle.vehicle_id}
-                  className="transport-card"
-                  onClick={() => {
-                    handleVehicleClick(vehicle.vehicle_id);
-                    scrollToTop();
-                  }}
-                >
-                  <div className="transport-image-container">
-                    <img
-                      src={vehicle.vehicle_images[0]}
-                      alt={`${vehicle.vehicle_type} - ${vehicle.brand} ${vehicle.model}`}
-                      className="transport-image"
-                    />
-                    <span className="transport-badge">{vehicle.vehicle_type}</span>
-                    <button
-                      className={`save-button ${savedVehicles.includes(vehicle.vehicle_id) ? 'saved' : ''}`}
-                      onClick={(e) => {
-                        toggleSaveVehicle(vehicle.vehicle_id, e)
-                        scrollToTop()
-                      }
-                      }
-                    >
-                      {savedVehicles.includes(vehicle.vehicle_id) ? (
-                        <FaHeart className="icon-heart-filled" />
-                      ) : (
-                        <FaRegHeart className="icon-heart-outline" />
-                      )}
-                    </button>
-                  </div>
-
-                  <div className="transport-card-content">
-                    <div className="transport-info">
-                      <div className="transport-header-info">
-                        <h2 className="transport-title">{vehicle.brand} {vehicle.model}</h2>
-                      </div>
-                      <div className="transport-specs">
-                        <div className="spec-item">
-                          <div className="transport-rating">
-                            <StarRating rating={vehicle.average_rating} />
-                            <span className="reviews">50+ reviews</span>
-                          </div>
-                        </div>
-                        <div className="spec-item">
-                          <span className="spec-label">Fuel:</span>
-                          <span className="spec-value">{vehicle.fuel_type}</span>
-                        </div>
-                        <div className="spec-item">
-                          <span className="spec-label">Seats:</span>
-                          <span className="spec-value">{vehicle.seating_capacity}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="transport-price-section">
-                      <div className="price-info">
-                        <p className="price">Rs {vehicle.rental_price_per_day.toLocaleString()}</p>
-                        <p className="price-per">per day</p>
-                      </div>
-                      <button
-                        className="view-details-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleVehicleClick(vehicle.vehicle_id);
-                          scrollToTop()
-                        }}
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </article>
+                  vehicle={vehicle}
+                  index={index}
+                  savedVehicles={savedVehicles}
+                  toggleSaveVehicle={toggleSaveVehicle}
+                  handleVehicleClick={handleVehicleClick}
+                />
               ))}
 
+              {/* Pagination */}
               {totalPages > 1 && (
-                <div className="pagination" aria-label="Pagination">
+                <div className={`pagination ${resultsInView ? 'slide-in-right' : ''}`}>
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className="pagination-arrow"
+                    aria-label="Previous page"
                   >
                     &lt;
                   </button>
+
                   {Array.from({ length: totalPages }, (_, i) => (
                     <button
                       key={`page-${i + 1}`}
                       onClick={() => handlePageChange(i + 1)}
                       className={`pagination-number ${currentPage === i + 1 ? 'active' : ''}`}
+                      aria-label={`Page ${i + 1}`}
+                      aria-current={currentPage === i + 1 ? 'page' : undefined}
                     >
                       {i + 1}
                     </button>
                   ))}
+
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className="pagination-arrow"
+                    aria-label="Next page"
                   >
                     &gt;
                   </button>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import './SignUp.css';
 import upload_area from '../Assets/upload_area.png';
 
-
 const SignUp = () => {
   const [image, setImage] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,22 +31,22 @@ const SignUp = () => {
   };
 
   return (
-    // --------------------- Main Container ---------------------
-    <div className="signup-container">
-      
-      {/* --------------------- Sub Container --------------------- */}
-      <div className="sub-container">
-        
-        {/* --------------------- Signup Form --------------------- */}
-        <form onSubmit={handleSubmit} className="signup-form">
-          
-          {/*  Form Title  */}
-          <h2 className="form-title">Sign Up</h2>
+    // Main container with fade-in animation
+    <div className="signup-container fade-in">
 
-          {/*  Input Fields Grid  */}
+      {/* Sub-container with slide-in-right animation */}
+      <div className="sub-container slide-in-right delay-100">
+
+        {/* Signup form with scale-up animation */}
+        <form onSubmit={handleSubmit} className="signup-form scale-up delay-200">
+
+          {/* Form title with slide-in-left animation */}
+          <h2 className="form-title slide-in-left delay-300">Sign Up</h2>
+
+          {/* Input fields grid */}
           <div className="form-grid">
-            {/*  First Name  */}
-            <div className="form-group">
+            {/* First Name - slide-in-left */}
+            <div className="form-group slide-in-left delay-400">
               <label>First Name</label>
               <input
                 type="text"
@@ -59,8 +58,8 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Last Name  */}
-            <div className="form-group">
+            {/* Last Name - slide-in-right */}
+            <div className="form-group slide-in-right delay-400">
               <label>Last Name</label>
               <input
                 type="text"
@@ -72,8 +71,8 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Email Address  */}
-            <div className="form-group">
+            {/* Email Address - slide-in-left */}
+            <div className="form-group slide-in-left delay-500">
               <label>Email Address</label>
               <input
                 type="email"
@@ -85,8 +84,8 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Mobile Number  */}
-            <div className="form-group">
+            {/* Mobile Number - slide-in-right */}
+            <div className="form-group slide-in-right delay-500">
               <label>Mobile Number</label>
               <input
                 type="text"
@@ -98,8 +97,8 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Address  */}
-            <div className="form-group full-width">
+            {/* Address - slide-in-left (full width) */}
+            <div className="form-group full-width slide-in-left delay-600">
               <label>Address</label>
               <input
                 type="text"
@@ -111,8 +110,8 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Password  */}
-            <div className="form-group">
+            {/* Password - slide-in-right */}
+            <div className="form-group slide-in-right delay-600">
               <label>Password</label>
               <input
                 type="password"
@@ -125,8 +124,8 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Confirm Password  */}
-            <div className="form-group">
+            {/* Confirm Password - slide-in-left */}
+            <div className="form-group slide-in-left delay-700">
               <label>Confirm Password</label>
               <input
                 type="password"
@@ -140,8 +139,8 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/*  Profile Photo Upload  */}
-          <div className="form-group">
+          {/* Profile Photo Upload - fade-in */}
+          <div className="form-group fade-in delay-800">
             <label>Profile Photo</label>
             <label htmlFor="file-input" className="uploadProfile">
               <img
@@ -159,15 +158,15 @@ const SignUp = () => {
             />
           </div>
 
-          {/*  Submit Button  */}
-          <div className="form-action">
+          {/* Submit Button - scale-up */}
+          <div className="form-action scale-up delay-900">
             <button type="submit">Sign Up</button>
           </div>
 
-          {/*  Footer: Login Link  */}
-          <div className="form-footer">
+          {/* Footer: Login Link - fade-in */}
+          <div className="form-footer fade-in delay-1000">
             <p>
-              Have An Account? <a href="/login" >Log In</a>
+              Have An Account? <a href="/login">Log In</a>
             </p>
           </div>
         </form>

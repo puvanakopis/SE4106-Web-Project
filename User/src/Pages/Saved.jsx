@@ -1,29 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roomsDummyData, vehicleData } from '../Assets/assets';
 import StarRating from '../Components/Rating/StarRating';
+import { scrollToTop } from './scrollToTop';
 import './Saved.css';
 
 const Saved = () => {
+  // ------------------ Routing & State Management ------------------
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('accommodation');
   const [currentPage, setCurrentPage] = useState(1);
+  const [animateContent, setAnimateContent] = useState(false);
   const itemsPerPage = 6;
 
-  // Initialize saved items from localStorage
+  // ------------------ Data Initialization ------------------
+  // Initialize saved accommodations from localStorage
   const [savedAccommodations, setSavedAccommodations] = useState(() => {
     const saved = localStorage.getItem('savedRooms');
     const savedIds = saved ? JSON.parse(saved) : [];
     return roomsDummyData.filter(room => savedIds.includes(room._id));
   });
 
+  // Initialize saved transports from localStorage
   const [savedTransports, setSavedTransports] = useState(() => {
     const saved = localStorage.getItem('savedVehicles');
     const savedIds = saved ? JSON.parse(saved) : [];
     return vehicleData.filter(vehicle => savedIds.includes(vehicle.vehicle_id));
   });
 
-  // Remove handlers
+  // ------------------ Animation Effects ------------------
+  // Trigger animation when tab changes
+  useEffect(() => {
+    setAnimateContent(true);
+    const timer = setTimeout(() => setAnimateContent(false), 500);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
+
+  // ------------------ Item Removal Handlers ------------------
   const removeSavedAccommodation = (roomId, e) => {
     e.stopPropagation();
     setSavedAccommodations(prev => prev.filter(r => r._id !== roomId));
@@ -40,7 +53,7 @@ const Saved = () => {
     localStorage.setItem('savedVehicles', JSON.stringify(newSaved));
   };
 
-  // Pagination logic
+  // ------------------ Pagination Logic ------------------
   const totalPages = Math.ceil(
     activeTab === 'transport'
       ? savedTransports.length / itemsPerPage
@@ -49,14 +62,15 @@ const Saved = () => {
 
   const paginatedItems = activeTab === 'transport'
     ? savedTransports.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      )
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    )
     : savedAccommodations.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      );
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
 
+  // ------------------ Event Handlers ------------------
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -64,67 +78,62 @@ const Saved = () => {
     }
   };
 
-  return (
-    <div className="saved-profile">
-      {/* Page wrapper for saved items */}
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+    scrollToTop();
+  };
 
-      <div className="saved-header">
-        {/* Top header section */}
+  return (
+    <div className="saved-profile fade-in">
+      {/* ------------------ Header Section ------------------ */}
+      <div className="saved-header slide-in-left delay-100">
         <div>Your Saved Items</div>
       </div>
 
-      <div className="saved-container">
-        {/* Main container holds sidebar and content */}
-
-        <div className="saved-sidebar">
-          {/* Left sidebar for tabs */}
+      {/* ------------------ Main Content Container ------------------ */}
+      <div className="saved-container fade-in delay-200">
+        {/* ------------------ Sidebar Navigation ------------------ */}
+        <div className="saved-sidebar slide-in-left delay-300">
           <div
-            onClick={() => {
-              setActiveTab('accommodation');
-              setCurrentPage(1);
-            }}
+            onClick={() => handleTabChange('accommodation')}
             className={`saved-title ${activeTab === 'accommodation' ? 'active' : ''}`}
           >
             Accommodations
           </div>
           <div
-            onClick={() => {
-              setActiveTab('transport');
-              setCurrentPage(1);
-            }}
+            onClick={() => handleTabChange('transport')}
             className={`saved-title ${activeTab === 'transport' ? 'active' : ''}`}
           >
             Transport
           </div>
         </div>
 
-        <div className="saved-content">
-          {/* Right content panel */}
+        {/* ------------------ Content Display Area ------------------ */}
+        <div className={`saved-content ${animateContent ? 'slide-in-right' : ''}`}>
           {activeTab === 'accommodation' ? (
             <>
               {savedAccommodations.length === 0 ? (
-                <div className="no-saved">
-                  {/* Message shown when no saved accommodations */}
+                <div className="no-saved fade-in delay-100">
                   <h3>No saved accommodations yet</h3>
                   <p>Save your favorite rooms by clicking the heart icon</p>
                   <button
-                    className="browse-button"
-                    onClick={() => navigate('/accommodation')}
+                    className="browse-button fade-in delay-200"
+                    onClick={() => { navigate('/accommodation'); scrollToTop(); }}
                   >
                     Browse Accommodations
                   </button>
                 </div>
               ) : (
                 <>
+                  {/* ------------------ Accommodation Grid ------------------ */}
                   <div className="saved-grid">
-                    {/* Grid layout for saved accommodation cards */}
-                    {paginatedItems.map((accommodation) => (
+                    {paginatedItems.map((accommodation, index) => (
                       <div
                         key={accommodation._id}
-                        className="card accommodation-card"
-                        onClick={() => navigate(`/room/${accommodation._id}`)}
+                        className={`card accommodation-card fade-in delay-${(index % 6) + 1}00`}
+                        onClick={() => { navigate(`/room/${accommodation._id}`); scrollToTop(); }}
                       >
-                        {/* Single accommodation card */}
                         <img
                           src={accommodation.images[0]}
                           alt={`${accommodation.roomType} in ${accommodation.hotel.name}`}
@@ -152,9 +161,9 @@ const Saved = () => {
                     ))}
                   </div>
 
+                  {/* ------------------ Pagination Controls ------------------ */}
                   {totalPages > 1 && (
-                    <div className="pagination">
-                      {/* Pagination controls */}
+                    <div className="pagination fade-in delay-700">
                       <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
@@ -186,28 +195,26 @@ const Saved = () => {
           ) : (
             <>
               {savedTransports.length === 0 ? (
-                <div className="no-saved">
-                  {/* Message shown when no saved transports */}
+                <div className="no-saved fade-in delay-100">
                   <h3>No saved vehicles yet</h3>
                   <p>Save your favorite vehicles by clicking the heart icon</p>
                   <button
-                    className="browse-button"
-                    onClick={() => navigate('/transport')}
+                    className="browse-button fade-in delay-200"
+                    onClick={() => { navigate('/transport'); scrollToTop(); }}
                   >
                     Browse Transport
                   </button>
                 </div>
               ) : (
                 <>
+                  {/* ------------------ Transport Grid ------------------ */}
                   <div className="saved-grid">
-                    {/* Grid layout for saved transport cards */}
-                    {paginatedItems.map((vehicle) => (
+                    {paginatedItems.map((vehicle, index) => (
                       <div
                         key={vehicle.vehicle_id}
-                        className={`card vehicle-card ${vehicle.vehicle_type.toLowerCase()}`}
-                        onClick={() => navigate(`/transport/${vehicle.vehicle_id}`)}
+                        className={`card vehicle-card ${vehicle.vehicle_type.toLowerCase()} fade-in delay-${(index % 6) + 1}00`}
+                        onClick={() => { navigate(`/transport/${vehicle.vehicle_id}`); scrollToTop(); }}
                       >
-                        {/* Single vehicle card */}
                         <img
                           src={vehicle.vehicle_images[0]}
                           alt={`${vehicle.brand} ${vehicle.model}`}
@@ -238,9 +245,9 @@ const Saved = () => {
                     ))}
                   </div>
 
+                  {/* ------------------ Pagination Controls ------------------ */}
                   {totalPages > 1 && (
-                    <div className="pagination">
-                      {/* Pagination controls */}
+                    <div className="pagination fade-in delay-700">
                       <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}

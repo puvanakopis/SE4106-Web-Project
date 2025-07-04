@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaStar, FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
 import { vehicleData } from '../../Assets/assets';
 import { scrollToTop } from '../../Pages/scrollToTop';
+import { useInView } from 'react-intersection-observer';
 import './PopularTransport.css';
 
 const PopularTransport = () => {
@@ -12,6 +13,19 @@ const PopularTransport = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [showSavedNotification, setShowSavedNotification] = useState(false);
+
+  // Add intersection observers for animations
+  const [headerRef, headerInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [gridRef, gridInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [buttonRef, buttonInView] = useInView({
+    threshold: 0.1
+  });
 
   const toggleSaveVehicle = (vehicleId, e) => {
     e.stopPropagation();
@@ -71,12 +85,12 @@ const PopularTransport = () => {
       )}
 
       <section className="featured-transport">
-        <div className="section-header">
+        <div className={`section-header ${headerInView ? 'slide-in-left' : ''}`} ref={headerRef}>
           <h2>Transportation Options</h2>
           <p>Convenient ways to reach your destination</p>
         </div>
 
-        <div className="transport-grid">
+        <div className={`transport-grid ${gridInView ? 'slide-in-right' : ''}`} ref={gridRef}>
           {transportOptions.map(option => (
             <div
               className="card"
@@ -141,11 +155,12 @@ const PopularTransport = () => {
         </div>
 
         <button
-          className="view-all-button"
+          className={`view-all-button ${buttonInView ? 'slide-in-bottom' : ''}`}
           onClick={() => {
             scrollToTop();
             navigate('/transport');
           }}
+          ref={buttonRef}
         >
           View All Transport Options <FaArrowRight className="arrow-icon" />
         </button>

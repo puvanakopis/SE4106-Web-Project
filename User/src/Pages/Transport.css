@@ -1,5 +1,4 @@
 :root {
-  /* Colors */
   --primary-color: #3b82f6;
   --primary-hover: #2563eb;
   --text-dark: #111827;
@@ -8,22 +7,16 @@
   --border-color: #e5e7eb;
   --background-light: #f9fafb;
   --background-white: #ffffff;
-  
-  /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  
-  /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
-  
-  /* Transitions */
   --transition: all 0.2s ease;
 }
 
-/* -------------------- Base Styles -------------------- */
+/* ------------- Base Styles ------------- */
 .transport {
   padding: 0 8%;
   margin: 0 auto;
@@ -31,9 +24,9 @@
   max-width: 1600px;
 }
 
-/* -------------------- Banner Styles -------------------- */
+/* ------------- Hero/Banner Section ------------- */
 .transport .transport-hero {
-   background:
+  background:
     linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
     url('../Assets/bg.png') center/cover no-repeat;
   height: 600px;
@@ -123,7 +116,7 @@
   transform: translateY(-1px);
 }
 
-/* -------------------- Notification Toast -------------------- */
+/* ------------- Notification Toast ------------- */
 .transport .toast-notification {
   position: fixed;
   bottom: 1.5rem;
@@ -169,7 +162,7 @@
   opacity: 1;
 }
 
-/* -------------------- Header & Filter Toggle -------------------- */
+/* ------------- Header & Filter Toggle ------------- */
 .transport .transport-header {
   display: flex;
   justify-content: flex-end;
@@ -200,7 +193,8 @@
   font-size: 1rem;
 }
 
-/* -------------------- Main Content Layout -------------------- */
+
+/* ------------- Main Content Layout ------------- */
 .transport .transport-content {
   display: flex;
   gap: 2rem;
@@ -208,7 +202,7 @@
   position: relative;
 }
 
-/* -------------------- Filter Sidebar -------------------- */
+/* ------------- Filter Sidebar ------------- */
 .transport .filters-sidebar {
   width: 280px;
   padding: 1.5rem;
@@ -238,7 +232,6 @@
   z-index: 999;
   display: none;
 }
-
 .transport .filter-section {
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
@@ -296,11 +289,11 @@
   transition: var(--transition);
 }
 
-.transport .filter-checkbox:hover input ~ .checkmark {
+.transport .filter-checkbox:hover input~.checkmark {
   background-color: #e0e7ff;
 }
 
-.transport .filter-checkbox input:checked ~ .checkmark {
+.transport .filter-checkbox input:checked~.checkmark {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
@@ -311,7 +304,7 @@
   display: none;
 }
 
-.transport .filter-checkbox input:checked ~ .checkmark:after {
+.transport .filter-checkbox input:checked~.checkmark:after {
   display: block;
 }
 
@@ -336,11 +329,11 @@
   transition: var(--transition);
 }
 
-.transport .filter-radio:hover input ~ .radiomark {
+.transport .filter-radio:hover input~.radiomark {
   background-color: #e0e7ff;
 }
 
-.transport .filter-radio input:checked ~ .radiomark {
+.transport .filter-radio input:checked~.radiomark {
   border-color: var(--primary-color);
 }
 
@@ -350,7 +343,7 @@
   display: none;
 }
 
-.transport .filter-radio input:checked ~ .radiomark:after {
+.transport .filter-radio input:checked~.radiomark:after {
   display: block;
 }
 
@@ -385,7 +378,9 @@
   cursor: not-allowed;
 }
 
-/* -------------------- Transport Listings -------------------- */
+
+
+/* ------------- Transport Listings ------------- */
 .transport .transports-list {
   flex: 1;
   display: grid;
@@ -404,12 +399,6 @@
   grid-column: 1 / -1;
 }
 
-.transport .results-header-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .transport .results-count {
   text-align: end;
   margin: 0;
@@ -422,6 +411,7 @@
   font-weight: 600;
 }
 
+/* No Results State */
 .transport .no-results {
   display: flex;
   flex-direction: column;
@@ -447,6 +437,7 @@
   margin-bottom: 1.5rem;
 }
 
+/* Reset Filters Button */
 .transport .reset-filters {
   background-color: transparent;
   color: var(--primary-color);
@@ -462,7 +453,7 @@
   background-color: #eff6ff;
 }
 
-/* -------------------- Transport Card -------------------- */
+/* ------------- Transport Card ------------- */
 .transport .transport-card {
   border: 1px solid var(--border-color);
   background-color: var(--background-white);
@@ -479,6 +470,7 @@
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
 }
+
 
 .transport .transport-image-container {
   position: relative;
@@ -675,7 +667,10 @@
   background-color: var(--primary-hover);
 }
 
-/* -------------------- Pagination -------------------- */
+
+
+
+/* ------------- Pagination ------------- */
 .transport .pagination {
   display: flex;
   justify-content: center;
@@ -713,13 +708,14 @@
   cursor: not-allowed;
 }
 
-/* -------------------- Responsive Design -------------------- */
+/* ------------- Responsive Design ------------- */
 @media (max-width: 1200px) {
   .transport .transport {
     padding: 2rem 5%;
   }
 }
 
+/* Tablet Layout */
 @media (max-width: 1024px) {
   .transport .transport-content {
     flex-direction: column;
@@ -753,6 +749,7 @@
   }
 }
 
+/* Small Tablet Layout */
 @media (max-width: 768px) {
   .transport .transport-hero {
     height: 400px;
@@ -780,6 +777,7 @@
   }
 }
 
+/* Mobile Layout */
 @media (max-width: 480px) {
   .transport .transport {
     padding: 1.5rem;
@@ -803,6 +801,7 @@
     gap: 0.5rem;
   }
 
+  /* Full Width Filter Toggle */
   .transport .mobile-filter-toggle {
     width: 100%;
     justify-content: center;

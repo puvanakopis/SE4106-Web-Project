@@ -1,4 +1,5 @@
-.room-details {
+/* ------------- CSS Variables ------------- */
+:root {
   --primary-color: #3b82f6;
   --primary-hover: #2563eb;
   --text-dark: #111827;
@@ -16,15 +17,16 @@
   --transition: all 0.2s ease;
 }
 
+/* -------------------- Main Container -------------------- */
 .room-details {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 5%;
   color: var(--text-medium);
+  font-family: 'Inter', sans-serif;
 }
 
-
-/* -------------------- Room Header -------------------- */
+/* -------------------- Header Section -------------------- */
 .room-details .room-header {
   margin-bottom: 2rem;
 }
@@ -43,6 +45,7 @@
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  font-weight: 600;
 }
 
 .room-details .room-type {
@@ -84,7 +87,7 @@
   font-size: 0.95rem;
 }
 
-/* -------------------- Room Gallery -------------------- */
+/* -------------------- Gallery Section -------------------- */
 .room-details .room-gallery {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -138,9 +141,8 @@
   object-fit: cover;
 }
 
-/*--------------------  Room Content -------------------- */
+/* -------------------- Main Content Layout -------------------- */
 .room-details .room-content {
-  padding: 0 !important;
   display: flex;
   gap: 2rem;
   margin-bottom: 3rem;
@@ -148,15 +150,7 @@
   width: 100%;
 }
 
-.room-details .room-section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-dark);
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
+/* -------------------- Specifications Section -------------------- */
 .room-details .room-specs {
   flex: 1;
   background-color: var(--background-light);
@@ -194,7 +188,7 @@
   font-weight: 600;
 }
 
-/* Amenities Section */
+/* -------------------- Amenities Section -------------------- */
 .room-details .amenities-section {
   margin-bottom: 2rem;
 }
@@ -229,11 +223,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-.room-details .amenity-item img {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
 /* -------------------- Description Section -------------------- */
 .room-details .description-section {
   margin-bottom: 2rem;
@@ -252,10 +241,9 @@
   color: var(--text-medium);
 }
 
-/* Map Section */
+/* -------------------- Map Section -------------------- */
 .room-details .map-section {
   margin-bottom: 2rem;
-  box-shadow: none !important;
 }
 
 .room-details .map-title {
@@ -271,20 +259,18 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* -------------------- Room Booking -------------------- */
+/* -------------------- Booking Section -------------------- */
 .room-details .room-booking {
   width: 350px;
   flex-shrink: 0;
 }
 
 .room-details .booking-card {
-  flex: 1;
   background-color: var(--background-light);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 2rem;
   box-shadow: var(--shadow-sm);
-  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -308,6 +294,7 @@
   color: var(--text-light);
 }
 
+/* -------------------- Date Picker Section -------------------- */
 .room-details .booking-dates {
   margin-bottom: 1.5rem;
 }
@@ -343,7 +330,6 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-
 /* -------------------- Payment Method Section -------------------- */
 .room-details .payment-method-section {
   margin-bottom: 1.5rem;
@@ -373,8 +359,7 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-
-/* -------------------- Booking Summary -------------------- */
+/* -------------------- Booking Summary Section -------------------- */
 .room-details .booking-summary {
   margin-bottom: 1.5rem;
   padding: 1rem;
@@ -418,6 +403,7 @@
   border-radius: var(--radius-sm);
 }
 
+/* -------------------- Booking Button -------------------- */
 .room-details .booking-button {
   width: 100%;
   padding: 0.75rem;
@@ -454,16 +440,16 @@
   border-radius: var(--radius-sm);
 }
 
-
-/* -------------------- Room Secondary -------------------- */
+/* -------------------- Secondary Sections -------------------- */
 .room-details .room-secondary {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
 }
 
+/* -------------------- Reviews Section -------------------- */
 .room-details .room-reviews,
-.room-details .room-host {
+.room-details .room-owner {
   background-color: var(--background-light);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -489,39 +475,57 @@
   color: var(--text-dark);
 }
 
+.room-details .reviews-distribution {
+  margin-top: 1rem;
+}
 
-/* -------------------- Host Profile -------------------- */
-.room-details .host-profile {
+.room-details .reviews-distribution__item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.room-details .reviews-distribution__bar-container {
+  flex: 1;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  margin: 0 0.5rem;
+}
+
+.room-details .reviews-distribution__bar {
+  height: 100%;
+  background-color: var(--primary-color);
+  border-radius: 4px;
+}
+
+/* -------------------- Owner Section -------------------- */
+.room-details .owner-profile {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
-.room-details .host-avatar {
+.room-details .owner-avatar {
   width: 60px;
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.room-details .host-info {
+.room-details .owner-info {
   flex: 1;
 }
 
-.room-details .host-response-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.room-details .host-name {
+.room-details .owner-name {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-dark);
   margin-bottom: 0.5rem;
 }
 
-.room-details .host-rating {
+.room-details .owner-rating {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -529,7 +533,14 @@
   color: var(--text-medium);
 }
 
-.room-details .host-contact-button {
+.room-details .owner-response-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.room-details .owner-contact-button {
   width: 100%;
   padding: 0.75rem;
   background-color: var(--primary-color);
@@ -542,12 +553,11 @@
   transition: var(--transition);
 }
 
-.room-details .host-contact-button:hover {
+.room-details .owner-contact-button:hover {
   background-color: var(--primary-hover);
 }
 
-
-/* -------------------- Room Not Found -------------------- */
+/* -------------------- Error States -------------------- */
 .room-details .room-not-found {
   text-align: center;
   padding: 4rem 2rem;
@@ -563,6 +573,47 @@
 .room-details .room-not-found__message {
   font-size: 1.1rem;
   color: var(--text-medium);
+  margin-bottom: 1.5rem;
+}
+
+.room-details .back-button {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.room-details .back-button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* -------------------- Loading State -------------------- */
+.room-details .room-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  text-align: center;
+}
+
+.room-details .loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid var(--primary-color);
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* -------------------- Responsive Design -------------------- */
@@ -573,10 +624,6 @@
 
   .room-details .room-booking {
     width: 100%;
-  }
-
-  .room-details .booking-card {
-    position: static;
   }
 }
 
@@ -594,7 +641,7 @@
   }
 
   .room-details .specs-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -604,6 +651,12 @@
   }
 
   .room-details .room-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .room-details .room-name {
     font-size: 1.5rem;
   }
 
@@ -611,12 +664,16 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .room-details .specs-grid {
+    grid-template-columns: 1fr;
+  }
+
   .room-details .booking-summary__item {
     font-size: 0.8rem;
   }
 }
 
-/* DatePicker Styles */
+/* -------------------- DatePicker Overrides -------------------- */
 .room-details .react-datepicker-popper {
   z-index: 1000;
 }

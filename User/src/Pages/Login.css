@@ -10,7 +10,7 @@
     --radius-md: 0.5rem;
 }
 
-/* --------------------- Main Container --------------------- */
+/* -------------------   MAIN CONTAINER STYLES   ------------------- */
 .login-container {
     display: flex;
     justify-content: center;
@@ -19,7 +19,7 @@
     background-color: var(--background-light);
 }
 
-/* --------------------- Sub Container --------------------- */
+/* -------------------   SUB CONTAINER STYLES ------------------- */
 .login-container .sub-container {
     margin-top: 5%;
     margin-bottom: 5%;
@@ -32,12 +32,12 @@
     box-shadow: var(--shadow-md);
 }
 
-/*  Login Form  */
+/* -------------------   FORM STYLES ------------------- */
 .login-container .login-form {
     width: 100%;
 }
 
-/*  Form Title  */
+/* ------------------ Form Title ------------------ */
 .login-container .form-title {
     display: flex;
     justify-self: center;
@@ -54,7 +54,7 @@
     border-bottom: 3px solid var(--primary-color);
 }
 
-/* Input Fields */
+/* ------------------ Input Fields ------------------ */
 .login-container .form-group {
     margin-bottom: 20px;
     display: flex;
@@ -80,7 +80,7 @@
     outline: none;
 }
 
-/* Forgot Password Link  */
+/* ------------------ Forgot Password Link ------------------ */
 .login-container .forgot-password {
     text-align: right;
     margin-top: 5px;
@@ -96,7 +96,7 @@
     color: var(--primary-hover);
 }
 
-/*  Link to signup page */
+/* ------------------ Form Footer ------------------ */
 .login-container .form-footer {
     text-align: center;
     margin: 20px 0;
@@ -114,7 +114,7 @@
     color: var(--primary-hover);
 }
 
-/*  Submit Button  */
+/* ------------------ Submit Button ------------------ */
 .login-container .form-action button {
     width: 100%;
     padding: 12px;
@@ -137,7 +137,7 @@
     cursor: not-allowed;
 }
 
-/* --------------------- Responsive Design --------------------- */
+/* -------------------   RESPONSIVE STYLES   ------------------- */
 @media (max-width: 600px) {
     .login-container .sub-container {
         padding: 30px 20px;
