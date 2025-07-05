@@ -501,10 +501,10 @@ const Rooms = () => {
             <thead>
               <tr>
                 <th>Image</th>
+                <th>ID</th>
                 <th>Room Type</th>
                 <th>Hotel</th>
                 <th>Price</th>
-                <th>Amenities</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -521,22 +521,13 @@ const Rooms = () => {
                       className="room-thumbnail"
                     />
                   </td>
+                  <td>{room._id}</td>
                   <td>{room.roomType}</td>
                   <td>
                     <div>{room.hotel.name}</div>
                     <div className="small-text">{room.hotel.city}</div>
                   </td>
                   <td>Rs {room.pricePerMonth}</td>
-                  <td>
-                    <div className="amenities-list">
-                      {room.amenities?.slice(0, 3).map((amenity, i) => (
-                        <span key={i} className="amenity-badge">{amenity}</span>
-                      ))}
-                      {room.amenities?.length > 3 && (
-                        <span className="more-amenities">+{room.amenities.length - 3} more</span>
-                      )}
-                    </div>
-                  </td>
                   <td>
                     <button
                       onClick={() => toggleAvailability(room._id)}
@@ -612,19 +603,19 @@ const Rooms = () => {
                 <tr key={booking._id}>
                   <td>{booking._id}</td>
                   <td>
-                    <div>{booking.room.roomType}</div>
-                    <div className="small-text">Rs {booking.room.pricePerMonth}/month</div>
+                    <div className='primary-text'>{booking.room.roomType}</div>
+                    <div className="secondary-text">Rs {booking.room.pricePerMonth}/month</div>
                   </td>
                   <td>
-                    <div>{booking.room.hotel.name}</div>
-                    <div className="small-text">{booking.room.hotel.city}</div>
+                    <div className='primary-text'>{booking.room.hotel.name}</div>
+                    <div className="secondary-text">{booking.room.hotel.city}</div>
                   </td>
                   <td>
-                    <div>{formatDate(booking.checkInDate)}</div>
-                    <div className="small-text">to {formatDate(booking.checkOutDate)}</div>
+                    <div className='primary-text'>{formatDate(booking.checkInDate)}</div>
+                    <div className="secondary-text">to {formatDate(booking.checkOutDate)}</div>
                   </td>
-                  <td>{booking.guests} guest(s)</td>
-                  <td>Rs {booking.totalPrice}</td>
+                  <td className='primary-text'>{booking.guests} guest(s)</td>
+                  <td className='primary-text'>Rs {booking.totalPrice}</td>
                   <td>
                     <span className={`payment-status ${booking.isPaid ? 'paid' : 'unpaid'}`}>
                       {booking.paymentMethod} - {booking.isPaid ? 'Paid' : 'Unpaid'}

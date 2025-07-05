@@ -548,7 +548,6 @@ const AddTransport = () => {
                 <th>Brand & Model</th>
                 <th>Type</th>
                 <th>Daily Rate</th>
-                <th>Rating</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -568,22 +567,10 @@ const AddTransport = () => {
                   </td>
                   <td>
                     <div className="vehicle-name">{vehicle.brand} {vehicle.model}</div>
-                    <div className="vehicle-details">{vehicle.year} • {vehicle.registration_number}</div>
+                    <div className="vehicle-details secondary-text">{vehicle.year} • {vehicle.registration_number}</div>
                   </td>
                   <td>{vehicle.vehicle_type}</td>
                   <td>Rs {vehicle.rental_price_per_day}</td>
-                  <td>
-                    <div className="rating-display">
-                      <span className="rating-value">{vehicle.average_rating}</span>
-                      <div className="stars">
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i} className={i < Math.floor(vehicle.average_rating) ? 'star-filled' : 'star-empty'}>
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </td>
                   <td>
                     <button
                       onClick={() => toggleAvailability(vehicle.vehicle_id)}
@@ -646,7 +633,6 @@ const AddTransport = () => {
                 <th>Vehicle</th>
                 <th>Renter</th>
                 <th>Dates</th>
-                <th>Days</th>
                 <th>Total Price</th>
                 <th>Payment</th>
                 <th>Status</th>
@@ -656,21 +642,20 @@ const AddTransport = () => {
             <tbody>
               {filteredBookings.map((booking) => (
                 <tr key={booking.booking_id}>
-                  <td className="booking-id">{booking.booking_id}</td>
-                  <td className="vehicle-id">{booking.vehicle.vehicle_id}</td>
+                  <td className="small-text ">{booking.booking_id}</td>
+                  <td className="secondary-text">{booking.vehicle.vehicle_id}</td>
                   <td>
                     <div>{booking.vehicle.brand} {booking.vehicle.model}</div>
-                    <div className="small-text">{booking.vehicle.vehicle_type}</div>
+                    <div className="secondary-text"> {booking.vehicle.vehicle_type}</div>
                   </td>
                   <td>
-                    <div>{booking.renter.fullName}</div>
-                    <div className="small-text">{booking.renter.contact}</div>
+                    <div className='primary-text'>{booking.renter.fullName}</div>
+                    <div className="secondary-text">{booking.renter.contact}</div>
                   </td>
                   <td>
-                    <div>{formatDate(booking.booking_start)}</div>
-                    <div className="small-text">for {booking.booking_days} days</div>
+                    <div className='primary-text'>{formatDate(booking.booking_start)}</div>
+                    <div className="secondary-text">for {booking.booking_days} days</div>
                   </td>
-                  <td>{booking.booking_days}</td>
                   <td>Rs {booking.totalPrice}</td>
                   <td>
                     <span className={`payment-status ${booking.isPaid ? 'paid' : 'unpaid'}`}>

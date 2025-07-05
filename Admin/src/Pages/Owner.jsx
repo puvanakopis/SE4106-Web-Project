@@ -5,7 +5,7 @@ import { ownerData as initialOwnerData } from '../Assets/assets';
 
 const Owner = () => {
   const [owners, setOwners] = useState([...initialOwnerData]);
-  
+
   // State for form
   const [formData, setFormData] = useState({
     id: '',
@@ -41,7 +41,7 @@ const Owner = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name.startsWith('bankDetails.')) {
       const bankField = name.split('.')[1];
       setFormData(prev => ({
@@ -71,7 +71,7 @@ const Owner = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
+
     // Validation
     if (!formData.fullName || !formData.email || !formData.phone || !formData.address) {
       setError('Full Name, Email, Phone and Address are required');
@@ -85,11 +85,11 @@ const Owner = () => {
 
     // Create profile picture URL if not provided
     const currentOwner = isEditing ? owners.find(o => o.id === formData.id) : null;
-    const profilePicUrl = formData.profilePic 
+    const profilePicUrl = formData.profilePic
       ? URL.createObjectURL(formData.profilePic)
-      : (isEditing 
-          ? currentOwner?.profile_pic 
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.fullName)}&background=random&color=fff`);
+      : (isEditing
+        ? currentOwner?.profile_pic
+        : `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.fullName)}&background=random&color=fff`);
 
     const governmentIdUrl = formData.governmentId
       ? URL.createObjectURL(formData.governmentId)
@@ -167,9 +167,9 @@ const Owner = () => {
   };
 
   const handleBlockToggle = (ownerId) => {
-    setOwners(owners.map(owner => 
-      owner.id === ownerId 
-        ? { ...owner, isBlocked: !owner.isBlocked } 
+    setOwners(owners.map(owner =>
+      owner.id === ownerId
+        ? { ...owner, isBlocked: !owner.isBlocked }
         : owner
     ));
     setSuccess(`Owner ${owners.find(o => o.id === ownerId).isBlocked ? 'unblocked' : 'blocked'} successfully!`);
@@ -324,7 +324,7 @@ const Owner = () => {
                 />
               </div>
 
-               <div className="form-group">
+              <div className="form-group">
                 <label>Profile Picture {isUploading && '(Uploading...)'}</label>
                 <input
                   type="file"
@@ -384,7 +384,7 @@ const Owner = () => {
                     type="checkbox"
                     name="isBlocked"
                     checked={formData.isBlocked}
-                    onChange={(e) => setFormData({...formData, isBlocked: e.target.checked})}
+                    onChange={(e) => setFormData({ ...formData, isBlocked: e.target.checked })}
                   />
                   <span>Block this owner</span>
                 </label>
@@ -396,7 +396,7 @@ const Owner = () => {
             <button type="submit" className="submit-button" disabled={isUploading}>
               {isUploading ? 'Processing...' : isEditing ? 'Update Owner' : 'Add Owner'}
             </button>
-            
+
             {isEditing && (
               <button
                 type="button"
@@ -421,7 +421,7 @@ const Owner = () => {
                 type="text"
                 placeholder="Search by name, email or phone..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                // onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
               />
             </div>
@@ -447,14 +447,14 @@ const Owner = () => {
                 {filteredOwners.map(owner => (
                   <tr key={owner.id} className={owner.isBlocked ? 'blocked' : ''}>
                     <td>
-                      <img 
-                        src={owner.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.fullName)}&background=random&color=fff`} 
+                      <img
+                        src={owner.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.fullName)}&background=random&color=fff`}
                         alt={owner.fullName}
                         className="owner-thumbnail"
                       />
                     </td>
                     <td>
-                      <div className="owner-id">{owner.id}</div>
+                      <div>{owner.id}</div>
                     </td>
                     <td>
                       <div className="owner-name">{owner.fullName}</div>
@@ -569,8 +569,8 @@ const Owner = () => {
 
       {/* Owner Properties Modal */}
       {showProperties && (
-        <OwnerProperties 
-          owner={selectedOwner} 
+        <OwnerProperties
+          owner={selectedOwner}
           onClose={() => setShowProperties(false)}
         />
       )}

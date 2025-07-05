@@ -344,7 +344,7 @@ const Dashboard = () => {
                       '--percentage': `${Math.round((bookingStats.roomStats.revenue / bookingStats.totalRevenue) * 100)}%`,
                       '--color': '#3b82f6'
                     }}
-                  ></div>
+                  > </div>
                   <div 
                     className="chart-segment vehicles" 
                     style={{ 
@@ -366,42 +366,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="chart-card">
-              <h3>Bookings Status</h3>
-              <div className="bar-chart">
-                <div className="chart-bars">
-                  <div 
-                    className="chart-bar confirmed" 
-                    style={{ 
-                      height: `${Math.round((bookingStats.confirmedBookings / bookingStats.totalBookings) * 100)}%`
-                    }}
-                  >
-                    <span>{bookingStats.confirmedBookings}</span>
-                  </div>
-                  <div 
-                    className="chart-bar pending" 
-                    style={{ 
-                      height: `${Math.round((bookingStats.pendingBookings / bookingStats.totalBookings) * 100)}%`
-                    }}
-                  >
-                    <span>{bookingStats.pendingBookings}</span>
-                  </div>
-                  <div 
-                    className="chart-bar cancelled" 
-                    style={{ 
-                      height: `${Math.round((bookingStats.cancelledBookings / bookingStats.totalBookings) * 100)}%`
-                    }}
-                  >
-                    <span>{bookingStats.cancelledBookings}</span>
-                  </div>
-                </div>
-                <div className="chart-labels">
-                  <span>Confirmed</span>
-                  <span>Pending</span>
-                  <span>Cancelled</span>
-                </div>
-              </div>
-            </div>
+       
           </div>
 
           {/* Recent Activities */}
