@@ -6,10 +6,9 @@ import Footer from './Components/Footer/Footer';
 
 import Dashboard from './Pages/Dashboard';
 import LogIn from './Pages/LogIn';
-import AddRoom from './Pages/AddRoom';
-import ListRoom from './Pages/ListRoom';
-import AddTransport from './Pages/AddTransport';
-import ListTransport from './Pages/ListTransport';
+import Room from './Pages/Rooms';
+import Owner from './Pages/Owner';
+import AddTransport from './Pages/Transport';
 import Profile from './Pages/ProfileInfo';
 import ForgotPassword from "./Pages/ForgotPassword";
 
@@ -29,50 +28,43 @@ function App() {
         <Route
           path="/"
           element={
-            <PrivateRoute>
+            // <PrivateRoute>
               <Dashboard />
-            </PrivateRoute>
+            // </PrivateRoute>
           }
         />
         <Route path="/profile"
           element={
-            <PrivateRoute>
+            // <PrivateRoute>
               <Profile />
-            </PrivateRoute>
+            // </PrivateRoute>
           }
         />
         <Route
-          path="/addroom"
+          path="/room"
           element={
-            <PrivateRoute>
-              <AddRoom />
-            </PrivateRoute>
+            // <PrivateRoute>
+              <Room />
+            // </PrivateRoute>
           }
         />
         <Route
-          path="/listroom"
+          path="/owner"
           element={
-            <PrivateRoute>
-              <ListRoom />
-            </PrivateRoute>
+             // <PrivateRoute>
+              <Owner />
+            // </PrivateRoute>
           }
         />
         <Route
-          path="/addtransport"
+          path="/transport"
           element={
-            <PrivateRoute>
+            // <PrivateRoute>
               <AddTransport />
-            </PrivateRoute>
+            // </PrivateRoute>
           }
         />
-        <Route
-          path="/listtransport"
-          element={
-            <PrivateRoute>
-              <ListTransport />
-            </PrivateRoute>
-          }
-        />
+
       </Routes>
       <Footer />
     </AuthProvider>
