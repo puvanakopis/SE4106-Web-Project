@@ -28,40 +28,40 @@ function App() {
         <Route
           path="/"
           element={
-            // <PrivateRoute>
+            <PrivateRoute>
               <Dashboard />
-            // </PrivateRoute>
+            </PrivateRoute>
           }
         />
         <Route path="/profile"
           element={
-            // <PrivateRoute>
+            <PrivateRoute>
               <Profile />
-            // </PrivateRoute>
+            </PrivateRoute>
           }
         />
         <Route
           path="/room"
           element={
-            // <PrivateRoute>
+            <PrivateRoute>
               <Room />
-            // </PrivateRoute>
+            </PrivateRoute>
           }
         />
         <Route
           path="/owner"
           element={
-             // <PrivateRoute>
+            <PrivateRoute>
               <Owner />
-            // </PrivateRoute>
+            </PrivateRoute>
           }
         />
         <Route
           path="/transport"
           element={
-            // <PrivateRoute>
+            <PrivateRoute>
               <AddTransport />
-            // </PrivateRoute>
+            </PrivateRoute>
           }
         />
 

@@ -11,7 +11,6 @@ const Dashboard = () => {
   const [vehicleBookings, setVehicleBookings] = useState([]);
   const [owners, setOwners] = useState([]);
   const [activeTab, setActiveTab] = useState('overview');
-  const [timeRange, setTimeRange] = useState('month');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -241,18 +240,7 @@ const Dashboard = () => {
       {/* ----------------------- Header Section ----------------------- */}
       <div className="dashboard-header">
         <h1 className="title">Admin Dashboard</h1>
-        <div className="time-range-selector">
-          <select 
-            value={timeRange} 
-            onChange={(e) => setTimeRange(e.target.value)}
-            disabled={isLoading}
-          >
-            <option value="day">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="year">This Year</option>
-          </select>
-        </div>
+
       </div>
 
       {/* ----------------------- Navigation Tabs ----------------------- */}

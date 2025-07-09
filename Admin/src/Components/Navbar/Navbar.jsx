@@ -99,7 +99,7 @@ const Navbar = () => {
                             </div>
                         </>
                     ) : (
-                        <span onClick={() => scrollNavigate('/login')} className="login-button hidden cursor-pointer">
+                        <span onClick={() => scrollNavigate('/login')} className="login-button login hidden cursor-pointer">
                             Login
                         </span>
                     )}
@@ -121,10 +121,9 @@ const Navbar = () => {
                 <div className={`custom-mobile-nav ${isClosing ? 'closing' : ''}`}>
                     <ul className="flex flex-col gap-4 text">
                         <li><span onClick={() => { closeMenu(); scrollNavigate('/'); }} className={`NavItem cursor-pointer ${currentPath === "/" ? "active" : ""}`}>Home</span></li>
-                        <li><span onClick={() => { closeMenu(); scrollNavigate('/addroom'); }} className={`NavItem cursor-pointer ${currentPath === "/addroom" ? "active" : ""}`}>Add Room</span></li>
-                        <li><span onClick={() => { closeMenu(); scrollNavigate('/listroom'); }} className={`NavItem cursor-pointer ${currentPath === "/listroom" ? "active" : ""}`}>List Room</span></li>
-                        <li><span onClick={() => { closeMenu(); scrollNavigate('/addtransport'); }} className={`NavItem cursor-pointer ${currentPath === "/addtransport" ? "active" : ""}`}>Add Transport</span></li>
-                        <li><span onClick={() => { closeMenu(); scrollNavigate('/listtransport'); }} className={`NavItem cursor-pointer ${currentPath === "/listtransport" ? "active" : ""}`}>List Transport</span></li>
+                        <li><span onClick={() => { closeMenu(); scrollNavigate('/room'); }} className={`NavItem cursor-pointer ${currentPath === "/room" ? "active" : ""}`}>Room</span></li>
+                        <li><span onClick={() => { closeMenu(); scrollNavigate('/transport'); }} className={`NavItem cursor-pointer ${currentPath === "/transport" ? "active" : ""}`}>Transport</span></li>
+                        <li><span onClick={() => { closeMenu(); scrollNavigate('/owner'); }} className={`NavItem cursor-pointer ${currentPath === "/owner" ? "active" : ""}`}>Owner</span></li>
                         {isLoggedIn && (
                             <li><span onClick={() => { closeMenu(); scrollNavigate('/profile'); }} className={`NavItem cursor-pointer ${currentPath === "/profile" ? "active" : ""}`}>Profile</span></li>
                         )}

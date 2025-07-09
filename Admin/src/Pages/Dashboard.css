@@ -1,25 +1,3 @@
-:root {
-  --primary-color: #3b82f6;
-  --primary-hover: #2563eb;
-  --secondary-color: #6366f1;
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --danger-color: #ef4444;
-  --text-dark: #111827;
-  --text-medium: #4b5563;
-  --text-light: #6b7280;
-  --border-color: #e5e7eb;
-  --background-light: #f9fafb;
-  --background-white: #ffffff;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
-  --transition: all 0.2s ease;
-}
-
 /* ==================== BASE STYLES ==================== */
 .dashboard {
   padding: 2rem 5%;
@@ -53,7 +31,6 @@
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -79,12 +56,13 @@
   background: var(--primary-hover);
 }
 
-/* ==================== HEADER ==================== */
+/* ==================== Header Section ==================== */
 .dashboard .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-top: 4%;
+  margin-bottom: 3%;
 }
 
 .dashboard .dashboard-header .title {
@@ -94,15 +72,6 @@
   margin: 0;
 }
 
-.dashboard .time-range-selector select {
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background: var(--background-white);
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
 /* ==================== TABS NAVIGATION ==================== */
 .dashboard .tabs {
   display: flex;
@@ -110,6 +79,11 @@
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .dashboard .tab-button {
@@ -124,7 +98,7 @@
 }
 
 .dashboard .tab-button:hover:not(:disabled) {
-  background: var(--background-light);
+  background: var(--primary-color);
   color: var(--text-dark);
 }
 
@@ -141,6 +115,13 @@
 
 /* ==================== OVERVIEW TAB ==================== */
 .dashboard .overview-tab {
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -154,7 +135,7 @@
 }
 
 .dashboard .summary-card {
-  background-color: var(--background-light);
+  background-color: var(--background-white);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -166,37 +147,6 @@
 
 .dashboard .summary-card:hover {
   transform: translateY(-3px);
-}
-
-.dashboard .summary-card .card-icon {
-  font-size: 1.5rem;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.dashboard .summary-card.total-revenue .card-icon {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--success-color);
-}
-
-.dashboard .summary-card.total-bookings .card-icon {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--secondary-color);
-}
-
-.dashboard .summary-card.total-rooms .card-icon {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--danger-color);
-}
-
-.dashboard .summary-card.total-vehicles .card-icon {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--warning-color);
 }
 
 .dashboard .summary-card .card-content {
@@ -227,8 +177,6 @@
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 1.5rem;
 }
-
-
 
 .dashboard .chart-card {
   padding: 1.5rem;
@@ -303,74 +251,6 @@
 
 .dashboard .color-dot.vehicles {
   background: var(--warning-color);
-}
-
-.dashboard .color-dot.active {
-  background: var(--success-color);
-}
-
-.dashboard .color-dot.blocked {
-  background: var(--danger-color);
-}
-
-/* Bar Chart */
-.dashboard .bar-chart {
-  display: flex;
-  /* flex-direction: row; */
-  height: 200px;
-}
-
-.dashboard .chart-bars {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1rem;
-  flex: 1;
-  padding-bottom: 1.5rem;
-}
-
-
-.dashboard .chart-bar {
-  flex: 1;
-  max-width: 60px;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-  display: flex;
-  flex-direction: column; 
-  justify-content: flex-end;
-  position: relative;
-}
-
-.dashboard .chart-bar span {
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.dashboard .chart-bar.confirmed {
-  background: var(--success-color);
-}
-
-.dashboard .chart-bar.pending {
-  background: var(--warning-color);
-}
-
-.dashboard .chart-bar.cancelled {
-  background: var(--danger-color);
-}
-
-.dashboard .chart-labels {
-  display: flex;
-  justify-content: space-around;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.dashboard .chart-labels span {
-  font-size: 0.75rem;
-  color: var(--text-light);
 }
 
 /* Recent Activities */
@@ -475,37 +355,21 @@
   border-radius: 999px;
 }
 
-.dashboard .activity-status.confirmed {
-  background: #dcfce7;
-  color: #166534;
+/* ==================== ROOMS TAB ==================== */
+.dashboard .rooms-tab {
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.dashboard .activity-status.pending {
-  background: #fef9c3;
-  color: #854d0e;
-}
-
-.dashboard .activity-status.cancelled {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.dashboard .activity-status.active {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.dashboard .activity-status.blocked {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.dashboard .activity-status.unknown {
-  background: #e5e7eb;
-  color: #4b5563;
-}
-
-/* ==================== COMMON COMPONENTS ==================== */
+/* Stats Summary */
 .dashboard .stats-summary {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -514,14 +378,17 @@
 }
 
 .dashboard .stat-card {
+  background-color: var(--background-white);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--background-light);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease;
 }
 
 .dashboard .stat-card:hover {
@@ -541,14 +408,13 @@
   color: var(--text-dark);
 }
 
-/* Bar Chart Container */
+/* Room Type Distribution Chart */
 .dashboard .chart-container {
   background: var(--background-white);
   border-radius: var(--radius-md);
   padding: 1.5rem;
   margin-bottom: 2rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
 }
 
 .dashboard .chart-container h3 {
@@ -558,7 +424,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Bar Chart Layout */
 .dashboard .bar-chart {
   display: flex;
   flex-direction: row;
@@ -571,19 +436,6 @@
   position: relative;
 }
 
-/* X-axis line */
-.dashboard .bar-chart::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--border-color);
-  z-index: 1;
-}
-
-/* Individual Bars */
 .dashboard .bar {
   flex: 1;
   min-width: 50px;
@@ -598,34 +450,27 @@
   transition: height 0.3s ease, background 0.3s ease;
 }
 
-/* Bar Colors */
 .dashboard .bar:nth-child(1) {
   background: #3b82f6;
 }
 
-/* Blue */
 .dashboard .bar:nth-child(2) {
   background: #6366f1;
 }
 
-/* Indigo */
 .dashboard .bar:nth-child(3) {
   background: #10b981;
 }
 
-/* Emerald */
 .dashboard .bar:nth-child(4) {
   background: #f59e0b;
 }
-
-/* Amber */
 
 .dashboard .bar:hover {
   opacity: 0.9;
   transform: translateY(-2px);
 }
 
-/* Value Label */
 .dashboard .bar-value {
   position: absolute;
   top: -25px;
@@ -636,7 +481,6 @@
   width: 100%;
 }
 
-/* Category Label */
 .dashboard .bar-label {
   position: absolute;
   bottom: -35px;
@@ -650,77 +494,18 @@
   text-overflow: ellipsis;
 }
 
-/* Y-axis indicators */
-.dashboard .y-axis {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-bottom: 25px;
-}
-
-.dashboard .y-axis-mark {
-  font-size: 0.7rem;
-  color: var(--text-light);
-  text-align: right;
-  padding-right: 0.5rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .dashboard .bar-chart {
-    height: 200px;
-  }
-
-  .dashboard .bar {
-    min-width: 40px;
-  }
-
-  .dashboard .bar-label {
-    font-size: 0.65rem;
-    bottom: -30px;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard .bar-chart {
-    height: 180px;
-    gap: 0.5rem;
-  }
-
-  .dashboard .bar {
-    min-width: 30px;
-  }
-
-  .dashboard .bar-label {
-    transform: rotate(-45deg);
-    transform-origin: left top;
-    text-align: left;
-    padding-left: 5px;
-    width: auto;
-    bottom: -50px;
-    left: 0;
-  }
-}
-
-/* Tables */
-.dashboard .bookings-table,
-.dashboard .owners-table {
+/* Recent Room Bookings Table */
+.dashboard .bookings-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   margin-top: 1rem;
 }
 
-.dashboard .bookings-table th,
-.dashboard .owners-table th {
+.dashboard .bookings-table th {
   text-align: left;
   padding: 1rem;
-  background: var(--background-light);
+  background: var(--background-white);
   color: var(--text-medium);
   font-weight: 500;
   font-size: 0.75rem;
@@ -728,8 +513,7 @@
   letter-spacing: 0.05em;
 }
 
-.dashboard .bookings-table td,
-.dashboard .owners-table td {
+.dashboard .bookings-table td {
   padding: 1rem;
   border-bottom: 1px solid var(--border-color);
   font-size: 0.875rem;
@@ -768,19 +552,117 @@
   color: #991b1b;
 }
 
-.dashboard .status-badge.active {
-  background: #dcfce7;
-  color: #166534;
+/* ==================== TRANSPORT TAB ==================== */
+.dashboard .transport-tab {
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.dashboard .status-badge.blocked {
-  background: #fee2e2;
-  color: #991b1b;
+/* Vehicle Type Distribution Chart */
+.dashboard .transport-tab .bar-chart {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 250px;
+  gap: 1rem;
+  padding: 0 0.5rem;
+  margin-bottom: 2%;
+  position: relative;
 }
 
-.dashboard .status-badge.unknown {
-  background: #e5e7eb;
-  color: #4b5563;
+.dashboard .transport-tab .bar {
+  flex: 1;
+  min-width: 50px;
+  max-width: 80px;
+  background: var(--primary-color);
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  transition: height 0.3s ease, background 0.3s ease;
+}
+
+/* Recent Vehicle Bookings Table */
+.dashboard .transport-tab .bookings-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1rem;
+}
+
+/* ==================== OWNERS TAB ==================== */
+.dashboard .owners-tab {
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Owner Status Distribution Chart */
+.dashboard .owners-tab .doughnut-chart {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.dashboard .owners-tab .chart-visual {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: conic-gradient(var(--color) var(--percentage),
+      var(--border-color) 0);
+  position: relative;
+}
+
+.dashboard .color-dot.active {
+  background: var(--success-color);
+}
+
+.dashboard .color-dot.blocked {
+  background: var(--danger-color);
+}
+
+/* Recent Owners Table */
+.dashboard .owners-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1rem;
+}
+
+.dashboard .owners-table th {
+  text-align: left;
+  padding: 1rem;
+  background: var(--background-white);
+  color: var(--text-medium);
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dashboard .owners-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  color: var(--text-dark);
 }
 
 .dashboard .owner-info {
@@ -794,6 +676,30 @@
   height: 30px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.dashboard .status-badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.dashboard .status-badge.blocked {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ==================== BOOKINGS TAB ==================== */
+.dashboard .bookings-tab {
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-light);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 /* Bookings Breakdown */
@@ -827,6 +733,14 @@
 
 .dashboard .breakdown-stats div:last-child {
   border-bottom: none;
+}
+
+/* All Bookings Table */
+.dashboard .bookings-tab .bookings-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1rem;
 }
 
 /* ==================== RESPONSIVE ADJUSTMENTS ==================== */

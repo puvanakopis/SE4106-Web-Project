@@ -3,7 +3,7 @@ import { assets } from '../Assets/assets';
 import { vehicleData, vehicleBookingsData } from '../Assets/assets';
 import './Transport.css';
 
-const AddTransport = () => {
+const Transport = () => {
   // ----------------------- State Management -----------------------
   const [formData, setFormData] = useState({
     vehicle_id: '',
@@ -752,4 +752,4 @@ const AddTransport = () => {
   );
 };
 
-export default AddTransport;
+export default Transport;
