@@ -1,6 +1,5 @@
-css
 /* ---------- Main Container ---------- */
-.booking-main-container {
+.booking-profile .booking-main-container {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
@@ -8,428 +7,446 @@ css
   box-sizing: border-box;
 }
 
-/* ---------- Root Booking Container ---------- */
 .booking-profile {
   padding: 3% 5%;
 }
 
-/* ---------- Header Section ---------- */
+
+
+/* ---------- Booking Header ---------- */
 .booking-profile .booking-header {
-    padding: 1% 3% 5% 1%;
+  padding: 1% 3% 5% 1%;
 }
 
 .booking-profile .booking-header div {
-    font-size: 40px;
+  font-size: 40px;
 }
 
-/* ---------- Container Layout for Sidebar + Content ---------- */
+
+
+/* ---------- Main Booking Container ---------- */
 .booking-profile .booking-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 70vh;
 }
 
-/* ---------- Sidebar Tabs (Upcoming / Past) ---------- */
+
+
+/* ---------- Sidebar Navigation ---------- */
 .booking-profile .booking-sidebar {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: start;
-    padding: 4rem 2rem;
-    row-gap: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  padding: 4rem 2rem;
+  row-gap: 1.5rem;
 }
 
 .booking-profile .booking-title {
-    cursor: pointer;
-    transition: all 0.3s ease;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .booking-profile .booking-title:hover {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .booking-profile .booking-title.active {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }
 
-/* ---------- Right Content Display Area ---------- */
+/*  Right Content Display Area  */
 .booking-profile .booking-content {
-    flex: 3;
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    padding: 5%;
+  flex: 3;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 5%;
 }
+
+
 
 /* ---------- Card Styles ---------- */
 .booking-profile .card {
-    position: relative;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .booking-profile .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* ---------- Image inside Card (ONLY CHANGE MADE) ---------- */
+/*  Image inside Card  */
 .booking-profile .card-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    object-position: center;
-    display: block; /* Added to remove gap */
-    margin: 0; /* Added to remove gap */
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  margin: 0;
 }
 
-/* Special case: Vehicle images (motorbike) object position fix */
 .booking-profile .card.motorbike .card-image {
-    object-position: top;
+  object-position: top;
 }
 
-/* ---------- Property Badge (room type / vehicle type) ----------  */
+/*  Property Badge */
 .booking-profile .property-badge {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    z-index: 1;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  z-index: 1;
 }
 
-/* ---------- Status Badge ---------- */
+/*  Status Badge  */
 .booking-profile .status-badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    z-index: 1;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  z-index: 1;
 }
 
 .booking-profile .status-badge.confirmed {
-    background-color: #28a745;
+  background-color: #28a745;
 }
 
 .booking-profile .status-badge.completed {
-    background-color: #6c757d;
+  background-color: #6c757d;
 }
 
 .booking-profile .status-badge.cancelled {
-    background-color: #dc3545;
+  background-color: #dc3545;
 }
 
-/* ---------- Card Info Block ---------- */
+/*  Card Info Block  */
 .booking-profile .card-info {
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .booking-profile .card-info h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #2c3e50;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
 }
 
 .booking-profile .card-info p {
-    color: #6f7173;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+  color: #6f7173;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .booking-profile .location {
-    margin-bottom: 1rem !important;
+  margin-bottom: 1rem !important;
 }
 
 /* ---------- Booking Dates Section ---------- */
 .booking-profile .booking-dates {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background-color: #f8f9fa;
-    border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
 }
 
 .booking-profile .booking-dates p {
-    margin: 0;
-    display: flex;
-    justify-content: space-between;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
 }
 
 .booking-profile .booking-dates span {
-    font-weight: 500;
-    color: #495057;
+  font-weight: 500;
+  color: #495057;
 }
 
 /* ---------- Rating Display ---------- */
 .booking-profile .rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
 /* ---------- Price & Cancel Button Section ---------- */
 .booking-profile .price-action {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
 }
 
 .booking-profile .price-details {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .booking-profile .total-price {
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 1rem;
-    margin: 0;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+  margin: 0;
 }
 
 .booking-profile .price-breakdown {
-    font-size: 0.8rem;
-    color: #6c757d;
-    margin: 0;
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin: 0;
 }
 
 .booking-profile .action-buttons {
-    display: flex;
-    gap: 1rem;
+  display: flex;
+  gap: 1rem;
 }
 
 .booking-profile .cancel-btn {
-    background-color: transparent;
-    color: #dc3545;
-    border: 1px solid #dc3545;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.85rem;
-    white-space: nowrap;
+  background-color: transparent;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .booking-profile .cancel-btn:hover {
-    background-color: #dc3545;
-    color: white;
+  background-color: #dc3545;
+  color: white;
 }
 
 .booking-profile .complete-btn {
-    background-color: transparent;
-    color: #28a745;
-    border: 1px solid #28a745;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.85rem;
-    white-space: nowrap;
+  background-color: transparent;
+  color: #28a745;
+  border: 1px solid #28a745;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .booking-profile .complete-btn:hover {
-    background-color: #28a745;
-    color: white;
+  background-color: #28a745;
+  color: white;
 }
+
+
+
 
 /* ---------- Grid Layout for Cards ---------- */
 .booking-profile .booking-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
+
+
 
 /* ---------- Message for No Bookings ---------- */
 .booking-profile .no-bookings {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    align-items: center;
-    text-align: center;
-    padding: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 0;
 }
 
 .booking-profile .no-bookings h3 {
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #2c3e50;
 }
 
 .booking-profile .no-bookings p {
-    color: #6f7173;
-    max-width: 500px;
+  color: #6f7173;
+  max-width: 500px;
 }
+
+
 
 /* ---------- Browse Button ---------- */
 .booking-profile .browse-button {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .booking-profile .browse-button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
+
+
 
 /* ---------- Pagination Controls ---------- */
 .booking-profile .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
 }
 
 .booking-profile .pagination-arrow,
 .booking-profile .pagination-number {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ddd;
-    background-color: white;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 40px;
-    text-align: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 40px;
+  text-align: center;
 }
 
 .booking-profile .pagination-arrow:hover,
 .booking-profile .pagination-number:hover {
-    background-color: #f1f1f1;
+  background-color: #f1f1f1;
 }
 
 .booking-profile .pagination-number.active {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
 }
+
+
 
 /* ---------- Responsive Styles ---------- */
 @media (min-width: 900px) {
-    .booking-profile .booking-container {
-        flex-direction: row;
-    }
+  .booking-profile .booking-container {
+    flex-direction: row;
+  }
 }
 
 @media (max-width: 900px) {
-    .booking-profile .booking-header {
-        padding: 1% 3% 2% 1%;
-    }
+  .booking-profile .booking-header {
+    padding: 1% 3% 2% 1%;
+  }
 
-    .booking-profile .booking-header div {
-        font-size: 32px;
-    }
+  .booking-profile .booking-header div {
+    font-size: 32px;
+  }
 
-    .booking-profile .booking-sidebar {
-        padding: 10% !important;
-        flex-direction: column;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1.5rem;
-    }
+  .booking-profile .booking-sidebar {
+    padding: 10% !important;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
 
-    .booking-profile .booking-content {
-        padding: 5% !important;
-    }
+  .booking-profile .booking-content {
+    padding: 5% !important;
+  }
 
-    .booking-profile .booking-grid {
-        grid-template-columns: 1fr;
-    }
+  .booking-profile .booking-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .booking-profile .card-info h3 {
-        font-size: 1rem;
-    }
+  .booking-profile .card-info h3 {
+    font-size: 1rem;
+  }
 
-    .booking-profile .card-info p,
-    .booking-profile .booking-dates,
-    .booking-profile .rating {
-        font-size: 0.8rem;
-    }
+  .booking-profile .card-info p,
+  .booking-profile .booking-dates,
+  .booking-profile .rating {
+    font-size: 0.8rem;
+  }
 
-    .booking-profile .total-price {
-        font-size: 0.9rem;
-    }
+  .booking-profile .total-price {
+    font-size: 0.9rem;
+  }
 
-    .booking-profile .cancel-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-    }
+  .booking-profile .cancel-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
 
-    .booking-profile .no-bookings h3 {
-        font-size: 1.2rem;
-    }
+  .booking-profile .no-bookings h3 {
+    font-size: 1.2rem;
+  }
 
-    .booking-profile .no-bookings p {
-        font-size: 0.9rem;
-    }
+  .booking-profile .no-bookings p {
+    font-size: 0.9rem;
+  }
 
-    .booking-profile .browse-button {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
+  .booking-profile .browse-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .booking-profile {
-        padding: 3% 3%;
-    }
+  .booking-profile {
+    padding: 3% 3%;
+  }
 
-    .booking-profile .booking-header div {
-        font-size: 28px;
-    }
+  .booking-profile .booking-header div {
+    font-size: 28px;
+  }
 
-    .booking-profile .booking-sidebar {
-        padding: 5% !important;
-        gap: 1rem;
-    }
+  .booking-profile .booking-sidebar {
+    padding: 5% !important;
+    gap: 1rem;
+  }
 
-    .booking-profile .booking-title {
-        font-size: 0.9rem;
-    }
+  .booking-profile .booking-title {
+    font-size: 0.9rem;
+  }
 
-    .booking-profile .card-image {
-        height: 160px;
-    }
+  .booking-profile .card-image {
+    height: 160px;
+  }
 
-    .booking-profile .price-action {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
+  .booking-profile .price-action {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 
-    .booking-profile .pagination-arrow,
-    .booking-profile .pagination-number {
-        padding: 0.3rem 0.6rem;
-        min-width: 30px;
-        font-size: 0.8rem;
-    }
+  .booking-profile .pagination-arrow,
+  .booking-profile .pagination-number {
+    padding: 0.3rem 0.6rem;
+    min-width: 30px;
+    font-size: 0.8rem;
+  }
 }

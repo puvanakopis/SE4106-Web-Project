@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import './Navbar.css';
+import {scrollToTop} from '../../Pages/scrollToTop'
 import { AuthContext } from '../../Context/AuthContext';
 
 const Navbar = () => {
@@ -46,25 +47,25 @@ const Navbar = () => {
 
                 {/* ----------------- Logo Section ----------------- */}
                 <div className="navbar__logo">
-                    <Link to="/" className="navbar__logo-text">CampusEase</Link>
+                    <Link to="/" className="navbar__logo-text" onClick={scrollToTop}>CampusEase</Link>
                 </div>
 
                 {/* ----------------- Desktop Navigation ----------------- */}
                 <ul className="navbar__desktop-links">
                     <li>
-                        <Link className={`navbar__link ${currentPath === "/" ? "navbar__link--active" : ""}`} to="/">Home</Link>
+                        <Link className={`navbar__link ${currentPath === "/" ? "navbar__link--active" : ""}`} to="/" onClick={scrollToTop}>Home</Link>
                     </li>
                     <li>
-                        <Link className={`navbar__link ${currentPath === "/accommodation" ? "navbar__link--active" : ""}`} to="/accommodation">Accommodation</Link>
+                        <Link className={`navbar__link ${currentPath === "/accommodation" ? "navbar__link--active" : ""}`} to="/accommodation" onClick={scrollToTop}>Accommodation</Link>
                     </li>
                     <li>
-                        <Link className={`navbar__link ${currentPath === "/transport" ? "navbar__link--active" : ""}`} to="/transport">Transport</Link>
+                        <Link className={`navbar__link ${currentPath === "/transport" ? "navbar__link--active" : ""}`} to="/transport" onClick={scrollToTop}>Transport</Link>
                     </li>
                     <li>
-                        <Link className={`navbar__link ${currentPath === "/about" ? "navbar__link--active" : ""}`} to="/about">About</Link>
+                        <Link className={`navbar__link ${currentPath === "/about" ? "navbar__link--active" : ""}`} to="/about" onClick={scrollToTop}>About</Link>
                     </li>
                     <li>
-                        <Link className={`navbar__link ${currentPath === "/contact" ? "navbar__link--active" : ""}`} to="/contact">Contact</Link>
+                        <Link className={`navbar__link ${currentPath === "/contact" ? "navbar__link--active" : ""}`} to="/contact" onClick={scrollToTop}>Contact</Link>
                     </li>
                 </ul>
 
@@ -91,28 +92,40 @@ const Navbar = () => {
                                 <Link
                                     className={`navbar__dropdown-link ${currentPath === "/profile" ? "navbar__dropdown-link--active" : ""}`}
                                     to="/profile"
-                                    onClick={closeProfileDropdown}
+                                    onClick={()=> {
+                                        closeProfileDropdown()
+                                        scrollToTop()
+                                    }}
                                 >
                                     Profile
                                 </Link>
                                 <Link
                                     className={`navbar__dropdown-link ${currentPath === "/saved" ? "navbar__dropdown-link--active" : ""}`}
                                     to="/saved"
-                                    onClick={closeProfileDropdown}
+                                    onClick={()=> {
+                                        closeProfileDropdown()
+                                        scrollToTop()
+                                    }}
                                 >
                                     Saved
                                 </Link>
                                 <Link
                                     className={`navbar__dropdown-link ${currentPath === "/booking" ? "navbar__dropdown-link--active" : ""}`}
                                     to="/booking"
-                                    onClick={closeProfileDropdown}
+                                     onClick={()=> {
+                                        closeProfileDropdown()
+                                        scrollToTop()
+                                    }}
                                 >
                                     Booking
                                 </Link>
                                 <Link
                                     className="navbar__dropdown-link"
                                     to="/"
-                                    onClick={handleLogout}
+                                     onClick={()=> {
+                                        handleLogout()
+                                        scrollToTop()
+                                    }}
                                 >
                                     Logout
                                 </Link>
@@ -135,10 +148,6 @@ const Navbar = () => {
                     ☰
                 </button>
             </div>
-
-
-
-
 
             {/* ----------------- Mobile Navigation Menu ----------------- */}
             {isMobileMenuOpen && (

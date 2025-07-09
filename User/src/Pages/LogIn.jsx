@@ -3,18 +3,19 @@ import { AuthContext } from '../Context/AuthContext';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 const Login = () => {
+  // ------------------ Context & State ------------------
   const { formData, setFormData, login, error, isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Handle input change
+  // ------------------ Handler Functions ------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -25,33 +26,33 @@ const Login = () => {
     }
   };
 
-  // Redirect if already logged in
+  // ------------------ Effect Hooks ------------------
   useEffect(() => {
     if (isLoggedIn) {
       navigate('/');
     }
   }, [isLoggedIn, navigate]);
 
-  // alert if login fails
   useEffect(() => {
     if (error) {
       alert(error);
     }
   }, [error]);
 
+  // ------------------ Render ------------------
   return (
-    // --------------------- Main container ---------------------
-    <div className="login-container">
+    /* Main container with fade-in animation */
+    <div className="login-container fade-in">
+      
+      {/* Sub-container with slide-in-right animation */}
+      <div className="sub-container slide-in-right delay-100">
 
-      {/* --------------------- Sub-container --------------------- */}
-      <div className="sub-container">
-
-        {/* Login form */}
-        <form onSubmit={handleSubmit} className="login-form">
-          <h2 className="form-title">Login</h2>
+        {/* Login form with scale-up animation */}
+        <form onSubmit={handleSubmit} className="login-form scale-up delay-200">
+          <h2 className="form-title slide-in-left delay-300">Login</h2>
 
           {/* Email input field */}
-          <div className="form-group full-width">
+          <div className="form-group full-width slide-in-left delay-400">
             <label>Email Address</label>
             <input
               type="email"
@@ -64,7 +65,7 @@ const Login = () => {
           </div>
 
           {/* Password input field */}
-          <div className="form-group full-width">
+          <div className="form-group full-width slide-in-right delay-500">
             <label>Password</label>
             <input
               type="password"
@@ -76,20 +77,20 @@ const Login = () => {
             />
 
             {/* Forgot password link */}
-            <div className="forgot-password">
+            <div className="forgot-password fade-in delay-600">
               <a href="/forgot-password">Forgot Password?</a>
             </div>
           </div>
 
           {/* Submit button */}
-          <div className="form-action">
+          <div className="form-action scale-up delay-700">
             <button type="submit" disabled={isLoading}>
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
           </div>
 
           {/* Link to signup page */}
-          <div className="form-footer">
+          <div className="form-footer fade-in delay-800">
             <p>
               Don't have an account? <a href="/signup">Create one</a>
             </p>

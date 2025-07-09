@@ -1,11 +1,20 @@
 import React from 'react';
+import { useInView } from 'react-intersection-observer';
 import './AboutSection.css';
 
 const AboutSection = () => {
+  const [containerRef, containerInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [featuresRef, featuresInView] = useInView({
+    threshold: 0.1
+  });
+
   return (
-    <section className="about-home">
+    <section className="about-home" ref={containerRef}>
       <div className="section-container">
-        <div className="section-header">
+        <div className={`section-header ${containerInView ? 'slide-in-left' : ''}`}>
           <h2>Discover More About Us</h2>
           <p>
             Find trusted accommodation and easy transport solutions for university life in Sri Lanka.
@@ -14,7 +23,7 @@ const AboutSection = () => {
           </p>
         </div>
 
-        <div className="features-grid">
+        <div className={`features-grid ${featuresInView ? 'slide-in-right' : ''}`} ref={featuresRef}>
           <div className="feature-card">
             <div className="feature-icon">🏠</div>
             <h3>Verified Accommodations</h3>

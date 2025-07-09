@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -10,7 +10,10 @@ import StarRating from '../Components/Rating/StarRating';
 import GoogleMapEmbed from '../Components/GoogleMap/GoogleMap';
 import PaymentPopup from '../Components/PaymentPopup/PaymentPopup';
 import OwnerDetails from './OwnerDetails';
+import { scrollToTop } from './scrollToTop';
+import { useInView } from 'react-intersection-observer';
 import './TransportDetails.css';
+import './Animation/animations.css';
 
 const TransportDetails = () => {
   const { id } = useParams();
@@ -18,6 +21,7 @@ const TransportDetails = () => {
   const { addBooking } = useBookings();
   const { isLoggedIn, user } = useContext(AuthContext);
 
+  /* ------------- State Declarations ------------- */
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -28,9 +32,17 @@ const TransportDetails = () => {
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
 
+  /* ------------- Animation Refs ------------- */
+  const [headerRef, headerInView] = useInView({ threshold: 0.1 });
+  const [galleryRef, galleryInView] = useInView({ threshold: 0.1 });
+  const [specsRef, specsInView] = useInView({ threshold: 0.1 });
+  const [bookingRef, bookingInView] = useInView({ threshold: 0.1 });
+  const [reviewsRef, reviewsInView] = useInView({ threshold: 0.1 });
+  const [ownerRef, ownerInView] = useInView({ threshold: 0.1 });
 
   const vehicle = vehicleData.find((v) => v.vehicle_id === id);
 
+  /* ------------- Date Handling Functions ------------- */
   const handleStartDateChange = (date) => {
     setStartDate(date);
     setBookingError('');
@@ -57,6 +69,7 @@ const TransportDetails = () => {
     }
   };
 
+  /* ------------- Calculation Functions ------------- */
   const calculateTotal = (start, end) => {
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
@@ -67,23 +80,27 @@ const TransportDetails = () => {
     }
   };
 
+  /* ------------- Owner Contact Functions ------------- */
   const handleContactOwner = () => {
     if (!isLoggedIn) {
+      scrollToTop();
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
-    
+
     if (!vehicle?.owner) {
       console.warn('No owner data available for this vehicle');
       alert('Owner information is not currently available. Please try again later.');
       return;
     }
-    
+
     setShowOwnerDetails(true);
   };
 
+  /* ------------- Booking Functions ------------- */
   const handleBookNow = () => {
     if (!isLoggedIn) {
+      scrollToTop();
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
@@ -115,6 +132,16 @@ const TransportDetails = () => {
     };
 
     addBooking(newBooking);
+    
+    // Show success animation
+    const bookingButton = document.querySelector('.booking-button');
+    if (bookingButton) {
+      bookingButton.classList.add('bounce');
+      setTimeout(() => {
+        bookingButton.classList.remove('bounce');
+      }, 1000);
+    }
+
     setStartDate(null);
     setEndDate(null);
     setTotalDays(0);
@@ -135,15 +162,16 @@ const TransportDetails = () => {
     };
   };
 
+  /* ------------- Vehicle Not Found Section ------------- */
   if (!vehicle) {
     return (
-      <div className="transport-not-found">
+      <div className={`transport-not-found fade-in`}>
         <h2 className="transport-not-found__title">Vehicle not found</h2>
         <p className="transport-not-found__message">
           Please check the ID or go back to the transport list.
         </p>
-        <button 
-          className="back-button"
+        <button
+          className="back-button pulse"
           onClick={() => navigate('/transport')}
         >
           Browse Available Vehicles
@@ -158,10 +186,12 @@ const TransportDetails = () => {
 
   return (
     <main className="transport-details">
+      {/* ------------- Popup Modals Section ------------- */}
       {showOwnerDetails && (
         <OwnerDetails
           owner={owner}
           onClose={() => setShowOwnerDetails(false)}
+          className={`${ownerInView ? 'scale-up' : ''}`}
         />
       )}
 
@@ -172,10 +202,15 @@ const TransportDetails = () => {
           bookingDetails={getBookingDetails()}
           onPaymentSuccess={handlePaymentSuccess}
           paymentMethod={paymentMethod}
+          className={`${bookingInView ? 'fade-in-up' : ''}`}
         />
       )}
 
-      <header className="transport-header">
+      {/* ------------- Header Section ------------- */}
+      <header 
+        ref={headerRef}
+        className={`transport-header ${headerInView ? 'slide-in-left' : ''}`}
+      >
         <h1 className="transport-title">
           <div className='transport-name'>{vehicle.brand} {vehicle.model}</div>
           <div className="transport-type">{vehicle.vehicle_type}</div>
@@ -192,12 +227,16 @@ const TransportDetails = () => {
         </div>
       </header>
 
-      <section className="transport-gallery">
+      {/* ------------- Gallery Section ------------- */}
+      <section 
+        ref={galleryRef}
+        className={`transport-gallery ${galleryInView ? 'scale-up delay-100' : ''}`}
+      >
         <div className="transport-gallery__main">
-          <img 
-            src={images[selectedImageIndex]} 
-            alt={`${vehicle.brand} ${vehicle.model}`} 
-            className="transport-gallery__main-image" 
+          <img
+            src={images[selectedImageIndex]}
+            alt={`${vehicle.brand} ${vehicle.model}`}
+            className="transport-gallery__main-image"
             loading="lazy"
           />
         </div>
@@ -209,10 +248,10 @@ const TransportDetails = () => {
               onClick={() => setSelectedImageIndex(index)}
               aria-label={`View image ${index + 1}`}
             >
-              <img 
-                src={img} 
-                alt={`Thumbnail ${index + 1}`} 
-                className="transport-gallery__thumbnail-image" 
+              <img
+                src={img}
+                alt={`Thumbnail ${index + 1}`}
+                className="transport-gallery__thumbnail-image"
                 loading="lazy"
               />
             </button>
@@ -220,8 +259,13 @@ const TransportDetails = () => {
         </div>
       </section>
 
+      {/* ------------- Main Content Section ------------- */}
       <div className="transport-content">
-        <section className="transport-specs">
+        {/* ------------- Specifications Section ------------- */}
+        <section 
+          ref={specsRef}
+          className={`transport-specs ${specsInView ? 'slide-in-left delay-200' : ''}`}
+        >
           <h2 className="transport-section-title">Vehicle Specifications</h2>
           <div className="specs-grid">
             <div className="specs-item">
@@ -258,6 +302,7 @@ const TransportDetails = () => {
             </div>
           </div>
 
+          {/* Description Subsection */}
           <div className="description-section">
             <h3 className="description-title">Description</h3>
             <p className="description-text">
@@ -265,10 +310,11 @@ const TransportDetails = () => {
             </p>
           </div>
 
+          {/* Map Subsection */}
           <div className="map-section">
             <h3 className="map-title">Location</h3>
             <div className="map-container">
-              <GoogleMapEmbed 
+              <GoogleMapEmbed
                 address={vehicle.address}
                 city={vehicle.location || 'Colombo'}
               />
@@ -276,7 +322,11 @@ const TransportDetails = () => {
           </div>
         </section>
 
-        <aside className="transport-booking">
+        {/* ------------- Booking Section ------------- */}
+        <aside 
+          ref={bookingRef}
+          className={`transport-booking ${bookingInView ? 'slide-in-right delay-200' : ''}`}
+        >
           <div className="booking-card">
             <div className="booking-price">
               <span className="booking-price__amount">
@@ -285,6 +335,7 @@ const TransportDetails = () => {
               <span className="booking-price__label">per day</span>
             </div>
 
+            {/* Date Selection Subsection */}
             <div className="booking-dates">
               <div className="booking-date-group">
                 <label className="booking-dates__label">Start Date</label>
@@ -311,9 +362,10 @@ const TransportDetails = () => {
                   disabled={!startDate}
                 />
               </div>
-              {bookingError && <div className="booking-error">{bookingError}</div>}
+              {bookingError && <div className="booking-error fade-in">{bookingError}</div>}
             </div>
 
+            {/* Payment Method Subsection */}
             <div className="payment-method-section">
               <label className="payment-method__label">Payment Method</label>
               <select
@@ -329,6 +381,7 @@ const TransportDetails = () => {
               </select>
             </div>
 
+            {/* Booking Summary Subsection */}
             <div className="booking-summary">
               <div className="booking-summary__item">
                 <span>Rental Days:</span>
@@ -369,8 +422,13 @@ const TransportDetails = () => {
         </aside>
       </div>
 
+      {/* ------------- Secondary Sections ------------- */}
       <div className="transport-secondary">
-        <section className="transport-reviews">
+        {/* ------------- Reviews Section ------------- */}
+        <section 
+          ref={reviewsRef}
+          className={`transport-reviews ${reviewsInView ? 'slide-in-left delay-300' : ''}`}
+        >
           <h2 className="transport-section-title">Reviews</h2>
           <div className="reviews-summary">
             <div className="reviews-overview">
@@ -380,7 +438,7 @@ const TransportDetails = () => {
             </div>
             <div className="reviews-distribution">
               {[5, 4, 3, 2, 1].map((star) => (
-                <div key={star} className="reviews-distribution__item">
+                <div key={star} className="reviews-distribution__item fade-in-up" style={{ animationDelay: `${star * 100}ms` }}>
                   <span>{star} star</span>
                   <div className="reviews-distribution__bar-container">
                     <div
@@ -395,7 +453,11 @@ const TransportDetails = () => {
           </div>
         </section>
 
-        <section className="transport-owner">
+        {/* ------------- Owner Section ------------- */}
+        <section 
+          ref={ownerRef}
+          className={`transport-owner ${ownerInView ? 'slide-in-right delay-300' : ''}`}
+        >
           <h2 className="transport-section-title">Vehicle Owner</h2>
           <div className="owner-profile">
             <img
@@ -415,8 +477,8 @@ const TransportDetails = () => {
               </div>
             </div>
           </div>
-          <button 
-            className="owner-contact-button" 
+          <button
+            className="owner-contact-button"
             onClick={handleContactOwner}
             aria-label="Contact vehicle owner"
           >

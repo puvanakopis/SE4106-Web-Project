@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaStar, FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
 import { vehicleData } from '../../Assets/assets';
+import { scrollToTop } from '../../Pages/scrollToTop';
+import { useInView } from 'react-intersection-observer';
 import './PopularTransport.css';
 
 const PopularTransport = () => {
@@ -12,6 +14,19 @@ const PopularTransport = () => {
   });
   const [showSavedNotification, setShowSavedNotification] = useState(false);
 
+  // Add intersection observers for animations
+  const [headerRef, headerInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [gridRef, gridInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [buttonRef, buttonInView] = useInView({
+    threshold: 0.1
+  });
+
   const toggleSaveVehicle = (vehicleId, e) => {
     e.stopPropagation();
     setSavedVehicles((prev) => {
@@ -20,11 +35,11 @@ const PopularTransport = () => {
         ? prev.filter((id) => id !== vehicleId)
         : [...prev, vehicleId];
       localStorage.setItem('savedVehicles', JSON.stringify(newSaved));
-      
+
       if (!isSaved) {
         setShowSavedNotification(true);
       }
-      
+
       return newSaved;
     });
   };
@@ -59,8 +74,8 @@ const PopularTransport = () => {
             <FaHeart className="notification-icon" />
             <span>Vehicle saved</span>
           </div>
-          <button 
-            className="notification-close" 
+          <button
+            className="notification-close"
             onClick={() => setShowSavedNotification(false)}
             aria-label="Close notification"
           >
@@ -70,17 +85,22 @@ const PopularTransport = () => {
       )}
 
       <section className="featured-transport">
-        <div className="section-header">
+        <div className={`section-header ${headerInView ? 'slide-in-left' : ''}`} ref={headerRef}>
           <h2>Transportation Options</h2>
           <p>Convenient ways to reach your destination</p>
         </div>
 
-        <div className="transport-grid">
+        <div className={`transport-grid ${gridInView ? 'slide-in-right' : ''}`} ref={gridRef}>
           {transportOptions.map(option => (
             <div
               className="card"
               key={option.id}
-              onClick={() => navigate(`/transport/${option.id}`, { state: { vehicle: option.vehicleData } })}
+              onClick={() => {
+                scrollToTop();
+                navigate(`/transport/${option.id}`, {
+                  state: { vehicle: option.vehicleData },
+                });
+              }}
             >
               <img
                 src={option.image}
@@ -89,8 +109,9 @@ const PopularTransport = () => {
                 loading="lazy"
               />
               <div className="transport-badge">{option.type}</div>
+
               {/* Save Button */}
-              <button 
+              <button
                 className={`save-button ${savedVehicles.includes(option.id) ? 'saved' : ''}`}
                 onClick={(e) => toggleSaveVehicle(option.id, e)}
                 aria-label={savedVehicles.includes(option.id) ? 'Remove from saved' : 'Save this vehicle'}
@@ -101,6 +122,7 @@ const PopularTransport = () => {
                   <FaRegHeart className="icon-heart-outline" />
                 )}
               </button>
+
               <div className="transport-info">
                 <h3>{option.title}</h3>
                 <p>Location – {option.location}</p>
@@ -118,8 +140,10 @@ const PopularTransport = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/transport/${option.id}`, { state: { vehicle: option.vehicleData } });
-                      window.scrollTo(0, 0);
+                      scrollToTop();
+                      navigate(`/transport/${option.id}`, {
+                        state: { vehicle: option.vehicleData },
+                      });
                     }}
                   >
                     View Details
@@ -131,8 +155,12 @@ const PopularTransport = () => {
         </div>
 
         <button
-          className="view-all-button"
-          onClick={() => navigate('/transport')}
+          className={`view-all-button ${buttonInView ? 'slide-in-bottom' : ''}`}
+          onClick={() => {
+            scrollToTop();
+            navigate('/transport');
+          }}
+          ref={buttonRef}
         >
           View All Transport Options <FaArrowRight className="arrow-icon" />
         </button>

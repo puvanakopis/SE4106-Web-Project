@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useInView } from 'react-intersection-observer';
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import avatar1 from '../../Assets/About/testimonial1.jpg'
 import avatar2 from '../../Assets/About/testimonial2.jpg'
@@ -41,6 +42,15 @@ const testimonials = [
 
 const TestimonialCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Add intersection observers for animations
+  const [headerRef, headerInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [carouselRef, carouselInView] = useInView({
+    threshold: 0.1
+  });
 
   const nextTestimonial = () => {
     setCurrentIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
@@ -57,12 +67,12 @@ const TestimonialCarousel = () => {
 
   return (
     <div className="testimonial-carousel">
-      <div className="section-header">
+      <div className={`section-header ${headerInView ? 'slide-in-left' : ''}`} ref={headerRef}>
         <h2>What Our Customers Say</h2>
         <p>Hear from travelers who've used our services</p>
       </div>
 
-      <div className="carousel-container">
+      <div className={`carousel-container ${carouselInView ? 'slide-in-right' : ''}`} ref={carouselRef}>
         <button className="nav-button prev" onClick={prevTestimonial}>
           <ChevronLeft size={24} />
         </button>

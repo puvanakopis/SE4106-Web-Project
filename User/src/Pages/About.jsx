@@ -1,22 +1,47 @@
 import React from 'react';
-import testimonial1 from '../Assets/About/testimonial1.jpg'
-import testimonial2 from '../Assets/About/testimonial2.jpg'
-import './About.css'
+import { useInView } from 'react-intersection-observer';
+import testimonial1 from '../Assets/About/testimonial1.jpg';
+import testimonial2 from '../Assets/About/testimonial2.jpg';
+import './About.css';
 
 const About = () => {
+  // Animation hooks
+  const [heroRef, heroInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [missionRef, missionInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [statsRef, statsInView] = useInView({
+    threshold: 0.1
+  });
+
+  const [testimonialsRef, testimonialsInView] = useInView({
+    threshold: 0.1
+  });
+
+  
   return (
-    <>{/* ------------- Hero Section ------------- */}
-      <section className="about-hero">
+    <>
+      {/* ------------- Hero Section ------------- */}
+      <section
+        ref={heroRef}
+        className={`about-hero`}
+      >
         <div className="hero-content">
-          <h1>About Us</h1>
-          <p>Exclusive accommodation solutions for Sabaragamuwa University students and staff</p>
+          <h1 className={`${heroInView ? 'slide-in-left' : ''}`}>About Us</h1>
+          <p className={`${heroInView ? 'slide-in-right delay-100' : ''}`}>Exclusive accommodation solutions for Sabaragamuwa University students and staff</p>
         </div>
       </section>
-     
-     
+
       <div className="about-page">
         {/* ------------- Mission Section ------------- */}
-        <section className="about-section mission-section">
+        <section
+          ref={missionRef}
+          className={`about-section mission-section ${missionInView ? 'slide-in-left' : ''}`}
+        >
           <div className="section-header">
             <h2>Our Mission</h2>
             <p>Serving the Sabaragamuwa University community with trusted housing</p>
@@ -33,7 +58,10 @@ const About = () => {
         </section>
 
         {/* ------------- Statistics Section ------------- */}
-        <section className="about-stats">
+        <section
+          ref={statsRef}
+          className={`about-stats ${statsInView ? 'scale-up' : ''}`}
+        >
           <div className="stats-container">
             <div className="stat-item">
               <h3>1,200+</h3>
@@ -55,7 +83,10 @@ const About = () => {
         </section>
 
         {/* ------------- Testimonials Section ------------- */}
-        <section className="about-section testimonials-section">
+        <section
+          ref={testimonialsRef}
+          className={`about-section testimonials-section ${testimonialsInView ? 'slide-in-right' : ''}`}
+        >
           <div className="section-header">
             <h2>Sabaragamuwa Experiences</h2>
             <p>What our university community says about us</p>

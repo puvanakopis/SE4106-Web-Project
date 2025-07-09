@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roomsDummyData } from '../../Assets/assets';
 import { FaArrowRight, FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
+import { scrollToTop } from '../../Pages/scrollToTop';
+import { useInView } from 'react-intersection-observer';
 import './PopularRooms.css';
 
 const PopularRooms = () => {
@@ -12,6 +14,19 @@ const PopularRooms = () => {
     });
     const [showSavedNotification, setShowSavedNotification] = useState(false);
 
+    // Modified intersection observers without triggerOnce
+    const [headerRef, headerInView] = useInView({
+        threshold: 0.1
+    });
+
+    const [gridRef, gridInView] = useInView({
+        threshold: 0.1
+    });
+
+    const [buttonRef, buttonInView] = useInView({
+        threshold: 0.1
+    });
+
     const toggleSaveRoom = (roomId, e) => {
         e.stopPropagation();
         setSavedRooms((prev) => {
@@ -20,11 +35,11 @@ const PopularRooms = () => {
                 ? prev.filter((id) => id !== roomId)
                 : [...prev, roomId];
             localStorage.setItem('savedRooms', JSON.stringify(newSaved));
-            
+
             if (!isSaved) {
                 setShowSavedNotification(true);
             }
-            
+
             return newSaved;
         });
     };
@@ -47,8 +62,8 @@ const PopularRooms = () => {
                         <FaHeart className="notification-icon" />
                         <span>Room saved</span>
                     </div>
-                    <button 
-                        className="notification-close" 
+                    <button
+                        className="notification-close"
                         onClick={() => setShowSavedNotification(false)}
                         aria-label="Close notification"
                     >
@@ -58,17 +73,20 @@ const PopularRooms = () => {
             )}
 
             <section className="featured-properties">
-                <div className="section-header">
+                <div className={`section-header ${headerInView ? 'slide-in-left' : ''}`} ref={headerRef}>
                     <h2>Featured Accommodations</h2>
                     <p>Top-rated stays selected by our travel experts</p>
                 </div>
 
-                <div className="properties-grid">
+                <div className={`properties-grid ${gridInView ? 'slide-in-right' : ''}`} ref={gridRef}>
                     {roomsDummyData.slice(0, 3).map(room => (
                         <div
                             className="card"
                             key={room._id}
-                            onClick={() => navigate(`/room/${room._id}`)}
+                            onClick={() => {
+                                navigate(`/room/${room._id}`)
+                                scrollToTop()
+                            }}
                         >
                             <img
                                 src={room.images[0]}
@@ -77,7 +95,7 @@ const PopularRooms = () => {
                                 loading="lazy"
                             />
                             <div className="property-badge">{room.roomType}</div>
-                            <button 
+                            <button
                                 className={`save-button ${savedRooms.includes(room._id) ? 'saved' : ''}`}
                                 onClick={(e) => toggleSaveRoom(room._id, e)}
                                 aria-label={savedRooms.includes(room._id) ? 'Remove from saved' : 'Save this room'}
@@ -112,8 +130,12 @@ const PopularRooms = () => {
                 </div>
 
                 <button
-                    className="view-all-button"
-                    onClick={() => navigate('/accommodation')}
+                    className={`view-all-button ${buttonInView ? 'slide-in-bottom' : ''}`}
+                    onClick={() => {
+                        navigate('/accommodation')
+                        scrollToTop()
+                    }}
+                    ref={buttonRef}
                 >
                     View All Accommodations <FaArrowRight className="arrow-icon" />
                 </button>

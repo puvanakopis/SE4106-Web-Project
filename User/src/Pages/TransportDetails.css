@@ -1,3 +1,4 @@
+/* ------------- Root Variables ------------- */
 .transport-details {
   --primary-color: #3b82f6;
   --primary-hover: #2563eb;
@@ -16,6 +17,7 @@
   --transition: all 0.2s ease;
 }
 
+/* ------------- Base Styles ------------- */
 .transport-details {
   max-width: 1400px;
   margin: 0 auto;
@@ -24,7 +26,7 @@
   font-family: 'Inter', sans-serif;
 }
 
-/* -------------------- Transport Header -------------------- */
+/* ------------- Header Section ------------- */
 .transport-details .transport-header {
   margin-bottom: 2rem;
 }
@@ -85,7 +87,7 @@
   font-size: 0.95rem;
 }
 
-/* -------------------- Transport Gallery -------------------- */
+/* ------------- Gallery Section ------------- */
 .transport-details .transport-gallery {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -139,7 +141,7 @@
   object-fit: cover;
 }
 
-/*--------------------  Transport Content -------------------- */
+/* ------------- Main Content Section ------------- */
 .transport-details .transport-content {
   padding: 0 !important;
   display: flex;
@@ -158,6 +160,7 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+/* ------------- Specifications Section ------------- */
 .transport-details .transport-specs {
   flex: 1;
   background-color: var(--background-light);
@@ -195,7 +198,7 @@
   font-weight: 600;
 }
 
-/* Description Section */
+/* ------------- Description Subsection ------------- */
 .transport-details .description-section {
   margin-bottom: 2rem;
 }
@@ -213,7 +216,7 @@
   color: var(--text-medium);
 }
 
-/* Map Section */
+/* ------------- Map Subsection ------------- */
 .transport-details .map-section {
   margin-bottom: 2rem;
 }
@@ -231,7 +234,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* -------------------- Transport Booking -------------------- */
+/* ------------- Booking Section ------------- */
 .transport-details .transport-booking {
   width: 350px;
   flex-shrink: 0;
@@ -268,6 +271,7 @@
   color: var(--text-light);
 }
 
+/* ------------- Date Selection Subsection ------------- */
 .transport-details .booking-dates {
   margin-bottom: 1.5rem;
 }
@@ -303,7 +307,7 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* -------------------- Payment Method Section -------------------- */
+/* ------------- Payment Method Subsection ------------- */
 .transport-details .payment-method-section {
   margin-bottom: 1.5rem;
 }
@@ -332,7 +336,7 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* -------------------- Booking Summary -------------------- */
+/* ------------- Booking Summary Subsection ------------- */
 .transport-details .booking-summary {
   margin-bottom: 1.5rem;
   padding: 1rem;
@@ -412,13 +416,14 @@
   border-radius: var(--radius-sm);
 }
 
-/* -------------------- Transport Secondary -------------------- */
+/* ------------- Secondary Sections ------------- */
 .transport-details .transport-secondary {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
 }
 
+/* ------------- Reviews Section ------------- */
 .transport-details .transport-reviews,
 .transport-details .transport-owner {
   background-color: var(--background-light);
@@ -470,7 +475,7 @@
   border-radius: 4px;
 }
 
-/* -------------------- Owner Profile -------------------- */
+/* ------------- Owner Section ------------- */
 .transport-details .owner-profile {
   display: flex;
   align-items: center;
@@ -526,7 +531,7 @@
   background-color: var(--primary-hover);
 }
 
-/* -------------------- Transport Not Found -------------------- */
+/* ------------- Not Found Section ------------- */
 .transport-details .transport-not-found {
   text-align: center;
   padding: 4rem 2rem;
@@ -560,7 +565,7 @@
   background-color: var(--primary-hover);
 }
 
-/* -------------------- Responsive Design -------------------- */
+/* ------------- Responsive Design ------------- */
 @media (max-width: 1024px) {
   .transport-details .transport-content {
     flex-direction: column;
@@ -611,7 +616,7 @@
   }
 }
 
-/* DatePicker Styles */
+/* ------------- DatePicker Styles ------------- */
 .transport-details .react-datepicker-popper {
   z-index: 1000;
 }
@@ -642,4 +647,207 @@
 .transport-details .react-datepicker__day--keyboard-selected {
   background-color: var(--primary-hover);
   border-radius: var(--radius-sm);
+}
+
+/* ------------- Animation Section ------------- */
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.slide-in-right {
+  animation: slideInRight 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.scale-up {
+  animation: scaleUp 0.6s ease-out forwards;
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.bounce {
+  animation: bounce 0.8s;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* ------------- Keyframes Section ------------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-15px);
+  }
+  60% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ------------- Delay Classes Section ------------- */
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+/* ------------- Hover Animations Section ------------- */
+.booking-button, .owner-contact-button, .back-button {
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.booking-button:hover, .owner-contact-button:hover, .back-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.transport-gallery__thumbnail {
+  transition: all 0.3s ease;
+}
+
+.transport-gallery__thumbnail:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.booking-dates__input {
+  transition: all 0.3s ease;
+}
+
+.booking-dates__input:focus {
+  transform: scale(1.01);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+.payment-method__select {
+  transition: all 0.3s ease;
+}
+
+.payment-method__select:focus {
+  transform: scale(1.01);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+.booking-summary__item {
+  transition: all 0.2s ease;
+}
+
+.booking-summary__item:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  transform: translateX(3px);
+}
+
+.owner-avatar {
+  transition: all 0.3s ease;
+}
+
+.owner-avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ------------- Reduced Motion Section ------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .fade-in,
+  .slide-in-left,
+  .slide-in-right,
+  .scale-up,
+  .fade-in-up {
+    opacity: 1;
+    transform: none;
+  }
 }

@@ -1,172 +1,329 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { assets, roomsDummyData, facilityIcons } from '../Assets/assets';
-import StarRating from '../Components/Rating/StarRating';
-import { FaHeart, FaRegHeart, FaTimes } from 'react-icons/fa';
+import { useInView } from 'react-intersection-observer';
+import { roomsDummyData } from '../Assets/assets';
+import { FaHeart, FaRegHeart, FaTimes, FaFilter } from 'react-icons/fa';
+import { scrollToTop } from './scrollToTop';
 import './Accommodation.css';
+import './Animation/animations.css'
 
-// Custom checkbox component for filters
-const CheckBox = ({ label, selected = false, onChange = () => { } }) => (
-  <label className="filter-checkbox">
-    <input
-      type="checkbox"
-      checked={selected}
-      onChange={(e) => onChange(e.target.checked, label)}
-      aria-label={label}
-    />
-    <span className="checkmark"></span>
-    <span className="filter-label">{label}</span>
-  </label>
-);
 
-// Custom radio button component for sorting options
-const RadioButton = ({ label, selected = false, onChange = () => { } }) => (
-  <label className="filter-radio">
-    <input
-      type="radio"
-      name="sortOption"
-      checked={selected}
-      onChange={() => onChange(label)}
-      aria-label={label}
-    />
-    <span className="radiomark"></span>
-    <span className="filter-label">{label}</span>
-  </label>
-);
 
-// Main Accommodation component
-const Accommodation = () => {
-  const navigate = useNavigate();
-  const [openFilters, setOpenFilters] = useState(false);
-  const [savedRooms, setSavedRooms] = useState(() => {
-    const saved = localStorage.getItem('savedRooms');
-    return saved ? JSON.parse(saved) : [];
+// --------------------------- Room card component ---------------------------
+const RoomCard = ({ room, index, savedRooms, toggleSaveRoom, handleRoomClick }) => {
+  const [cardRef, cardInView] = useInView({
+    threshold: 0.1,
+    triggerOnce: false
   });
-  const [showSavedNotification, setShowSavedNotification] = useState(false);
-
-  // Filter options
-  const roomTypes = ['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'];
-  const priceRanges = ['0 to 2500', '2500 to 5000', '5000 to 10000', '10000 to 15000'];
-  const sortOptions = ['Price Low to High', 'Price High to Low'];
-
-  // State for selected filters and sorting
-  const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
-  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
-  const [selectedSortOption, setSelectedSortOption] = useState('');
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const roomsPerPage = 5;
-
-  // Handle room type checkbox changes
-  const handleRoomTypeChange = (checked, label) => {
-    setSelectedRoomTypes((prev) =>
-      checked ? [...prev, label] : prev.filter((type) => type !== label)
-    );
-    setCurrentPage(1);
-  };
-
-  // Handle price range checkbox changes
-  const handlePriceRangeChange = (checked, label) => {
-    setSelectedPriceRanges((prev) =>
-      checked ? [...prev, `Rs ${label}`] : prev.filter((range) => range !== `Rs ${label}`)
-    );
-    setCurrentPage(1);
-  };
-
-  // Handle sort option radio button changes
-  const handleSortChange = (label) => {
-    setSelectedSortOption(label);
-    setCurrentPage(1);
-  };
-
-  // Reset all filters and sorting
-  const resetAllFilters = () => {
-    setSelectedRoomTypes([]);
-    setSelectedPriceRanges([]);
-    setSelectedSortOption('');
-    setCurrentPage(1);
-  };
-
-  // Toggle save room
-  const toggleSaveRoom = (roomId, e) => {
-    e.stopPropagation();
-    setSavedRooms((prev) => {
-      const isSaved = prev.includes(roomId);
-      const newSaved = isSaved
-        ? prev.filter((id) => id !== roomId)
-        : [...prev, roomId];
-      localStorage.setItem('savedRooms', JSON.stringify(newSaved));
-      
-      if (!isSaved) {
-        setShowSavedNotification(true);
-      }
-      
-      return newSaved;
-    });
-  };
-
-  useEffect(() => {
-    if (showSavedNotification) {
-      const timer = setTimeout(() => {
-        setShowSavedNotification(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSavedNotification]);
-
-  // Apply filtering and sorting to the rooms data
-  const filteredRooms = roomsDummyData
-    .filter((room) => {
-      const matchesType =
-        selectedRoomTypes.length === 0 || selectedRoomTypes.includes(room.roomType);
-
-      const matchesPrice =
-        selectedPriceRanges.length === 0 ||
-        selectedPriceRanges.some((range) => {
-          const [min, max] = range.replace('Rs ', '').split(' to ').map(Number);
-          return room.pricePerMonth >= min && room.pricePerMonth <= max;
-        });
-
-      return matchesType && matchesPrice;
-    })
-    // Apply sorting based on selected option
-    .sort((a, b) => {
-      switch (selectedSortOption) {
-        case 'Price Low to High':
-          return a.pricePerMonth - b.pricePerMonth;
-        case 'Price High to Low':
-          return b.pricePerMonth - a.pricePerMonth;
-        default:
-          return 0;
-      }
-    });
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredRooms.length / roomsPerPage);
-  const startIdx = (currentPage - 1) * roomsPerPage;
-  const endIdx = startIdx + roomsPerPage;
-  const paginatedRooms = filteredRooms.slice(startIdx, endIdx);
-
-  // Change current page
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
 
   return (
-    <div className="accommodation">
-      {/* Save Notification */}
-      {showSavedNotification && (
-        <div className="save-notification">
-          <div className="notification-content">
-            <FaHeart className="notification-icon" />
-            <span>Room saved</span>
+    <article
+      ref={cardRef}
+      className={`room-card simple ${cardInView ? 'scale-up' : ''}`}
+      style={{ transitionDelay: `${index * 0.1}s` }}
+      onClick={() => {
+        handleRoomClick(room._id);
+        scrollToTop();
+      }}
+    >
+      <div className="room-image-container">
+        <img
+          src={room.images[0]}
+          alt={`${room.roomType} room at ${room.hotel.name}`}
+          className="room-image"
+          loading="lazy"
+        />
+        <span className="room-badge">{room.roomType}</span>
+        <button
+          className={`save-button ${savedRooms.includes(room._id) ? 'saved' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSaveRoom(room._id, e);
+          }}
+          aria-label={savedRooms.includes(room._id) ? 'Remove from saved' : 'Save this room'}
+        >
+          {savedRooms.includes(room._id) ? (
+            <FaHeart className="icon-heart-filled" />
+          ) : (
+            <FaRegHeart className="icon-heart-outline" />
+          )}
+        </button>
+      </div>
+      <div className="room-simple-content full">
+        <div className="room-main-info">
+          <h2 className="room-title">
+            {room.roomType} room at {room.hotel.name}
+          </h2>
+          <div className="room-hotel-name">{room.hotel.name}</div>
+          <div className="room-address">
+            {room.hotel.city}, {room.hotel.address}
           </div>
-          <button 
-            className="notification-close" 
+        </div>
+        <div className="room-rating-reviews">
+          <div className="room-rating-icons">
+            {[...Array(5)].map((_, i) => (
+              <span key={i} className="star-icon">★</span>
+            ))}
+          </div>
+          <span className="reviews">200+ reviews</span>
+        </div>
+        <div className="room-amenities-preview">
+          {room.amenities.slice(0, 3).map((item, index) => (
+            <span key={index} className="amenity-tag">{item}</span>
+          ))}
+        </div>
+        <div className="room-bottom-row">
+          <div className="room-price-simple">
+            Rs {room.pricePerMonth.toLocaleString()}{' '}
+            <span className="price-period">/ month</span>
+          </div>
+          <button
+            className="view-details-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRoomClick(room._id);
+              scrollToTop();
+            }}
+          >
+            View Details
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+
+
+
+const Accommodation = () => {
+// ------------------ Navigation and UI State ------------------
+const navigate = useNavigate();
+const [openFilters, setOpenFilters] = useState(false);
+
+// ------------------ Saved Rooms State ------------------
+const [savedRooms, setSavedRooms] = useState(() => {
+  const saved = localStorage.getItem('savedRooms');
+  return saved ? JSON.parse(saved) : [];
+});
+
+// ------------------ Notification State ------------------
+const [showSavedNotification, setShowSavedNotification] = useState(false);
+const [notificationMsg, setNotificationMsg] = useState('');
+const [isRemovedNotification, setIsRemovedNotification] = useState(false);
+
+// ------------------ Search Filter State ------------------
+const [searchName, setSearchName] = useState('');
+const [searchCity, setSearchCity] = useState('');
+const [searchType, setSearchType] = useState('');
+const [searchMinPrice, setSearchMinPrice] = useState('');
+const [searchMaxPrice, setSearchMaxPrice] = useState('');
+
+// ------------------ Filter Options Constants ------------------
+const roomTypes = ['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'];
+const priceRanges = ['0 to 2500', '2500 to 5000', '5000 to 10000', '10000 to 15000'];
+const sortOptions = ['Price Low to High', 'Price High to Low'];
+
+// ------------------ Selected Filter State ------------------
+const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
+const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+const [selectedSortOption, setSelectedSortOption] = useState('');
+
+// ------------------ Pagination State ------------------
+const [currentPage, setCurrentPage] = useState(1);
+const roomsPerPage = 5;
+
+// ------------------ Animation Hooks ------------------
+const [heroRef, heroInView] = useInView({ threshold: 0.1, triggerOnce: false });
+const [resultsRef, resultsInView] = useInView({ threshold: 0.1, triggerOnce: false });
+const [filtersSidebarRef, filtersSidebarInView] = useInView({ threshold: 0.1, triggerOnce: false });
+const [filtersButtonRef, filtersButtonInView] = useInView({ threshold: 0.1, triggerOnce: false });
+
+
+
+
+/* ------------------ Filters and sorts rooms ------------------ */
+const filteredRooms = useMemo(() => {
+  let result = [...roomsDummyData];
+
+  // Apply text-based filters
+  if (searchName.trim()) {
+    result = result.filter(room =>
+      room.hotel.name.toLowerCase().includes(searchName.toLowerCase())
+    );
+  }
+
+  if (searchCity.trim()) {
+    result = result.filter(room =>
+      room.hotel.city.toLowerCase().includes(searchCity.toLowerCase())
+    );
+  }
+
+  if (searchType.trim()) {
+    result = result.filter(room =>
+      room.roomType.toLowerCase().includes(searchType.toLowerCase())
+    );
+  }
+
+  // Apply price range filters
+  if (searchMinPrice) {
+    result = result.filter(room => room.pricePerMonth >= Number(searchMinPrice));
+  }
+
+  if (searchMaxPrice) {
+    result = result.filter(room => room.pricePerMonth <= Number(searchMaxPrice));
+  }
+
+  // Apply checkbox filters
+  if (selectedRoomTypes.length > 0) {
+    result = result.filter(room => selectedRoomTypes.includes(room.roomType));
+  }
+
+  if (selectedPriceRanges.length > 0) {
+    result = result.filter(room =>
+      selectedPriceRanges.some(range => {
+        const [min, max] = range.replace('Rs ', '').split(' to ').map(Number);
+        return room.pricePerMonth >= min && room.pricePerMonth <= max;
+      })
+    );
+  }
+
+  // Apply sorting
+  if (selectedSortOption === 'Price Low to High') {
+    result.sort((a, b) => a.pricePerMonth - b.pricePerMonth);
+  } else if (selectedSortOption === 'Price High to Low') {
+    result.sort((a, b) => b.pricePerMonth - a.pricePerMonth);
+  }
+
+  return result;
+}, [
+  roomsDummyData,
+  searchName,
+  searchCity,
+  searchType,
+  searchMinPrice,
+  searchMaxPrice,
+  selectedRoomTypes,
+  selectedPriceRanges,
+  selectedSortOption
+]);
+
+
+
+// ------------------ Pagination calculations ------------------
+const totalPages = Math.ceil(filteredRooms.length / roomsPerPage);
+const paginatedRooms = useMemo(() => {
+  const startIdx = (currentPage - 1) * roomsPerPage;
+  return filteredRooms.slice(startIdx, startIdx + roomsPerPage);
+}, [filteredRooms, currentPage, roomsPerPage]);
+
+// Filter Handlers
+const handleRoomTypeChange = (checked, label) => {
+  setSelectedRoomTypes(prev =>
+    checked ? [...prev, label] : prev.filter(type => type !== label)
+  );
+  setCurrentPage(1);
+};
+
+const handlePriceRangeChange = (checked, label) => {
+  setSelectedPriceRanges(prev =>
+    checked ? [...prev, `Rs ${label}`] : prev.filter(range => range !== `Rs ${label}`)
+  );
+  setCurrentPage(1);
+};
+
+const handleSortChange = (label) => {
+  setSelectedSortOption(label);
+  setCurrentPage(1);
+};
+
+
+
+/* ------------------ Resets all filters to their initial state ------------------ */
+const resetAllFilters = () => {
+  setSelectedRoomTypes([]);
+  setSelectedPriceRanges([]);
+  setSelectedSortOption('');
+  setSearchName('');
+  setSearchCity('');
+  setSearchType('');
+  setSearchMinPrice('');
+  setSearchMaxPrice('');
+  setCurrentPage(1);
+};
+
+
+
+/* ------------------ Toggles a room's saved status ------------------ */
+const toggleSaveRoom = (roomId, e) => {
+  e.stopPropagation();
+  setSavedRooms(prev => {
+    const isSaved = prev.includes(roomId);
+    const newSaved = isSaved
+      ? prev.filter(id => id !== roomId)
+      : [...prev, roomId];
+    
+    localStorage.setItem('savedRooms', JSON.stringify(newSaved));
+    setNotificationMsg(isSaved ? 'Room removed from saved' : 'Room saved!');
+    setIsRemovedNotification(isSaved);
+    setShowSavedNotification(true);
+    return newSaved;
+  });
+};
+
+
+
+/* ------------------ Handles pagination changes ------------------ */
+const handlePageChange = (page) => {
+  if (page >= 1 && page <= totalPages) {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
+
+// ------------------ Handles room card click to navigate to details page ------------------
+const handleRoomClick = (roomId) => {
+  navigate(`/room/${roomId}`);
+};
+
+
+// ------------------ Notification timeout effect ------------------
+useEffect(() => {
+  if (showSavedNotification) {
+    const timer = setTimeout(() => {
+      setShowSavedNotification(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }
+}, [showSavedNotification]);
+
+
+// ------------------ Check if filters can be reset ------------------
+const canResetFilters = !(
+  selectedRoomTypes.length === 0 &&
+  selectedPriceRanges.length === 0 &&
+  selectedSortOption === '' &&
+  !searchName &&
+  !searchCity &&
+  !searchType &&
+  !searchMinPrice &&
+  !searchMaxPrice
+);
+
+
+  return (
+
+    <div className="accommodation">
+      {/* --------------------------- Notification --------------------------- */}
+      {showSavedNotification && (
+        <div className="toast-notification" role="alert">
+          <span className="toast-icon">
+            {isRemovedNotification ? <FaRegHeart /> : <FaHeart />}
+          </span>
+          <span className="toast-message">{notificationMsg}</span>
+          <button
+            className="toast-close"
             onClick={() => setShowSavedNotification(false)}
             aria-label="Close notification"
           >
@@ -175,184 +332,215 @@ const Accommodation = () => {
         </div>
       )}
 
-      {/* ---------------------- Mobile filter toggle ---------------------- */}
-      <div className="accommodation-header">
+
+      {/* --------------------------- Hero Section --------------------------- */}
+      <section ref={heroRef} className={`accommodation-hero `} >
+        <div className="accommodation-hero-content container">
+          <h1 className={`hero-title ${heroInView ? 'slide-in-left' : ''}`}>
+            Find the Ideal Room for You
+          </h1>
+          <p className={`hero-subtitle ${heroInView ? 'slide-in-right' : ''}`}>
+            Smart filters. Trusted listings. Simplified campus life.
+          </p>
+
+          <form
+            className={`accommodation-search-bar ${heroInView ? 'scale-up' : ''}`}
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <input
+              type="text"
+              placeholder="Search by Accommodation Name"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="accommodation-search-input"
+              aria-label="Hotel name"
+            />
+
+            <select
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value)}
+              className="accommodation-search-select"
+              aria-label="Room Type"
+            >
+              <option value="">Room Type</option>
+              <option value="Single Bed">Single Bed</option>
+              <option value="Double Bed">Double Bed</option>
+              <option value="Triple Sharing">Triple Sharing</option>
+              <option value="Annexe">Annexe</option>
+            </select>
+
+            <select
+              onChange={(e) => {
+                const [min, max] = e.target.value.split('-');
+                setSearchMinPrice(min);
+                setSearchMaxPrice(max);
+              }}
+              className="accommodation-search-select"
+              aria-label="Price Range"
+            >
+              <option value="">Price Range</option>
+              <option value="0-2500">0 - 2,500</option>
+              <option value="2500-5000">2,500 - 5,000</option>
+              <option value="5000-10000">5,000 - 10,000</option>
+              <option value="10000-15000">10,000 - 15,000</option>
+            </select>
+
+            <button type="submit" className="btn accommodation-search-btn">
+              Search
+            </button>
+          </form>
+        </div>
+      </section>
+
+
+      {/* --------------------------- Mobile Filter Toggle --------------------------- */}
+      <div className="accommodation-mobile-filter">
         <button
-          className="mobile-filter-toggle"
+          ref={filtersButtonRef}
+          className={`mobile-filter-toggle ${filtersButtonInView ? 'slide-in-left' : ''}`}
           onClick={() => setOpenFilters(!openFilters)}
           aria-expanded={openFilters}
         >
           {openFilters ? (
             <>
-              <span className="icon-close"></span> Hide Filters
+              <FaTimes className="icon-close" /> Hide Filters
             </>
           ) : (
             <>
-              <span className="icon-filter"></span> Show Filters
+              <FaFilter className="icon-filter" /> Show Filters
             </>
           )}
         </button>
       </div>
 
 
-      
-
+      {/* --------------------------- Accommodation Content --------------------------- */}
       <div className="accommodation-content">
-        {/* ---------------------- Room Types Filter ---------------------- */}
-        <aside className={`filters-sidebar ${openFilters ? 'open' : ''}`}>
-          {/* Room Types Filter */}
-          <div className="filter-section">
+
+        {/* --------------------------- Filters Sidebar --------------------------- */}
+        <aside
+          ref={filtersSidebarRef}
+          className={`filters-sidebar ${openFilters || window.innerWidth > 768 ? 'open' : ''} ${filtersSidebarInView ? 'slide-in-left' : ''}`}
+        >
+          <div className={`filter-section ${filtersSidebarInView ? 'scale-up' : ''}`}>
             <h2 className="filter-section-title">Room Types</h2>
             <div className="filter-options">
               {roomTypes.map((room, i) => (
-                <CheckBox
-                  key={`room-type-${i}`}
-                  label={room}
-                  selected={selectedRoomTypes.includes(room)}
-                  onChange={handleRoomTypeChange}
-                />
+                <label key={`room-type-${i}`} className="filter-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedRoomTypes.includes(room)}
+                    onChange={(e) => handleRoomTypeChange(e.target.checked, room)}
+                    aria-label={room}
+                  />
+                  <span className="checkmark"></span>
+                  <span className="filter-label">{room}</span>
+                </label>
               ))}
             </div>
           </div>
 
-          {/* Price Range Filter */}
-          <div className="filter-section">
+          <div className={`filter-section ${filtersSidebarInView ? 'scale-up' : ''}`}>
             <h2 className="filter-section-title">Price Range</h2>
             <div className="filter-options">
               {priceRanges.map((range, i) => (
-                <CheckBox
-                  key={`price-range-${i}`}
-                  label={`Rs ${range}`}
-                  selected={selectedPriceRanges.includes(`Rs ${range}`)}
-                  onChange={handlePriceRangeChange}
-                />
+                <label key={`price-range-${i}`} className="filter-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedPriceRanges.includes(`Rs ${range}`)}
+                    onChange={(e) => handlePriceRangeChange(e.target.checked, range)}
+                    aria-label={range}
+                  />
+                  <span className="checkmark"></span>
+                  <span className="filter-label">{range}</span>
+                </label>
               ))}
             </div>
           </div>
 
-          {/* Sort Options */}
-          <div className="filter-section">
+          <div className={`filter-section ${filtersSidebarInView ? 'scale-up' : ''}`}>
             <h2 className="filter-section-title">Sort By</h2>
             <div className="filter-options">
               {sortOptions.map((option, i) => (
-                <RadioButton
-                  key={`sort-option-${i}`}
-                  label={option}
-                  selected={selectedSortOption === option}
-                  onChange={handleSortChange}
-                />
+                <label key={`sort-option-${i}`} className="filter-radio">
+                  <input
+                    type="radio"
+                    name="sortOption"
+                    checked={selectedSortOption === option}
+                    onChange={() => handleSortChange(option)}
+                    aria-label={option}
+                  />
+                  <span className="radiomark"></span>
+                  <span className="filter-label">{option}</span>
+                </label>
               ))}
             </div>
           </div>
 
-          {/* Reset All Filters Button */}
           <button
-            className="resetButton"
+            className={`resetButton ${filtersSidebarInView ? 'scale-up' : ''}`}
             onClick={resetAllFilters}
-            disabled={selectedRoomTypes.length === 0 &&
-              selectedPriceRanges.length === 0 &&
-              selectedSortOption === ''}
+            disabled={!canResetFilters}
           >
             Reset All Filters
           </button>
         </aside>
 
 
+        {openFilters && window.innerWidth <= 768 && (
+          <div
+            className="filters-overlay"
+            onClick={() => setOpenFilters(false)}
+          />
+        )}
 
 
 
-        {/* ---------------------- Main Room List ---------------------- */}
-        <main className="rooms-list">
-          {/* No results message */}
+
+        <main className="rooms-list" ref={resultsRef}>
+
+          {/* --------------------------- Rooms Counter --------------------------- */}
+          <div className={`results-header full-width ${resultsInView ? 'slide-in-right' : ''}`}>
+            <div className="results-header-content">
+              <p className="results-count">
+                Found <strong>{filteredRooms.length}</strong> Rooms
+              </p>
+            </div>
+          </div>
+
+
+
+          {/* ---------------------------  No Results Found --------------------------- */} 
           {paginatedRooms.length === 0 ? (
-            <div className="no-results">
+            <div className={`no-results ${resultsInView ? 'scale-up' : ''}`}>
               <h3>No rooms found matching your criteria</h3>
               <p>Try adjusting your filters to see more results</p>
-              <button
-                className="reset-filters"
-                onClick={resetAllFilters}
-              >
+              <button className="reset-filters" onClick={resetAllFilters}>
                 Reset All Filters
               </button>
             </div>
           ) : (
             <>
-              {paginatedRooms.map((room) => (
-                <article
+
+
+
+              {/* ---------------------------  Rooms List --------------------------- */}
+              {paginatedRooms.map((room, index) => (
+                <RoomCard
                   key={room._id}
-                  className="room-card"
-                  onClick={() => navigate(`/room/${room._id}`)}
-                >
-                  {/* Room image with badge */}
-                  <div className="room-image-container">
-                    <img
-                      src={room.images[0]}
-                      alt={`${room.roomType} room at ${room.hotel.name}`}
-                      className="room-image"
-                      loading="lazy"
-                    />
-                    <span className="room-badge">{room.roomType}</span>
-                    <button 
-                      className={`save-button ${savedRooms.includes(room._id) ? 'saved' : ''}`}
-                      onClick={(e) => toggleSaveRoom(room._id, e)}
-                      aria-label={savedRooms.includes(room._id) ? 'Remove from saved' : 'Save this room'}
-                    >
-                      {savedRooms.includes(room._id) ? (
-                        <FaHeart className="icon-heart-filled" />
-                      ) : (
-                        <FaRegHeart className="icon-heart-outline" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Room details */}
-                  <div className="room-content">
-                    <div className="room-info">
-                      <h2 className="room-title">{room.hotel.name}</h2>
-                      <div className="room-location">
-                        <img src={assets.locationIcon} alt="" aria-hidden="true" />
-                        <span>{room.hotel.city}, {room.hotel.address}</span>
-                      </div>
-                      <div className="room-rating">
-                        <StarRating rating={room.rating} />
-                        <span className="reviews">200+ reviews</span>
-                      </div>
-
-                      {/* Room amenities preview */}
-                      <div className="room-amenities">
-                        {room.amenities.slice(0, 4).map((item, index) => (
-                          <div key={`amenity-${index}`} className="amenity-tag">
-                            <img src={facilityIcons[item]} alt="" aria-hidden="true" />
-                            <span>{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Price and action button */}
-                    <div className="room-price-section">
-                      <div className="price-info">
-                        <p className="price-per-month">Rs {room.pricePerMonth.toLocaleString()}</p>
-                        <p className="price-period">/ month</p>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/room/${room._id}`);
-                        }}
-                        className="mt-2 sm:mt-0 bg-blue-600 text-white px-5 py-2 rounded-xs hover:bg-blue-700 text-sm transition duration-200 view-details-btn"
-                        aria-label={`View details for ${room.roomType} room`}
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </article>
+                  room={room}
+                  index={index}
+                  savedRooms={savedRooms}
+                  toggleSaveRoom={toggleSaveRoom}
+                  handleRoomClick={handleRoomClick}
+                />
               ))}
 
-              {/* Pagination controls */}
+
+
+              {/* ---------------------------  Pagination --------------------------- */}
               {totalPages > 1 && (
-                <div className="pagination">
+                <div className={`pagination ${resultsInView ? 'slide-in-right' : ''}`}>
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}

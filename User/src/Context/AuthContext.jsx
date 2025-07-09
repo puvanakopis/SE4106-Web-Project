@@ -1,10 +1,13 @@
 import { createContext, useState } from 'react';
-import puvi from '../Assets/puvi.jpg'
+import puvi from '../Assets/puvi.jpg';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('token') !== null;
+  });
+  
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
@@ -40,7 +43,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, formData, setFormData, login, logout, error, validUser }}>
+    <AuthContext.Provider 
+      value={{ 
+        isLoggedIn, 
+        setIsLoggedIn, 
+        formData, 
+        setFormData, 
+        login, 
+        logout, 
+        error, 
+        validUser 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
