@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import './Navbar.css';
-import {scrollToTop} from '../../Pages/scrollToTop'
+import { scrollToTop } from '../../Pages/scrollToTop';
 import { AuthContext } from '../../Context/AuthContext';
 
 const Navbar = () => {
@@ -32,10 +32,10 @@ const Navbar = () => {
     const currentPath = location.pathname;
 
     // Authentication context 
-    const { isLoggedIn, setIsLoggedIn, validUser } = useContext(AuthContext);
+    const { user, isLoggedIn, logout } = useContext(AuthContext);
+    
     const handleLogout = () => {
-        setIsLoggedIn(false);
-        localStorage.removeItem('token');
+        logout();
         closeProfileDropdown();
         closeMobileMenu();
     };
@@ -79,12 +79,16 @@ const Navbar = () => {
                                 aria-label="Profile menu"
                                 aria-expanded={isProfileDropdownOpen ? "true" : "false"}
                             >
-                                {validUser?.dp && (
+                                {user?.photo ? (
                                     <img
-                                        src={validUser.dp}
+                                        src={user.photo}
                                         alt="Profile"
                                         className="navbar__profile-image"
                                     />
+                                ) : (
+                                    <div className="navbar__profile-initial">
+                                        {user?.firstName?.charAt(0).toUpperCase()}
+                                    </div>
                                 )}
                             </button>
 
@@ -92,7 +96,7 @@ const Navbar = () => {
                                 <Link
                                     className={`navbar__dropdown-link ${currentPath === "/profile" ? "navbar__dropdown-link--active" : ""}`}
                                     to="/profile"
-                                    onClick={()=> {
+                                    onClick={() => {
                                         closeProfileDropdown()
                                         scrollToTop()
                                     }}
@@ -102,7 +106,7 @@ const Navbar = () => {
                                 <Link
                                     className={`navbar__dropdown-link ${currentPath === "/saved" ? "navbar__dropdown-link--active" : ""}`}
                                     to="/saved"
-                                    onClick={()=> {
+                                    onClick={() => {
                                         closeProfileDropdown()
                                         scrollToTop()
                                     }}
@@ -112,7 +116,7 @@ const Navbar = () => {
                                 <Link
                                     className={`navbar__dropdown-link ${currentPath === "/booking" ? "navbar__dropdown-link--active" : ""}`}
                                     to="/booking"
-                                     onClick={()=> {
+                                    onClick={() => {
                                         closeProfileDropdown()
                                         scrollToTop()
                                     }}
@@ -122,7 +126,7 @@ const Navbar = () => {
                                 <Link
                                     className="navbar__dropdown-link"
                                     to="/"
-                                     onClick={()=> {
+                                    onClick={() => {
                                         handleLogout()
                                         scrollToTop()
                                     }}

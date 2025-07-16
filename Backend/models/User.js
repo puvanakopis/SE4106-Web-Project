@@ -4,34 +4,41 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: true,
+    required: [true, 'First name is required'],
     trim: true
   },
   lastName: {
     type: String,
-    required: true,
+    required: [true, 'Last name is required'],
     trim: true
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Email is required'],
     unique: true,
     trim: true,
-    lowercase: true
+    lowercase: true,
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
   },
   mobile: {
     type: String,
-    required: true,
+    required: [true, 'Mobile number is required'],
     trim: true
   },
   password: {
     type: String,
-    required: true,
-    minlength: 6
+    required: [true, 'Password is required'],
+    minlength: [6, 'Password must be at least 6 characters']
+  },
+  role: {
+    type: String,
+    required: [true, 'Role is required'],
+    enum: ['student', 'lecturer'],
+    default: 'student'
   },
   address: {
     type: String,
-    required: true,
+    required: [true, 'Address is required'],
     trim: true
   },
   photo: {
@@ -39,6 +46,10 @@ const userSchema = new mongoose.Schema({
     default: ''
   },
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
@@ -57,10 +68,31 @@ userSchema.pre('save', async function(next) {
   }
 });
 
+// Update the updatedAt field before saving
+userSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
 // Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
+
+// Virtual for full name
+userSchema.virtual('fullName').get(function() {
+  return `${this.firstName} ${this.lastName}`;
+});
+
+// Transform output to remove sensitive data
+userSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  }
+});
 
 const User = mongoose.model('User', userSchema);
 

@@ -13,6 +13,7 @@ const SignUp = () => {
     confirmPassword: '',
     address: '',
     photo: null,
+    role: 'student', // Default role
   });
 
   const imageHandler = (e) => {
@@ -41,6 +42,7 @@ const SignUp = () => {
     data.append('password', formData.password);
     data.append('confirmPassword', formData.confirmPassword);
     data.append('address', formData.address);
+    data.append('role', formData.role);
     if (formData.photo) {
       data.append('photo', formData.photo);
     }
@@ -69,21 +71,27 @@ const SignUp = () => {
   };
 
   return (
-    // Main container with fade-in animation
     <div className="signup-container fade-in">
-
-      {/* Sub-container with slide-in-right animation */}
       <div className="sub-container slide-in-right delay-100">
-
-        {/* Signup form with scale-up animation */}
         <form onSubmit={handleSubmit} className="signup-form scale-up delay-200">
-
-          {/* Form title with slide-in-left animation */}
           <h2 className="form-title slide-in-left delay-300">Sign Up</h2>
 
-          {/* Input fields grid */}
           <div className="form-grid">
-            {/* First Name - slide-in-left */}
+            {/* Role Selection - now as dropdown */}
+            <div className="form-group full-width slide-in-left delay-400">
+              <label>Register As</label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="role-dropdown"
+              >
+                <option value="student">Student</option>
+                <option value="lecturer">Lecturer</option>
+              </select>
+            </div>
+
+            {/* Rest of the form fields remain the same */}
             <div className="form-group slide-in-left delay-400">
               <label>First Name</label>
               <input
@@ -96,7 +104,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Last Name - slide-in-right */}
             <div className="form-group slide-in-right delay-400">
               <label>Last Name</label>
               <input
@@ -109,7 +116,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Email Address - slide-in-left */}
             <div className="form-group slide-in-left delay-500">
               <label>Email Address</label>
               <input
@@ -122,7 +128,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Mobile Number - slide-in-right */}
             <div className="form-group slide-in-right delay-500">
               <label>Mobile Number</label>
               <input
@@ -135,7 +140,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Address - slide-in-left (full width) */}
             <div className="form-group full-width slide-in-left delay-600">
               <label>Address</label>
               <input
@@ -148,7 +152,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Password - slide-in-right */}
             <div className="form-group slide-in-right delay-600">
               <label>Password</label>
               <input
@@ -162,7 +165,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Confirm Password - slide-in-left */}
             <div className="form-group slide-in-left delay-700">
               <label>Confirm Password</label>
               <input
@@ -177,7 +179,6 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/* Profile Photo Upload - fade-in */}
           <div className="form-group fade-in delay-800">
             <label>Profile Photo</label>
             <label htmlFor="file-input" className="uploadProfile">
@@ -196,12 +197,10 @@ const SignUp = () => {
             />
           </div>
 
-          {/* Submit Button - scale-up */}
           <div className="form-action scale-up delay-900">
             <button type="submit">Sign Up</button>
           </div>
 
-          {/* Footer: Login Link - fade-in */}
           <div className="form-footer fade-in delay-1000">
             <p>
               Have An Account? <a href="/login">Log In</a>
