@@ -13,6 +13,7 @@ const SignUp = () => {
     confirmPassword: '',
     address: '',
     photo: null,
+    role: 'student', // Default role
   });
 
   const imageHandler = (e) => {
@@ -41,6 +42,7 @@ const SignUp = () => {
     data.append('password', formData.password);
     data.append('confirmPassword', formData.confirmPassword);
     data.append('address', formData.address);
+    data.append('role', formData.role);
     if (formData.photo) {
       data.append('photo', formData.photo);
     }
@@ -69,20 +71,39 @@ const SignUp = () => {
   };
 
   return (
-    // Main container with fade-in animation
     <div className="signup-container fade-in">
-
-      {/* Sub-container with slide-in-right animation */}
       <div className="sub-container slide-in-right delay-100">
-
-        {/* Signup form with scale-up animation */}
         <form onSubmit={handleSubmit} className="signup-form scale-up delay-200">
-
-          {/* Form title with slide-in-left animation */}
           <h2 className="form-title slide-in-left delay-300">Sign Up</h2>
 
-          {/* Input fields grid */}
           <div className="form-grid">
+            {/* Role Selection - slide-in-left */}
+            <div className="form-group full-width slide-in-left delay-400">
+              <label>Register As</label>
+              <div className="role-selection">
+                <label className="role-option">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="student"
+                    checked={formData.role === 'student'}
+                    onChange={handleChange}
+                  />
+                  <span>Student</span>
+                </label>
+                <label className="role-option">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="lecturer"
+                    checked={formData.role === 'lecturer'}
+                    onChange={handleChange}
+                  />
+                  <span>Lecturer</span>
+                </label>
+              </div>
+            </div>
+
             {/* First Name - slide-in-left */}
             <div className="form-group slide-in-left delay-400">
               <label>First Name</label>
