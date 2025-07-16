@@ -77,34 +77,21 @@ const SignUp = () => {
           <h2 className="form-title slide-in-left delay-300">Sign Up</h2>
 
           <div className="form-grid">
-            {/* Role Selection - slide-in-left */}
+            {/* Role Selection - now as dropdown */}
             <div className="form-group full-width slide-in-left delay-400">
               <label>Register As</label>
-              <div className="role-selection">
-                <label className="role-option">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="student"
-                    checked={formData.role === 'student'}
-                    onChange={handleChange}
-                  />
-                  <span>Student</span>
-                </label>
-                <label className="role-option">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="lecturer"
-                    checked={formData.role === 'lecturer'}
-                    onChange={handleChange}
-                  />
-                  <span>Lecturer</span>
-                </label>
-              </div>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="role-dropdown"
+              >
+                <option value="student">Student</option>
+                <option value="lecturer">Lecturer</option>
+              </select>
             </div>
 
-            {/* First Name - slide-in-left */}
+            {/* Rest of the form fields remain the same */}
             <div className="form-group slide-in-left delay-400">
               <label>First Name</label>
               <input
@@ -117,7 +104,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Last Name - slide-in-right */}
             <div className="form-group slide-in-right delay-400">
               <label>Last Name</label>
               <input
@@ -130,7 +116,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Email Address - slide-in-left */}
             <div className="form-group slide-in-left delay-500">
               <label>Email Address</label>
               <input
@@ -143,7 +128,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Mobile Number - slide-in-right */}
             <div className="form-group slide-in-right delay-500">
               <label>Mobile Number</label>
               <input
@@ -156,7 +140,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Address - slide-in-left (full width) */}
             <div className="form-group full-width slide-in-left delay-600">
               <label>Address</label>
               <input
@@ -169,7 +152,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Password - slide-in-right */}
             <div className="form-group slide-in-right delay-600">
               <label>Password</label>
               <input
@@ -183,7 +165,6 @@ const SignUp = () => {
               />
             </div>
 
-            {/* Confirm Password - slide-in-left */}
             <div className="form-group slide-in-left delay-700">
               <label>Confirm Password</label>
               <input
@@ -198,7 +179,6 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/* Profile Photo Upload - fade-in */}
           <div className="form-group fade-in delay-800">
             <label>Profile Photo</label>
             <label htmlFor="file-input" className="uploadProfile">
@@ -217,12 +197,10 @@ const SignUp = () => {
             />
           </div>
 
-          {/* Submit Button - scale-up */}
           <div className="form-action scale-up delay-900">
             <button type="submit">Sign Up</button>
           </div>
 
-          {/* Footer: Login Link - fade-in */}
           <div className="form-footer fade-in delay-1000">
             <p>
               Have An Account? <a href="/login">Log In</a>

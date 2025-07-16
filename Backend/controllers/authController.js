@@ -7,7 +7,7 @@ const fs = require('fs');
 // Register a new user
 exports.register = async (req, res) => {
   try {
-    const { firstName, lastName, email, mobile, password, confirmPassword, address } = req.body;
+    const { firstName, lastName, email, mobile, password, confirmPassword, address, role } = req.body;
     
     // Check if passwords match
     if (password !== confirmPassword) {
@@ -28,6 +28,7 @@ exports.register = async (req, res) => {
       mobile,
       password,
       address,
+      role,
       photo: req.file ? req.file.filename : ''
     });
 
@@ -46,6 +47,7 @@ exports.register = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        role: user.role,
         photo: user.photo
       }
     });
@@ -85,6 +87,7 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        role: user.role,
         photo: user.photo
       }
     });
