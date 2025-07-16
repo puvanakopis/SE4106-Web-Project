@@ -2,7 +2,6 @@ import React, { useState, useContext} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import PropTypes from 'prop-types';
 import { assets, vehicleData } from '../Assets/assets';
 import { useBookings } from '../Context/BookingContext';
 import { AuthContext } from '../Context/AuthContext';
@@ -490,8 +489,5 @@ const TransportDetails = () => {
   );
 };
 
-TransportDetails.propTypes = {
-  id: PropTypes.string
-};
 
 export default TransportDetails;

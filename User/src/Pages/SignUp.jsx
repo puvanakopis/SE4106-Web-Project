@@ -25,9 +25,47 @@ const SignUp = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
+
+    const data = new FormData();
+    data.append('firstName', formData.firstName);
+    data.append('lastName', formData.lastName);
+    data.append('email', formData.email);
+    data.append('mobile', formData.mobile);
+    data.append('password', formData.password);
+    data.append('confirmPassword', formData.confirmPassword);
+    data.append('address', formData.address);
+    if (formData.photo) {
+      data.append('photo', formData.photo);
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        body: data,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Registration successful
+        console.log('Registration successful:', result);
+        // Redirect or show success message
+      } else {
+        // Registration failed
+        console.error('Registration failed:', result.error);
+        alert(result.error || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred during registration');
+    }
   };
 
   return (
