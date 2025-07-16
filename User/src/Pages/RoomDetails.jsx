@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import PropTypes from 'prop-types';
 import { roomsDummyData, assets } from '../Assets/assets';
 import { useBookings } from '../Context/BookingContext';
 import { AuthContext } from '../Context/AuthContext';
@@ -514,10 +513,6 @@ const RoomDetails = () => {
       </div>
     </main>
   );
-};
-
-RoomDetails.propTypes = {
-  id: PropTypes.string
 };
 
 export default RoomDetails;
