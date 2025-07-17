@@ -1,0 +1,23 @@
+.footer{
+    background-color: #EFF0F2;
+    margin-top: 5%;
+}
+
+
+/* Brand Description */
+.footer-logo{
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer-logo .logo-text{
+    font-family: "DM Serif Display", serif;
+    font-weight: 800 ;
+    font-style: normal;
+    font-size: 35px;
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+}

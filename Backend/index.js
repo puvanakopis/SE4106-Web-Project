@@ -10,6 +10,26 @@ const app = express();
 // Connect to database
 connectDB();
 
+// Create default admin if not exists
+const createDefaultAdmin = async () => {
+  const Admin = require('./models/Admin');
+  const adminExists = await Admin.findOne({ email: 'admin@campusease.com' });
+  
+  if (!adminExists) {
+    const admin = new Admin({
+      email: 'admin@campusease.com',
+      password: 'Admin@123', 
+      name: 'System Admin'
+    });
+    await admin.save();
+    console.log('Default admin created');
+  }
+};
+
+createDefaultAdmin();
+
+
+
 // Middleware
 app.use(cors());
 app.use(express.json());

@@ -1,10 +1,11 @@
 const User = require('../models/User');
+const Admin = require('../models/Admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
 
-// Register a new user
+// Register a new user (student/lecturer)
 exports.register = async (req, res) => {
   try {
     const { firstName, lastName, email, mobile, password, confirmPassword, address, role } = req.body;
@@ -35,7 +36,7 @@ exports.register = async (req, res) => {
     await user.save();
 
     // Create token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: '1d'
     });
 
@@ -57,7 +58,7 @@ exports.register = async (req, res) => {
   }
 };
 
-// Login user
+// Login user (student/lecturer)
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -75,7 +76,7 @@ exports.login = async (req, res) => {
     }
 
     // Create token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: '1d'
     });
 
@@ -97,14 +98,60 @@ exports.login = async (req, res) => {
   }
 };
 
+// Login admin
+exports.loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if admin exists
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Check password
+    const isMatch = await admin.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Create token
+    const token = jwt.sign({ userId: admin._id, role: 'admin' }, process.env.JWT_SECRET, {
+      expiresIn: '1d'
+    });
+
+    res.json({
+      success: true,
+      token,
+      admin: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: 'admin'
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 // Get user profile
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select('-password');
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+    if (req.role === 'admin') {
+      const admin = await Admin.findById(req.userId).select('-password');
+      if (!admin) {
+        return res.status(404).json({ error: 'Admin not found' });
+      }
+      return res.json(admin);
+    } else {
+      const user = await User.findById(req.userId).select('-password');
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      return res.json(user);
     }
-    res.json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
