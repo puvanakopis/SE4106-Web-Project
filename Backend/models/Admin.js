@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const Counter = require('./Counter');
 
 const adminSchema = new mongoose.Schema({
+  _id: { type: String },
   email: {
     type: String,
     required: [true, 'Email is required'],
@@ -23,6 +25,23 @@ const adminSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  }
+});
+
+// Pre-save hook to generate custom ID
+adminSchema.pre('save', async function(next) {
+  if (!this.isNew) return next();
+  
+  try {
+    const counter = await Counter.findByIdAndUpdate(
+      { _id: 'adminId' },
+      { $inc: { value: 1 } },
+      { new: true, upsert: true }
+    );
+    this._id = `admin_${String(counter.value).padStart(2, '0')}`;
+    next();
+  } catch (err) {
+    next(err);
   }
 });
 

@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const Counter = require('./Counter');
 
 const userSchema = new mongoose.Schema({
+  _id: { type: String },
   firstName: {
     type: String,
     required: [true, 'First name is required'],
@@ -33,7 +35,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: [true, 'Role is required'],
-    enum: ['student', 'lecturer' , 'admin'],
+    enum: ['student', 'lecturer', 'admin'],
     default: 'student'
   },
   address: {
@@ -55,6 +57,27 @@ const userSchema = new mongoose.Schema({
   }
 });
 
+// Pre-save hook to generate custom ID
+userSchema.pre('save', async function(next) {
+  if (!this.isNew) {
+    this.updatedAt = Date.now();
+    return next();
+  }
+  
+  try {
+    const counter = await Counter.findByIdAndUpdate(
+      { _id: 'userId' },
+      { $inc: { value: 1 } },
+      { new: true, upsert: true }
+    );
+    this._id = `user_${String(counter.value).padStart(2, '0')}`;
+    this.updatedAt = Date.now();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Hash password before saving
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
@@ -66,12 +89,6 @@ userSchema.pre('save', async function(next) {
   } catch (error) {
     next(error);
   }
-});
-
-// Update the updatedAt field before saving
-userSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
 });
 
 // Method to compare passwords
