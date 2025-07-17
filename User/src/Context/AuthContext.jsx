@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, registerUser, getProfile } from '../api/auth';
+import { loginUser, registerUser, getProfile, loginAdmin } from '../api/auth';
 
 export const AuthContext = createContext();
 
@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
     photo: null
   });
   const [isLoading, setIsLoading] = useState(false); 
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate(); 
 
   // Run once on initial load to check if a token exists
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }) => {
       const userData = await getProfile();
       setUser(userData);
       setIsLoggedIn(true);
+      setIsAdmin(userData.role === 'admin');
     } catch (error) {
       console.error('Token verification failed:', error);
       setError('Your session has expired. Please log in again.');
@@ -53,12 +55,32 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', response.token); 
       setUser(response.user);
       setIsLoggedIn(true);
+      setIsAdmin(false);
       setFormData(prev => ({ ...prev, password: '' }));
       navigate('/'); 
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Login failed');
+      setError(err.message || 'Login failed');
     } finally {
       setIsLoading(false); 
+    }
+  };
+
+  // Handle admin login
+  const adminLogin = async (email, password) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await loginAdmin(email, password);
+
+      localStorage.setItem('token', response.token); 
+      setUser(response.admin);
+      setIsLoggedIn(true);
+      setIsAdmin(true);
+      navigate('/admin'); 
+    } catch (err) {
+      setError(err.message || 'Admin login failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,6 +94,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', response.token); 
       setUser(response.user);
       setIsLoggedIn(true);
+      setIsAdmin(false);
       setFormData(prev => ({ 
         ...prev,
         password: '',
@@ -80,7 +103,7 @@ export const AuthProvider = ({ children }) => {
       }));
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Registration failed');
+      setError(err.message || 'Registration failed');
     } finally {
       setIsLoading(false);
     }
@@ -91,20 +114,22 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token'); 
     setUser(null);
     setIsLoggedIn(false);
+    setIsAdmin(false);
     navigate('/login'); 
   };
 
-  // Provide all values and methods to consuming components
   return (
     <AuthContext.Provider
       value={{
         user,
         isLoggedIn,
+        isAdmin,
         error,
         formData,
         setFormData,
         isLoading,
         login,
+        adminLogin,
         register,
         logout,
       }}
@@ -114,7 +139,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to access auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

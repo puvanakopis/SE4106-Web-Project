@@ -212,6 +212,7 @@ export const ownerData = [
     username: "Mr. Senaka Perera",
     email: "senaka@gmail.com",
     role: "Owner",
+    phoneNumber: "+94771234567",
     recentSearchedCities: ["Pambahinna"],
     profile_pic: "https://ui-avatars.com/api/?name=Senaka+Perera&background=0D8ABC&color=fff",
   },

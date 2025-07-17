@@ -18,6 +18,7 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
+// User login
 export const loginUser = async (email, password) => {
   try {
     const response = await api.post('/login', { email, password });
@@ -27,6 +28,17 @@ export const loginUser = async (email, password) => {
   }
 };
 
+// Admin login
+export const loginAdmin = async (email, password) => {
+  try {
+    const response = await api.post('/admin/login', { email, password });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || 'Admin login failed');
+  }
+};
+
+// User registration
 export const registerUser = async (userData) => {
   try {
     const formData = new FormData();
@@ -47,6 +59,7 @@ export const registerUser = async (userData) => {
   }
 };
 
+// Get profile (works for both users and admins)
 export const getProfile = async () => {
   try {
     const response = await api.get('/profile');

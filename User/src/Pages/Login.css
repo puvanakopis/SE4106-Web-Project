@@ -10,6 +10,39 @@
     --radius-md: 0.5rem;
 }
 
+/* ------------------ Toggle Login Type Button ------------------ */
+.login-container .toggle-login-type {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.login-container .toggle-button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 5px;
+    text-decoration: underline;
+    transition: color 0.3s;
+}
+
+.login-container .toggle-button:hover {
+    color: var(--primary-hover);
+}
+
+/* ------------------ Admin Login Specific Styles ------------------ */
+.login-container .admin-login .form-title {
+    border-bottom-color: #dc2626; /* Different color for admin */
+}
+
+.login-container .admin-login .form-action button {
+    background-color: #dc2626;
+}
+
+.login-container .admin-login .form-action button:hover {
+    background-color: #b91c1c;
+}
 /* -------------------   MAIN CONTAINER STYLES   ------------------- */
 .login-container {
     display: flex;

@@ -2,18 +2,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const Counter = require('./Counter');
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
   _id: { type: String },
-  firstName: {
-    type: String,
-    required: [true, 'First name is required'],
-    trim: true
-  },
-  lastName: {
-    type: String,
-    required: [true, 'Last name is required'],
-    trim: true
-  },
   email: {
     type: String,
     required: [true, 'Email is required'],
@@ -22,56 +12,33 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
   },
-  mobile: {
-    type: String,
-    required: [true, 'Mobile number is required'],
-    trim: true
-  },
   password: {
     type: String,
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters']
   },
-  role: {
+  name: {
     type: String,
-    required: [true, 'Role is required'],
-    enum: ['student', 'lecturer', 'admin'],
-    default: 'student'
-  },
-  address: {
-    type: String,
-    required: [true, 'Address is required'],
+    required: [true, 'Name is required'],
     trim: true
   },
-  photo: {
-    type: String,
-    default: ''
-  },
   createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
     type: Date,
     default: Date.now
   }
 });
 
 // Pre-save hook to generate custom ID
-userSchema.pre('save', async function(next) {
-  if (!this.isNew) {
-    this.updatedAt = Date.now();
-    return next();
-  }
+adminSchema.pre('save', async function(next) {
+  if (!this.isNew) return next();
   
   try {
     const counter = await Counter.findByIdAndUpdate(
-      { _id: 'userId' },
+      { _id: 'adminId' },
       { $inc: { value: 1 } },
       { new: true, upsert: true }
     );
-    this._id = `user_${String(counter.value).padStart(2, '0')}`;
-    this.updatedAt = Date.now();
+    this._id = `admin_${String(counter.value).padStart(2, '0')}`;
     next();
   } catch (err) {
     next(err);
@@ -79,7 +46,7 @@ userSchema.pre('save', async function(next) {
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+adminSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
   try {
@@ -92,18 +59,12 @@ userSchema.pre('save', async function(next) {
 });
 
 // Method to compare passwords
-userSchema.methods.comparePassword = async function(candidatePassword) {
+adminSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Virtual for full name
-userSchema.virtual('fullName').get(function() {
-  return `${this.firstName} ${this.lastName}`;
-});
-
 // Transform output to remove sensitive data
-userSchema.set('toJSON', {
-  virtuals: true,
+adminSchema.set('toJSON', {
   transform: function(doc, ret) {
     delete ret.password;
     delete ret.__v;
@@ -111,6 +72,6 @@ userSchema.set('toJSON', {
   }
 });
 
-const User = mongoose.model('User', userSchema);
+const Admin = mongoose.model('Admin', adminSchema);
 
-module.exports = User;
+module.exports = Admin;
