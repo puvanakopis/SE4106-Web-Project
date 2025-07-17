@@ -6,10 +6,9 @@ import Footer from './Components/Footer/Footer';
 
 import Dashboard from './Pages/Dashboard';
 import LogIn from './Pages/LogIn';
-import AddRoom from './Pages/AddRoom';
-import ListRoom from './Pages/ListRoom';
-import AddTransport from './Pages/AddTransport';
-import ListTransport from './Pages/ListTransport';
+import Room from './Pages/Rooms';
+import Owner from './Pages/Owner';
+import AddTransport from './Pages/Transport';
 import Profile from './Pages/ProfileInfo';
 import ForgotPassword from "./Pages/ForgotPassword";
 
@@ -42,37 +41,30 @@ function App() {
           }
         />
         <Route
-          path="/addroom"
+          path="/room"
           element={
             <PrivateRoute>
-              <AddRoom />
+              <Room />
             </PrivateRoute>
           }
         />
         <Route
-          path="/listroom"
+          path="/owner"
           element={
             <PrivateRoute>
-              <ListRoom />
+              <Owner />
             </PrivateRoute>
           }
         />
         <Route
-          path="/addtransport"
+          path="/transport"
           element={
             <PrivateRoute>
               <AddTransport />
             </PrivateRoute>
           }
         />
-        <Route
-          path="/listtransport"
-          element={
-            <PrivateRoute>
-              <ListTransport />
-            </PrivateRoute>
-          }
-        />
+
       </Routes>
       <Footer />
     </AuthProvider>

@@ -1,0 +1,306 @@
+/* ------------- CSS Variables ------------- */
+:root {
+  --primary-color: #0066cc;
+  --primary-hover: #0052a3;
+  --secondary-color: #f0f0f0;
+  --secondary-hover: #e0e0e0;
+  --text-dark: #333;
+  --text-medium: #666;
+  --text-light: #999;
+  --border-color: #eee;
+  --background-light: #f5f5f5;
+  --background-white: #ffffff;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --transition: all 0.2s ease;
+}
+
+/* --------------------------- Modal Overlay --------------------------- */
+.owner-details {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* --------------------------- Modal Container --------------------------- */
+.owner-details .owner-modal {
+  background-color: var(--background-white);
+  border-radius: var(--radius-md);
+  width: 100%;
+  max-width: 450px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* --------------------------- Modal Header --------------------------- */
+.owner-details .owner-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.owner-details .owner-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-dark);
+}
+
+.owner-details .close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  transition: var(--transition);
+}
+
+.owner-details .close-button:hover {
+  opacity: 0.8;
+}
+
+.owner-details .close-button img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+}
+
+/* --------------------------- Profile Section --------------------------- */
+.owner-details .owner-profile-section {
+  display: flex;
+  padding: 20px;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.owner-details .owner-avatar-container {
+  margin-right: 16px;
+}
+
+.owner-details .owner-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--background-light);
+}
+
+.owner-details .owner-info {
+  flex: 1;
+}
+
+.owner-details .owner-name {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+}
+
+.owner-details .owner-role {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-medium);
+}
+
+.owner-details .owner-rating {
+  display: flex;
+  align-items: center;
+}
+
+.owner-details .rating-text {
+  margin-left: 8px;
+  font-size: 0.85rem;
+  color: var(--text-medium);
+}
+
+/* --------------------------- Details Section --------------------------- */
+.owner-details .owner-details-section {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.owner-details .detail-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.owner-details .detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.owner-details .detail-label {
+  width: 120px;
+  font-size: 0.9rem;
+  color: var(--text-medium);
+  font-weight: 500;
+}
+
+.owner-details .detail-value {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.owner-details .detail-value.link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.owner-details .detail-value.link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------- Recent Searches Section --------------------------- */
+.owner-details .recent-searches-section {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.owner-details .recent-searches-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.owner-details .city-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.owner-details .city-tag {
+  background-color: var(--background-light);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--text-medium);
+  transition: var(--transition);
+}
+
+.owner-details .city-tag:hover {
+  background-color: var(--secondary-color);
+}
+
+/* --------------------------- Action Buttons --------------------------- */
+.owner-details .owner-actions {
+  display: flex;
+  padding: 16px;
+  gap: 12px;
+}
+
+.owner-details .action-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.owner-details .action-button img {
+  width: 18px;
+  height: 18px;
+}
+
+.owner-details .action-button.primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.owner-details .action-button.primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.owner-details .action-button.secondary {
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+}
+
+.owner-details .action-button.secondary:hover {
+  background-color: var(--secondary-hover);
+}
+
+/* --------------------------- Star Rating --------------------------- */
+.owner-details .star-rating {
+  display: inline-flex;
+  align-items: center;
+}
+
+.owner-details .star-rating_star {
+  display: inline-block;
+  color: #ddd;
+}
+
+.owner-details .star-rating_star--full {
+  color: #ffc107;
+}
+
+.owner-details .star-rating_star--half {
+  position: relative;
+  color: #ddd;
+}
+
+.owner-details .star-rating_star--half::before {
+  content: '★';
+  position: absolute;
+  left: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #ffc107;
+}
+
+.owner-details .star-rating--small {
+  font-size: 0.9rem;
+}
+
+.owner-details .star-rating--medium {
+  font-size: 1.1rem;
+}
+
+/* --------------------------- Responsive Styles --------------------------- */
+@media (max-width: 480px) {
+  .owner-details  .owner-modal {
+    max-width: 100%;
+  }
+  
+  .owner-details .owner-profile-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .owner-details .owner-avatar-container {
+    margin-right: 0;
+    margin-bottom: 16px;
+  }
+  
+  .owner-details .detail-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .owner-details .detail-label {
+    width: 100%;
+  }
+
+  .owner-details .owner-actions {
+    flex-direction: column;
+  }
+}

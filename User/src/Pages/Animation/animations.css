@@ -1,0 +1,227 @@
+/* animations.css */
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 1s ease-out forwards;
+  opacity: 0; /* Start invisible for animations */
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.8s ease-out forwards;
+  opacity: 0; /* Start invisible for animations */
+}
+
+.slide-in-right {
+  animation: slideInRight 0.8s ease-out forwards;
+  opacity: 0; /* Start invisible for animations */
+}
+
+.scale-up {
+  animation: scaleUp 0.8s ease-out forwards;
+  opacity: 0; /* Start invisible for animations */
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Optional: Delay classes */
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+
+
+
+/* footer */
+/* Add these to your Footer.css */
+.footer-section,
+.footer-logo,
+.social-media,
+.copyright {
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.social-media a {
+  transition: transform 0.3s ease, color 0.3s ease;
+  display: inline-block;
+}
+
+.social-media a:hover {
+  transform: scale(1.1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* accomantaion */
+/* Animation Classes */
+.slide-in-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.scale-up {
+  animation: scaleUp 0.5s ease-out forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Filters Sidebar Responsive Behavior */
+.filters-sidebar {
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .filters-sidebar:not(.open) {
+    transform: translateX(-100%);
+  }
+  
+  .filters-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .filters-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 998;
+  }
+}
+
+@media (min-width: 769px) {
+  .filters-sidebar {
+    transform: translateX(0) !important;
+  }
+  
+  .filters-overlay {
+    display: none !important;
+  }
+  
+  .mobile-filter-toggle {
+    display: none;
+  }
+}
+
+/* Room Card Animations */
+.room-card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.room-card.scale-up {
+  opacity: 1;
+  transform: translateY(0);
+}

@@ -13,6 +13,7 @@ const SignUp = () => {
     confirmPassword: '',
     address: '',
     photo: null,
+    role: 'student', // Default role
   });
 
   const imageHandler = (e) => {
@@ -25,28 +26,73 @@ const SignUp = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
+
+    const data = new FormData();
+    data.append('firstName', formData.firstName);
+    data.append('lastName', formData.lastName);
+    data.append('email', formData.email);
+    data.append('mobile', formData.mobile);
+    data.append('password', formData.password);
+    data.append('confirmPassword', formData.confirmPassword);
+    data.append('address', formData.address);
+    data.append('role', formData.role);
+    if (formData.photo) {
+      data.append('photo', formData.photo);
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        body: data,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Registration successful
+        console.log('Registration successful:', result);
+        // Redirect or show success message
+      } else {
+        // Registration failed
+        console.error('Registration failed:', result.error);
+        alert(result.error || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred during registration');
+    }
   };
 
   return (
-    // --------------------- Main Container ---------------------
-    <div className="signup-container">
-      
-      {/* --------------------- Sub Container --------------------- */}
-      <div className="sub-container">
-        
-        {/* --------------------- Signup Form --------------------- */}
-        <form onSubmit={handleSubmit} className="signup-form">
-          
-          {/*  Form Title  */}
-          <h2 className="form-title">Sign Up</h2>
+    <div className="signup-container fade-in">
+      <div className="sub-container slide-in-right delay-100">
+        <form onSubmit={handleSubmit} className="signup-form scale-up delay-200">
+          <h2 className="form-title slide-in-left delay-300">Sign Up</h2>
 
-          {/*  Input Fields Grid  */}
           <div className="form-grid">
-            {/*  First Name  */}
-            <div className="form-group">
+            {/* Role Selection - now as dropdown */}
+            <div className="form-group full-width slide-in-left delay-400">
+              <label>Register As</label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="role-dropdown"
+              >
+                <option value="student">Student</option>
+                <option value="lecturer">Lecturer</option>
+              </select>
+            </div>
+
+            {/* Rest of the form fields remain the same */}
+            <div className="form-group slide-in-left delay-400">
               <label>First Name</label>
               <input
                 type="text"
@@ -58,8 +104,7 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Last Name  */}
-            <div className="form-group">
+            <div className="form-group slide-in-right delay-400">
               <label>Last Name</label>
               <input
                 type="text"
@@ -71,8 +116,7 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Email Address  */}
-            <div className="form-group">
+            <div className="form-group slide-in-left delay-500">
               <label>Email Address</label>
               <input
                 type="email"
@@ -84,8 +128,7 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Mobile Number  */}
-            <div className="form-group">
+            <div className="form-group slide-in-right delay-500">
               <label>Mobile Number</label>
               <input
                 type="text"
@@ -97,8 +140,7 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Address  */}
-            <div className="form-group full-width">
+            <div className="form-group full-width slide-in-left delay-600">
               <label>Address</label>
               <input
                 type="text"
@@ -110,8 +152,7 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Password  */}
-            <div className="form-group">
+            <div className="form-group slide-in-right delay-600">
               <label>Password</label>
               <input
                 type="password"
@@ -124,8 +165,7 @@ const SignUp = () => {
               />
             </div>
 
-            {/*  Confirm Password  */}
-            <div className="form-group">
+            <div className="form-group slide-in-left delay-700">
               <label>Confirm Password</label>
               <input
                 type="password"
@@ -139,8 +179,7 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/*  Profile Photo Upload  */}
-          <div className="form-group">
+          <div className="form-group fade-in delay-800">
             <label>Profile Photo</label>
             <label htmlFor="file-input" className="uploadProfile">
               <img
@@ -158,13 +197,11 @@ const SignUp = () => {
             />
           </div>
 
-          {/*  Submit Button  */}
-          <div className="form-action">
+          <div className="form-action scale-up delay-900">
             <button type="submit">Sign Up</button>
           </div>
 
-          {/*  Footer: Login Link  */}
-          <div className="form-footer">
+          <div className="form-footer fade-in delay-1000">
             <p>
               Have An Account? <a href="/login">Log In</a>
             </p>
