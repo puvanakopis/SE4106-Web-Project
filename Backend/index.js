@@ -3,6 +3,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const path = require('path');
 require('dotenv').config();
+const vehicleRoutes = require('./routes/vehicleRoutes');
 
 // Initialize app
 const app = express();
@@ -59,6 +60,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// API Routes
+app.use('/api/auth/vehicles', vehicleRoutes);
 
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));

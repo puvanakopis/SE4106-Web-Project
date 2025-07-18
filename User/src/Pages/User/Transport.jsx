@@ -51,6 +51,10 @@ const NotificationToast = ({ message, onClose, isRemoved }) => (
   </div>
 );
 
+
+
+
+
 /* ------------- Transport Card Component ------------- */
 const TransportCard = ({ vehicle, index, savedVehicles, toggleSaveVehicle, handleVehicleClick }) => {
   const [cardRef, cardInView] = useInView({
@@ -162,6 +166,12 @@ const Transport = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const transportsPerPage = 9;
 
+
+
+
+
+
+  
   /* ------------- Intersection Observer Hooks ------------- */
   const [heroRef, heroInView] = useInView({ threshold: 0.1, triggerOnce: false });
   const [resultsRef, resultsInView] = useInView({ threshold: 0.1, triggerOnce: false });
