@@ -1,7 +1,10 @@
+import './Notifications.css';
 import './Login.css';
 import { useAuth } from '../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const { 
@@ -19,6 +22,27 @@ const Login = () => {
   const [localError, setLocalError] = useState(null);
   const [isAdminLogin, setIsAdminLogin] = useState(false);
 
+  // Toast configuration
+  const showToast = (message, type = 'error') => {
+    const toastOptions = {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      className: 'toast-message',
+      transition: Slide,
+    };
+
+    if (type === 'success') {
+      toast.success(message, toastOptions);
+    } else {
+      toast.error(message, toastOptions);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ 
@@ -33,6 +57,7 @@ const Login = () => {
     
     if (!formData.email || !formData.password) {
       setLocalError('Please fill in all fields');
+      showToast('Please fill in all fields');
       return;
     }
 
@@ -42,8 +67,11 @@ const Login = () => {
       } else {
         await login();
       }
+      // Removed the success toast here
     } catch (err) {
-      setLocalError(err.message || 'Login failed');
+      const errorMessage = err.message || 'Login failed';
+      setLocalError(errorMessage);
+      showToast(errorMessage);
     }
   };
 
@@ -58,13 +86,26 @@ const Login = () => {
   }, [isLoggedIn, navigate, isAdmin]);
 
   useEffect(() => {
-    if (error || localError) {
-      alert(error || localError);
+    if (error) {
+      showToast(error);
     }
-  }, [error, localError]);
+  }, [error]);
 
   return (
     <div className={`login-container ${isAdminLogin ? 'admin-login' : ''}`}>
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        transition={Slide}
+      />
+      
       <div className="sub-container">
         <form onSubmit={handleSubmit} className="login-form">
           <h2 className="form-title">
