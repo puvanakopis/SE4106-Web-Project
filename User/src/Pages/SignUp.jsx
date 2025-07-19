@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './SignUp.css';
+import './Notifications.css'
 import upload_area from '../Assets/upload_area.png';
 
 const SignUp = () => {
@@ -13,8 +16,29 @@ const SignUp = () => {
     confirmPassword: '',
     address: '',
     photo: null,
-    role: 'student', // Default role
+    role: 'student',
   });
+
+  // Toast configuration
+  const showToast = (type, message) => {
+    const toastOptions = {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      className: 'toast-message',
+      transition: Slide,
+    };
+
+    if (type === 'success') {
+      toast.success(message, toastOptions);
+    } else {
+      toast.error(message, toastOptions);
+    }
+  };
 
   const imageHandler = (e) => {
     setImage(e.target.files[0]);
@@ -30,7 +54,7 @@ const SignUp = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      showToast('error', "Passwords don't match!");
       return;
     }
 
@@ -56,28 +80,48 @@ const SignUp = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // Registration successful
-        console.log('Registration successful:', result);
-        // Redirect or show success message
+        showToast('success', 'Registration successful!');
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          mobile: '',
+          password: '',
+          confirmPassword: '',
+          address: '',
+          photo: null,
+          role: 'student',
+        });
+        setImage(false);
       } else {
-        // Registration failed
-        console.error('Registration failed:', result.error);
-        alert(result.error || 'Registration failed');
+        showToast('error', result.error || 'Registration failed');
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred during registration');
+      showToast('error', 'An error occurred during registration');
+      console.error('Registration error:', error);
     }
   };
 
   return (
     <div className="signup-container fade-in">
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        transition={Slide}
+      />
       <div className="sub-container slide-in-right delay-100">
         <form onSubmit={handleSubmit} className="signup-form scale-up delay-200">
           <h2 className="form-title slide-in-left delay-300">Sign Up</h2>
 
           <div className="form-grid">
-            {/* Role Selection - now as dropdown */}
+            {/* Role Selection */}
             <div className="form-group full-width slide-in-left delay-400">
               <label>Register As</label>
               <select
@@ -91,9 +135,9 @@ const SignUp = () => {
               </select>
             </div>
 
-            {/* Rest of the form fields remain the same */}
+            {/* First Name */}
             <div className="form-group slide-in-left delay-400">
-              <label>First Name</label>
+              <label>First Name *</label>
               <input
                 type="text"
                 name="firstName"
@@ -104,8 +148,9 @@ const SignUp = () => {
               />
             </div>
 
+            {/* Last Name */}
             <div className="form-group slide-in-right delay-400">
-              <label>Last Name</label>
+              <label>Last Name *</label>
               <input
                 type="text"
                 name="lastName"
@@ -116,8 +161,9 @@ const SignUp = () => {
               />
             </div>
 
+            {/* Email */}
             <div className="form-group slide-in-left delay-500">
-              <label>Email Address</label>
+              <label>Email Address *</label>
               <input
                 type="email"
                 name="email"
@@ -128,8 +174,9 @@ const SignUp = () => {
               />
             </div>
 
+            {/* Mobile */}
             <div className="form-group slide-in-right delay-500">
-              <label>Mobile Number</label>
+              <label>Mobile Number *</label>
               <input
                 type="text"
                 name="mobile"
@@ -140,8 +187,9 @@ const SignUp = () => {
               />
             </div>
 
+            {/* Address */}
             <div className="form-group full-width slide-in-left delay-600">
-              <label>Address</label>
+              <label>Address *</label>
               <input
                 type="text"
                 name="address"
@@ -152,8 +200,9 @@ const SignUp = () => {
               />
             </div>
 
+            {/* Password */}
             <div className="form-group slide-in-right delay-600">
-              <label>Password</label>
+              <label>Password *</label>
               <input
                 type="password"
                 name="password"
@@ -165,8 +214,9 @@ const SignUp = () => {
               />
             </div>
 
+            {/* Confirm Password */}
             <div className="form-group slide-in-left delay-700">
-              <label>Confirm Password</label>
+              <label>Confirm Password *</label>
               <input
                 type="password"
                 name="confirmPassword"
@@ -179,6 +229,7 @@ const SignUp = () => {
             </div>
           </div>
 
+          {/* Profile Photo Upload */}
           <div className="form-group fade-in delay-800">
             <label>Profile Photo</label>
             <label htmlFor="file-input" className="uploadProfile">
@@ -197,10 +248,12 @@ const SignUp = () => {
             />
           </div>
 
+          {/* Submit Button */}
           <div className="form-action scale-up delay-900">
             <button type="submit">Sign Up</button>
           </div>
 
+          {/* Login Link */}
           <div className="form-footer fade-in delay-1000">
             <p>
               Have An Account? <a href="/login">Log In</a>
