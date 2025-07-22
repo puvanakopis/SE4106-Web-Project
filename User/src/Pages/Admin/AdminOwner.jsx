@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AdminOwner.css';
 import OwnerProperties from './AdminOwnerProperties';
-import { ownerData as initialOwnerData } from '../../Assets/assets';
+import {
+  createOwner,
+  getAllOwners,
+  updateOwner,
+  deleteOwner,
+  getOwnerStats
+} from '../../api/ownerApi';
 
 const AdminOwner = () => {
-  const [owners, setOwners] = useState([...initialOwnerData]);
+  const [owners, setOwners] = useState([]);
+  const [stats, setStats] = useState({
+    totalOwners: 0,
+    activeOwners: 0,
+    blockedOwners: 0,
+    ownersWithProperties: 0
+  });
 
   // State for form
   const [formData, setFormData] = useState({
@@ -31,6 +43,34 @@ const AdminOwner = () => {
   const [showProperties, setShowProperties] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState('add');
+
+  useEffect(() => {
+    fetchOwners();
+    fetchStats();
+  }, []);
+
+  const fetchOwners = async (search = '') => {
+    try {
+      const response = await getAllOwners(search);
+      if (response.success) {
+        setOwners(response.data);
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await getOwnerStats();
+      if (response.success) {
+        setStats(response.data);
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
 
   // Filter owners based on search term
   const filteredOwners = owners.filter(owner =>
@@ -67,73 +107,43 @@ const AdminOwner = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    // Validation
     if (!formData.fullName || !formData.email || !formData.phone || !formData.address) {
       setError('Full Name, Email, Phone and Address are required');
       return;
     }
-
     if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
       setError('Please enter a valid email address');
       return;
     }
 
-    // Create profile picture URL if not provided
-    const currentOwner = isEditing ? owners.find(o => o.id === formData.id) : null;
-    const profilePicUrl = formData.profilePic
-      ? URL.createObjectURL(formData.profilePic)
-      : (isEditing
-        ? currentOwner?.profile_pic
-        : `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.fullName)}&background=random&color=fff`);
+    const data = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (key === 'bankDetails') {
+        data.append(key, JSON.stringify(formData[key]));
+      } else {
+        data.append(key, formData[key]);
+      }
+    });
 
-    const governmentIdUrl = formData.governmentId
-      ? URL.createObjectURL(formData.governmentId)
-      : (isEditing ? currentOwner?.governmentId : null);
-
-    if (isEditing) {
-      // Update existing owner
-      const updatedOwners = owners.map(owner =>
-        owner.id === formData.id ? {
-          ...owner,
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          profile_pic: profilePicUrl,
-          governmentId: governmentIdUrl,
-          bankDetails: formData.bankDetails,
-          isBlocked: formData.isBlocked
-        } : owner
-      );
-      setOwners(updatedOwners);
-      setSuccess('Owner updated successfully!');
-    } else {
-      // Add new owner
-      const newId = `owner_${Date.now()}`;
-      const newOwner = {
-        id: newId,
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.address,
-        role: "Owner",
-        profile_pic: profilePicUrl,
-        governmentId: governmentIdUrl,
-        bankDetails: formData.bankDetails,
-        isBlocked: false,
-        createdAt: new Date().toISOString()
-      };
-      setOwners([...owners, newOwner]);
-      setSuccess('Owner added successfully!');
+    try {
+      if (isEditing) {
+        await updateOwner(formData.id, data);
+        setSuccess('Owner updated successfully!');
+      } else {
+        await createOwner(data);
+        setSuccess('Owner added successfully!');
+      }
+      resetForm();
+      fetchOwners();
+      fetchStats();
+    } catch (err) {
+      setError(err.message);
     }
-
-    // Reset form
-    resetForm();
   };
 
   const handleEdit = (owner) => {
@@ -156,23 +166,35 @@ const AdminOwner = () => {
     setActiveTab('add');
   };
 
-  const handleDelete = (ownerId) => {
+  const handleDelete = async (ownerId) => {
     if (window.confirm('Are you sure you want to delete this owner?')) {
-      setOwners(owners.filter(owner => owner.id !== ownerId));
-      setSuccess('Owner deleted successfully!');
-      if (isEditing && formData.id === ownerId) {
-        resetForm();
+      try {
+        await deleteOwner(ownerId);
+        setSuccess('Owner deleted successfully!');
+        fetchOwners();
+        fetchStats();
+        if (isEditing && formData.id === ownerId) {
+          resetForm();
+        }
+      } catch (err) {
+        setError(err.message);
       }
     }
   };
 
-  const handleBlockToggle = (ownerId) => {
-    setOwners(owners.map(owner =>
-      owner.id === ownerId
-        ? { ...owner, isBlocked: !owner.isBlocked }
-        : owner
-    ));
-    setSuccess(`Owner ${owners.find(o => o.id === ownerId).isBlocked ? 'unblocked' : 'blocked'} successfully!`);
+  const handleBlockToggle = async (ownerId) => {
+    const owner = owners.find(o => o._id === ownerId);
+    if (!owner) return;
+
+    const updatedData = { isBlocked: !owner.isBlocked };
+
+    try {
+      await updateOwner(ownerId, updatedData);
+      setSuccess(`Owner ${owner.isBlocked ? 'unblocked' : 'blocked'} successfully!`);
+      fetchOwners();
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleViewProperties = (owner) => {
@@ -231,13 +253,19 @@ const AdminOwner = () => {
         </button>
         <button
           className={`tab-button ${activeTab === 'view' ? 'active' : ''}`}
-          onClick={() => setActiveTab('view')}
+          onClick={() => {
+            setActiveTab('view');
+            fetchOwners();
+          }}
         >
           View All Owners
         </button>
         <button
           className={`tab-button ${activeTab === 'stats' ? 'active' : ''}`}
-          onClick={() => setActiveTab('stats')}
+          onClick={() => {
+            setActiveTab('stats');
+            fetchStats();
+          }}
         >
           Statistics
         </button>
@@ -251,25 +279,25 @@ const AdminOwner = () => {
             <div className="stat-card">
               <div>
                 <h3>Total Owners</h3>
-                <p>{ownerStats.totalOwners}</p>
+                <p>{stats.totalOwners}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Active</h3>
-                <p>{ownerStats.activeOwners}</p>
+                <p>{stats.activeOwners}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Blocked</h3>
-                <p>{ownerStats.blockedOwners}</p>
+                <p>{stats.blockedOwners}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>With Properties</h3>
-                <p>{ownerStats.ownersWithProperties}</p>
+                <p>{stats.ownersWithProperties}</p>
               </div>
             </div>
           </div>
@@ -421,7 +449,10 @@ const AdminOwner = () => {
                 type="text"
                 placeholder="Search by name, email or phone..."
                 value={searchTerm}
-                // onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  fetchOwners(e.target.value);
+                }}
                 className="search-input"
               />
             </div>
@@ -519,48 +550,48 @@ const AdminOwner = () => {
                     cy="60"
                     r="50"
                     style={{
-                      strokeDashoffset: 314 - (314 * (ownerStats.activeOwners / ownerStats.totalOwners))
+                      strokeDashoffset: stats.totalOwners > 0 ? 314 - (314 * (stats.activeOwners / stats.totalOwners)) : 314
                     }}
                   ></circle>
                 </svg>
                 <div className="percentage">
-                  {Math.round((ownerStats.activeOwners / ownerStats.totalOwners) * 100)}%
+                  {stats.totalOwners > 0 ? Math.round((stats.activeOwners / stats.totalOwners) * 100) : 0}%
                 </div>
               </div>
-              <p>{ownerStats.activeOwners} of {ownerStats.totalOwners} owners active</p>
+              <p>{stats.activeOwners} of {stats.totalOwners} owners active</p>
             </div>
 
             <div className="stat-card">
               <h3>Total Owners</h3>
-              <div className="big-number">{ownerStats.totalOwners}</div>
+              <div className="big-number">{stats.totalOwners}</div>
               <div className="stats-details">
-                <div>Active: {ownerStats.activeOwners}</div>
-                <div>Blocked: {ownerStats.blockedOwners}</div>
-                <div>With Properties: {ownerStats.ownersWithProperties}</div>
+                <div>Active: {stats.activeOwners}</div>
+                <div>Blocked: {stats.blockedOwners}</div>
+                <div>With Properties: {stats.ownersWithProperties}</div>
               </div>
             </div>
 
             <div className="stat-card">
               <h3>Owners with Properties</h3>
-              <div className="big-number">{ownerStats.ownersWithProperties}</div>
-              <p>{Math.round((ownerStats.ownersWithProperties / ownerStats.totalOwners) * 100)}% of total</p>
+              <div className="big-number">{stats.ownersWithProperties}</div>
+              <p>{stats.totalOwners > 0 ? Math.round((stats.ownersWithProperties / stats.totalOwners) * 100) : 0}% of total</p>
             </div>
           </div>
 
           <div className="chart-container">
             <h3>Owner Status Distribution</h3>
             <div className="bar-chart">
-              <div className="bar" style={{ height: `${(ownerStats.activeOwners / ownerStats.totalOwners) * 100}%` }}>
+              <div className="bar" style={{ height: `${stats.totalOwners > 0 ? (stats.activeOwners / stats.totalOwners) * 100 : 0}%` }}>
                 <div className="bar-label">Active</div>
-                <div className="bar-value">{ownerStats.activeOwners}</div>
+                <div className="bar-value">{stats.activeOwners}</div>
               </div>
-              <div className="bar" style={{ height: `${(ownerStats.blockedOwners / ownerStats.totalOwners) * 100}%` }}>
+              <div className="bar" style={{ height: `${stats.totalOwners > 0 ? (stats.blockedOwners / stats.totalOwners) * 100 : 0}%` }}>
                 <div className="bar-label">Blocked</div>
-                <div className="bar-value">{ownerStats.blockedOwners}</div>
+                <div className="bar-value">{stats.blockedOwners}</div>
               </div>
-              <div className="bar" style={{ height: `${(ownerStats.ownersWithProperties / ownerStats.totalOwners) * 100}%` }}>
+              <div className="bar" style={{ height: `${stats.totalOwners > 0 ? (stats.ownersWithProperties / stats.totalOwners) * 100 : 0}%` }}>
                 <div className="bar-label">With Properties</div>
-                <div className="bar-value">{ownerStats.ownersWithProperties}</div>
+                <div className="bar-value">{stats.ownersWithProperties}</div>
               </div>
             </div>
           </div>

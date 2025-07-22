@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 // Initialize app
@@ -61,7 +62,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
-app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/auth', require('./routes/authRoutes.js'));
+
+// Add this after your other route imports
+const ownerRoutes = require('./routes/ownerRoutes.js');
+
+// Add this to your middleware section, after other app.use() calls
+app.use('/api/owners', ownerRoutes);
+
+// Make sure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

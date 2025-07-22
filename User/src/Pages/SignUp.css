@@ -291,7 +291,6 @@
 
 /* Toast Notifications - Customized */
 .Toastify__toast-container {
-    margin-top: 5%;
     width: 320px;
     padding: 1rem;
 }
