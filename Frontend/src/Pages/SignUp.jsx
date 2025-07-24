@@ -40,6 +40,7 @@ const SignUp = () => {
     }
   };
 
+
   const imageHandler = (e) => {
     setImage(e.target.files[0]);
     setFormData({ ...formData, photo: e.target.files[0] });

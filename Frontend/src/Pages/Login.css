@@ -10,6 +10,7 @@
     --radius-md: 0.5rem;
 }
 
+
 /* ------------------ Toggle Login Type Button ------------------ */
 .login-container .toggle-login-type {
     text-align: center;
@@ -86,6 +87,7 @@
     padding-bottom: 0.75rem;
     border-bottom: 3px solid var(--primary-color);
 }
+
 
 /* ------------------ Input Fields ------------------ */
 .login-container .form-group {

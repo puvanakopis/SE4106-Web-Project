@@ -1128,6 +1128,28 @@ export const vehicleBookingsData = [
     booking_status: "Pending",
     isPaid: false,
     totalPrice: 2 * 9000,
+  },
+  {
+    booking_id: "booking_7",
+    renter: lecturerData[1],
+    vehicle: vehicleData[7],
+    owner: ownerData[2],
+    booking_start: "2025-06-25T09:00:00",
+    booking_days: 3,
+    booking_status: "Confirmed",
+    isPaid: true,
+    totalPrice: 3 * 7500,
+  },
+  {
+    booking_id: "booking_8",
+    renter: lecturerData[0],
+    vehicle: vehicleData[8],
+    owner: ownerData[3],
+    booking_start: "2025-06-28T08:00:00",
+    booking_days: 2,
+    booking_status: "Pending",
+    isPaid: false,
+    totalPrice: 2 * 9000,
   }
 
 

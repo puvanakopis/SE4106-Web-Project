@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, registerUser, getProfile, loginAdmin } from '../api/auth';
 
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -134,6 +135,7 @@ export const AuthProvider = ({ children }) => {
         logout,
       }}
     >
+
       {children}
     </AuthContext.Provider>
   );
