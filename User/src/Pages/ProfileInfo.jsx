@@ -66,7 +66,7 @@ const ProfileInfo = () => {
                 <select>
                   <option>Student</option>
                   <option>Lecturer</option>
-                </select>
+]                </select>
               </div>
 
               <div className="form-group fade-in delay-600">
@@ -74,7 +74,7 @@ const ProfileInfo = () => {
                 <input type="text" defaultValue="No. 123, University Road, Belihuloya, Sabaragamuwa" />
               </div>
 
-              <div className="form-group button-group fade-in delay-700">
+]              <div className="form-group button-group fade-in delay-700">
                 <button type="submit" className="save-button-div">Save</button>
               </div>
             </form>

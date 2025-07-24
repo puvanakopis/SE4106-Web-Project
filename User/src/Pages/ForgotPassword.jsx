@@ -149,8 +149,7 @@ const ForgotPassword = () => {
             </p>
             
             <button
-              className="back-button slide-in-right delay-600"
-              onClick={() => navigate('/login')}
+              className="back-button slide-in-right delay-600"              onClick={() => navigate('/login')}
             >
               Back to Log in
             </button>
