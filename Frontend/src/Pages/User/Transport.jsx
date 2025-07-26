@@ -166,7 +166,21 @@ const Transport = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const transportsPerPage = 9;
 
+ const [vehicleData, setVehicleData] = useState([]); 
 
+  useEffect(() => {                                     // ✅ Step 3
+    const fetchVehicles = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/vehicles");
+        const data = await res.json();
+        setVehicleData(data);
+      } catch (error) {
+        console.error("Error fetching vehicle data:", error);
+      }
+    };
+
+    fetchVehicles();
+  }, []);
 
 
 
@@ -310,8 +324,8 @@ const Transport = () => {
     }
   };
 
-  const handleVehicleClick = (vehicleId) => {
-    navigate(`/transport/${vehicleId}`);
+  const handleVehicleClick = (vehicle_Id) => {
+    navigate(`/transport/${vehicle_Id}`);
   };
 
   /* ------------- Effects ------------- */
@@ -319,8 +333,8 @@ const Transport = () => {
     if (showSavedNotification) {
       const timer = setTimeout(() => {
         setShowSavedNotification(false);
-      }, 3000);
-      return () => clearTimeout(timer);
+      },0);
+      return ( ) => clearTimeout(timer);
     }
   }, [showSavedNotification]);
 
@@ -526,7 +540,7 @@ const Transport = () => {
                   key={vehicle.vehicle_id}
                   vehicle={vehicle}
                   index={index}
-                  savedVehicles={savedVehicles}
+                  savedVehicles={vehicleData}
                   toggleSaveVehicle={toggleSaveVehicle}
                   handleVehicleClick={handleVehicleClick}
                 />

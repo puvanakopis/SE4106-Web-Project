@@ -5,23 +5,39 @@ const Vehicle = require('../models/vehicleModel');
 exports.getAllVehicles = async (req, res) => {
   try {
     const vehicles = await Vehicle.find();
-    res.json(vehicles)
-    alert("vehiles")
+    res.status(200).json(vehicles); // ✅ First response
   } catch (err) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: 'Something went wrong' }); // ❌ Will throw if error happens after response is already sent
   }
 };
 
+
 // @desc    Get single vehicle by ID
-// @route   GET /api//vehicles/:id
 exports.getVehicleById = async (req, res) => {
   try {
-    const vehicle = await Vehicle.findOne({ vehicle_id: req.params.id });
-    if (!vehicle) {
-      return res.status(404).json({ message: 'Vehicle not found' });
+    const { id } = req.params; // id is 'V001' or similar custom vehicle_id
+
+    if (!id) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Vehicle ID is required' 
+      });
     }
-    res.json(vehicle);
-  } catch (err) {
-    res.status(500).json({ message: 'Server Error' });
+
+    // Find vehicle by custom vehicle_id field instead of MongoDB _id
+    const vehicle = await Vehicle.findOne({ vehicle_id: id });
+
+    if (!vehicle) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Vehicle not found' 
+      });
+    }
+
+    res.status(200).json(vehicle);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 };
+
+

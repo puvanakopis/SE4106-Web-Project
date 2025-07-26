@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useContext, useEffect } from 'react'; // Added useEffect import
+import { useParams, useNavigate, data } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { assets, vehicleData } from '../../Assets/assets';
@@ -31,6 +31,53 @@ const TransportDetails = () => {
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
 
+  // Fixed state declarations
+  const [vehicle, setVehicle] = useState(null); // Renamed from Vehicle to vehicle
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchVehicle = async () => {
+      try {
+        setLoading(true);
+        // Option 1: Fetch specific vehicle by IDa
+        const res = await fetch(`http://localhost:5000/api/auth/vehicles/${id}`);
+        console.log(res.ok)
+        // Option 2: If your API doesn't support single vehicle fetch, fetch all and filter
+        // const res = await fetch(`http://localhost:5000/api/auth/vehicles`);
+     
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        alert(JSON.stringify(data));
+
+        
+        // Option 1: If fetching single vehicle
+        setVehicle(data);
+        
+        // Option 2: If fetching all vehicles and filtering
+        // if (Array.isArray(data)) {
+        //   const foundVehicle = data.find((v) => v.vehicle_id === id || v.id === id || v._id === id);
+        //   setVehicle(foundVehicle);
+        // } else {
+        //   setVehicle(data);
+        // }
+        
+      } catch (err) {
+        
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchVehicle();
+    }
+  }, [id]);
+
   /* ------------- Animation Refs ------------- */
   const [headerRef, headerInView] = useInView({ threshold: 0.1 });
   const [galleryRef, galleryInView] = useInView({ threshold: 0.1 });
@@ -38,8 +85,6 @@ const TransportDetails = () => {
   const [bookingRef, bookingInView] = useInView({ threshold: 0.1 });
   const [reviewsRef, reviewsInView] = useInView({ threshold: 0.1 });
   const [ownerRef, ownerInView] = useInView({ threshold: 0.1 });
-
-  const vehicle = vehicleData.find((v) => v.vehicle_id === id);
 
   /* ------------- Date Handling Functions ------------- */
   const handleStartDateChange = (date) => {
@@ -83,7 +128,7 @@ const TransportDetails = () => {
   const handleContactOwner = () => {
     if (!isLoggedIn) {
       scrollToTop();
-      navigate('/login', { state: { from: `/transport/${id}` } });
+      navigate('/login', { state: { from: `/transport/${id}` } }); // Fixed route
       return;
     }
 
@@ -100,7 +145,7 @@ const TransportDetails = () => {
   const handleBookNow = () => {
     if (!isLoggedIn) {
       scrollToTop();
-      navigate('/login', { state: { from: `/transport/${id}` } });
+      navigate('/login', { state: { from: `/transport/${id}` } }); // Fixed route
       return;
     }
 
@@ -161,6 +206,31 @@ const TransportDetails = () => {
     };
   };
 
+  /* ------------- Loading and Error States ------------- */
+  if (loading) {
+    return (
+      <div className="transport-loading fade-in">
+        <h2>Loading vehicle details...</h2>
+        <div className="loading-spinner"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="transport-error fade-in">
+        <h2 className="transport-error__title">Error loading vehicle</h2>
+        <p className="transport-error__message">{error}</p>
+        <button
+          className="back-button pulse"
+          onClick={() => navigate('/transport')}
+        >
+          Browse Available Vehicles
+        </button>
+      </div>
+    );
+  }
+
   /* ------------- Vehicle Not Found Section ------------- */
   if (!vehicle) {
     return (
@@ -182,8 +252,9 @@ const TransportDetails = () => {
   const images = vehicle.vehicle_images || [];
   const owner = vehicle.owner || {};
   const ratingDist = vehicle.rating_distribution || {};
-
+console.log(res)
   return (
+    
     <main className="transport-details">
       {/* ------------- Popup Modals Section ------------- */}
       {showOwnerDetails && (
@@ -489,5 +560,4 @@ const TransportDetails = () => {
   );
 };
 
-
-export default TransportDetails;
+export default TransportDetails;                       
