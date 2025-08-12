@@ -1,0 +1,236 @@
+.transport-card {
+  display: flex;
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: var(--transition);
+  cursor: pointer;
+  max-height: 300px;
+}
+
+.transport-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ------------- Image Section ------------- */
+.transport-card .vehicle-image-container {
+  position: relative;
+  width: 300px;
+  min-width: 300px;
+  overflow: hidden;
+}
+
+.transport-card .vehicle-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.transport-card .vehicle-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: var(--primary-color);
+  color: var(--background-white);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem;
+  font-weight: 500;
+  z-index: 1;
+}
+
+/* Save Button */
+.transport-card .save-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--background-light);
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-medium);
+}
+
+.transport-card .save-button:hover {
+  background-color: var(--background-white);
+  transform: scale(1.05);
+}
+
+.transport-card .save-button.saved {
+  background-color: var(--primary-color);
+  color: var(--background-white);
+}
+
+.transport-card .save-button:hover .icon-heart-outline {
+  color: var(--primary-color);
+}
+
+.transport-card .save-button.saved:hover {
+  background-color: var(--primary-hover);
+}
+
+.transport-card .icon-heart-filled,
+.transport-card .icon-heart-outline {
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+/* ------------- Content Section ------------- */
+.transport-card .vehicle-content {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title, Specs, Location */
+.transport-card .vehicle-main-info {
+  margin-bottom: 1rem;
+}
+
+.transport-card .vehicle-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+.transport-card .vehicle-specs {
+  font-size: 0.9rem;
+  color: var(--text-medium);
+  margin-bottom: 0.5rem;
+}
+
+.transport-card .vehicle-location {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+/* Rating & Reviews */
+.transport-card .vehicle-rating-reviews {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.transport-card .reviews {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+/* Key Features */
+.transport-card .vehicle-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.transport-card .feature-item {
+  display: flex;
+  flex-direction: row !important;
+
+  /* gap: 50px ; */
+}
+
+.transport-card .feature-item span{
+  padding: 0.35rem 0.75rem;
+  background-color: #f0f9ff;
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem !important;
+  color: #0369a1;
+width: fit-content;}
+
+.transport-card .feature-label {
+  font-weight: 500;
+  color: var(--text-medium);
+}
+
+/* Price & Button */
+.transport-card .vehicle-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.transport-card .vehicle-price {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.transport-card .price-period {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.transport-card .deposit-amount {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: 0.25rem;
+}
+
+.transport-card .view-details-btn {
+  background-color: var(--primary-color);
+  color: var(--background-white);
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.transport-card .view-details-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* ------------- Responsive Design ------------- */
+@media (max-width: 1024px) {
+  .transport-card .vehicle-image-container {
+    width: 250px;
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .transport-card {
+    flex-direction: column;
+    max-height: none;
+  }
+
+  .transport-card .vehicle-image-container {
+    width: 100%;
+    height: 200px;
+    min-width: auto;
+  }
+
+  .transport-card .vehicle-bottom-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .transport-card .view-details-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .transport-card .vehicle-features {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { assets } from '../Assets/assets';
 import './Feedback.css';
 
-
-/* -----------------------  STAR RATING COMPONENT  ----------------------- */
 const StarRating = ({ rating, size = 'medium' }) => {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
@@ -22,10 +20,7 @@ const StarRating = ({ rating, size = 'medium' }) => {
   );
 };
 
-
-/* -----------------------  MAIN FEEDBACK COMPONENT  ----------------------- */
 const Feedback = ({
-  // ------------------ Component Props ------------------
   rating: initialRating = 0,
   editable = false,
   onRatingChange,
@@ -43,13 +38,11 @@ const Feedback = ({
   showTips = false,
   requiredFeedback = false
 }) => {
-  // ------------------ Component State ------------------
   const [rating, setRating] = useState(initialRating);
   const [hoverRating, setHoverRating] = useState(0);
   const [feedback, setFeedback] = useState(initialFeedback);
   const [selectedEmoji, setSelectedEmoji] = useState(null);
 
-  // ------------------ Effect Hooks ------------------
   useEffect(() => {
     setRating(initialRating);
   }, [initialRating]);
@@ -58,15 +51,6 @@ const Feedback = ({
     setFeedback(initialFeedback);
   }, [initialFeedback]);
 
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // ------------------ Derived Values ------------------
-  const displayRating = hoverRating || rating;
-
-  // ------------------ Handler Functions ------------------
   const handleRatingChange = (newRating) => {
     setRating(newRating);
     if (onRatingChange) onRatingChange(newRating);
@@ -77,7 +61,7 @@ const Feedback = ({
       alert('Please provide feedback before submitting');
       return;
     }
-
+    
     if (onSubmit) {
       onSubmit({
         rating,
@@ -93,15 +77,13 @@ const Feedback = ({
     }
   };
 
-  // ------------------ Static Data ------------------
-  const emojis = [
-    { icon: '😞', label: 'Poor' },
-    { icon: '😐', label: 'Average' },
-    { icon: '😊', label: 'Good' },
-    { icon: '😍', label: 'Excellent' }
-  ];
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-  // ------------------ Early Return for Non-Editable Mode ------------------
+  const displayRating = hoverRating || rating;
+
   if (!editable) {
     return (
       <div className="star-rating-container">
@@ -110,17 +92,9 @@ const Feedback = ({
     );
   }
 
-  // ------------------ Main Component Render ------------------
   return (
     <div className="feedback-modal-overlay" onClick={onClose}>
-      <div 
-        className="feedback-modal" 
-        role="dialog" 
-        aria-modal="true" 
-        aria-labelledby="modal-title" 
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* ------------------ Modal Header ------------------ */}
+      <div className="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={(e) => e.stopPropagation()}>
         <div className="feedback-modal-header">
           <h2 id="modal-title">{title}</h2>
           <button className="close-button" onClick={onClose} aria-label="Close feedback modal">
@@ -128,11 +102,9 @@ const Feedback = ({
           </button>
         </div>
 
-        {/* ------------------ Modal Content ------------------ */}
         <div className="feedback-content">
           <p className="feedback-description">{description}</p>
-
-          {/* Rating Section */}
+          
           <div className="rating-section">
             <div className="rating-stars">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -153,7 +125,6 @@ const Feedback = ({
             </span>
           </div>
 
-          {/* Emoji Selection Section */}
           {showEmojis && (
             <div className="emoji-section">
               <p>How would you describe your experience?</p>
@@ -173,7 +144,6 @@ const Feedback = ({
             </div>
           )}
 
-          {/* Feedback Text Area */}
           <div className="feedback-input-section">
             <textarea
               placeholder={feedbackPlaceholder}
@@ -198,7 +168,6 @@ const Feedback = ({
           </div>
         </div>
 
-        {/* ------------------ Action Buttons ------------------ */}
         <div className="feedback-actions">
           <button onClick={onClose} className="action-button secondary" disabled={isSubmitting}>
             {cancelText}
@@ -215,5 +184,12 @@ const Feedback = ({
     </div>
   );
 };
+
+const emojis = [
+  { icon: '😞', label: 'Poor' },
+  { icon: '😐', label: 'Average' },
+  { icon: '😊', label: 'Good' },
+  { icon: '😍', label: 'Excellent' }
+];
 
 export default Feedback;

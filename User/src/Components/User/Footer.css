@@ -1,0 +1,126 @@
+.footer {
+    background-color: #EFF0F2;
+    padding: 1% 0 0 0;
+    width: 100%;
+}
+
+.footer .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+/* Logo Section */
+.footer .footer-logo {
+    padding: 10px;
+}
+
+.footer .footer-logo .logo-text {
+    width: 100%;
+    font-family: "DM Serif Display", serif;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 35px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #000;
+}
+
+.footer .footer-logo .tagline {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Footer Sections */
+.footer .footer-section {
+    padding: 10px;
+}
+
+.footer .section-header {
+    color: var(--primary-color);
+    font-size: 20px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.footer .section-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer .section-list li {
+    margin-bottom: 8px;
+}
+
+.footer .section-list li{
+    color: #666 !important;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer .section-list a:hover {
+    color: black;
+}
+
+/* Contact Section */
+.footer .contact-info {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.footer .contact-info p {
+    margin-bottom: 8px;
+}
+
+.footer .social-media {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.footer .social-icon {
+    color: var(--primary-color);
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.footer .social-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Copyright */
+.footer .copyright {
+    text-align: center;
+    color: #666;
+    margin-top: 30px;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+    font-size: 14px;
+}
+
+/* Responsive Styles */
+@media (max-width: 750px) {
+    .footer .footer-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer .about, .services {
+        display: none;
+    }
+}
+
+@media (min-width: 751px) and (max-width: 1024px) {
+    .footer .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

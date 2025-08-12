@@ -1,16 +1,23 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import { upcomingBookings, pastBookings } from '../Assets/assets';
 
 const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
   const [bookings, setBookings] = useState({
-    upcoming: [],
-    past: []
+    roomBookings: [],
+    vehicleBookings: []
   });
 
-  // Load bookings from localStorage on initial render
+  // Load initial bookings from data files
   useEffect(() => {
-    loadBookings();
+    const initialBookings = {
+      roomBookings: [...upcomingBookings.roomBookings, ...pastBookings.roomBookings],
+      vehicleBookings: [...upcomingBookings.vehicleBookings, ...pastBookings.vehicleBookings]
+    };
+    
+    setBookings(initialBookings);
+    localStorage.setItem('bookings', JSON.stringify(initialBookings));
   }, []);
 
   const loadBookings = () => {
@@ -24,62 +31,63 @@ export const BookingProvider = ({ children }) => {
     localStorage.setItem('bookings', JSON.stringify(updatedBookings));
   };
 
-  const addBooking = (newBooking) => {
+  const addRoomBooking = (newBooking) => {
     const updatedBookings = {
       ...bookings,
-      upcoming: [...bookings.upcoming, newBooking]
+      roomBookings: [...bookings.roomBookings, newBooking]
     };
     setBookings(updatedBookings);
     saveBookings(updatedBookings);
   };
 
-  const cancelBooking = (bookingId) => {
+  const addVehicleBooking = (newBooking) => {
     const updatedBookings = {
       ...bookings,
-      upcoming: bookings.upcoming.filter(booking => booking.id !== bookingId)
+      vehicleBookings: [...bookings.vehicleBookings, newBooking]
     };
     setBookings(updatedBookings);
     saveBookings(updatedBookings);
   };
 
-  const completeBooking = (bookingId, rating, feedback) => {
-    // Find the booking to complete
-    const bookingToComplete = bookings.upcoming.find(b => b.id === bookingId);
-    
-    if (!bookingToComplete) return;
+  const updateBookingStatus = (bookingId, type, status, feedbackData = null) => {
+    const bookingArray = type === 'room' ? 'roomBookings' : 'vehicleBookings';
+    const bookingIndex = bookings[bookingArray].findIndex(b => b._id === bookingId);
+    if (bookingIndex === -1) return;
 
-    // Create the completed booking with feedback
-    const completedBooking = {
-      ...bookingToComplete,
-      status: 'completed',
-      feedback: {
-        rating,
-        comment: feedback,
-        date: new Date().toISOString()
-      }
+    const bookingToUpdate = bookings[bookingArray][bookingIndex];
+    const updatedBooking = {
+      ...bookingToUpdate,
+      booking_status: status,
+      ...(feedbackData && {
+        rating: feedbackData.rating,
+        feedback: feedbackData.feedback
+      })
     };
 
-    // Update the bookings state
     const updatedBookings = {
-      upcoming: bookings.upcoming.filter(b => b.id !== bookingId),
-      past: [...bookings.past, completedBooking]
+      ...bookings,
+      [bookingArray]: [
+        ...bookings[bookingArray].slice(0, bookingIndex),
+        updatedBooking,
+        ...bookings[bookingArray].slice(bookingIndex + 1)
+      ]
     };
 
     setBookings(updatedBookings);
     saveBookings(updatedBookings);
   };
 
-  const getBookingById = (bookingId) => {
-    const allBookings = [...bookings.upcoming, ...bookings.past];
-    return allBookings.find(booking => booking.id === bookingId);
+  const getBookingById = (bookingId, type) => {
+    const bookingArray = type === 'room' ? 'roomBookings' : 'vehicleBookings';
+    return bookings[bookingArray].find(booking => booking._id === bookingId);
   };
 
   return (
     <BookingContext.Provider value={{
       bookings,
-      addBooking,
-      cancelBooking,
-      completeBooking,
+      addRoomBooking,
+      addVehicleBooking,
+      updateBookingStatus,
       loadBookings,
       getBookingById
     }}>

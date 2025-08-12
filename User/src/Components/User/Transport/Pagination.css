@@ -1,0 +1,36 @@
+.tran-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  grid-column: 1 / -1;
+}
+
+.tran-pagination .pagination-arrow,
+.tran-pagination .pagination-number {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-white);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 40px;
+  text-align: center;
+}
+
+.tran-pagination .pagination-arrow:hover,
+.tran-pagination .pagination-number:hover {
+  background-color: var(--background-light);
+}
+
+.tran-pagination .pagination-number.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.tran-pagination .pagination-arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

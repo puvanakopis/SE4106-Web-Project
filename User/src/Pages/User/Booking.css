@@ -1,0 +1,466 @@
+/* ---------- Root Booking Container ---------- */
+.booking-profile {
+    padding: 3% 5%;
+}
+
+/* ---------- Header Section ---------- */
+.booking-profile .booking-header {
+    padding: 1% 3% 5% 1%;
+}
+
+.booking-profile .booking-header div {
+    font-size: 40px;
+    color: #2c3e50;
+}
+
+/* ---------- Container Layout for Sidebar + Content ---------- */
+.booking-profile .booking-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 70vh;
+}
+
+/* ---------- Sidebar Tabs (Upcoming / Past) ---------- */
+.booking-profile .booking-sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    padding: 4rem 2rem;
+    row-gap: 1.5rem;
+}
+
+.booking-profile .booking-title {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #6f7173;
+}
+
+.booking-profile .booking-title:hover {
+    color: var(--primary-color);
+}
+
+.booking-profile .booking-title.active {
+    color: var(--primary-color);
+}
+
+/* ---------- Right Content Display Area ---------- */
+.booking-profile .booking-content {
+    flex: 3;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    padding: 5%;
+}
+
+/* ---------- Card Styles ---------- */
+.booking-profile .card {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.booking-profile .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- Image inside Card ---------- */
+.booking-profile .card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    margin: 0;
+}
+
+/* Special case: Vehicle images (motorbike) object position fix */
+.booking-profile .card.motorbike .card-image {
+    object-position: top;
+}
+
+/* ---------- Property Badge (room type / vehicle type) ---------- */
+.booking-profile .property-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 1;
+}
+
+/* ---------- Status Badge ---------- */
+.booking-profile .status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 1;
+    text-transform: capitalize;
+}
+
+.booking-profile .status-badge.confirmed {
+    background-color: #28a745;
+}
+
+.booking-profile .status-badge.completed {
+    background-color: #6c757d;
+}
+
+.booking-profile .status-badge.cancelled {
+    background-color: #dc3545;
+}
+
+/* ---------- Card Info Block ---------- */
+.booking-profile .card-info {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.booking-profile .card-info h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.booking-profile .card-info p {
+    color: #6f7173;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.booking-profile .location {
+    margin-bottom: 1rem !important;
+}
+
+/* ---------- Booking Dates Section ---------- */
+.booking-profile .booking-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.booking-profile .booking-dates p {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.booking-profile .booking-dates span {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* ---------- Rating Display ---------- */
+.booking-profile .rating {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center !important;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+
+/* ---------- Price & Cancel Button Section ---------- */
+.booking-profile .rating-action {
+    display: flex;
+    flex-direction: column;
+}
+
+.booking-profile .price-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.booking-profile .total-price {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.booking-profile .price-breakdown {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.booking-profile .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.booking-profile .cancel-btn {
+    background-color: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    flex: 1;
+    text-align: center;
+}
+
+.booking-profile .cancel-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+.booking-profile .complete-btn {
+    background-color: transparent;
+    color: #28a745;
+    border: 1px solid #28a745;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    flex: 1;
+    text-align: center;
+}
+
+.booking-profile .complete-btn:hover {
+    background-color: #28a745;
+    color: white;
+}
+
+/* ---------- Grid Layout for Cards ---------- */
+.booking-profile .booking-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* ---------- Message for No Bookings ---------- */
+.booking-profile .no-bookings {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.booking-profile .no-bookings h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.booking-profile .no-bookings p {
+    color: #6f7173;
+    max-width: 500px;
+}
+
+/* ---------- Browse Button ---------- */
+.booking-profile .browse-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.booking-profile .browse-button:hover {
+    background-color: #0056b3;
+}
+
+/* ---------- Pagination Controls ---------- */
+.booking-profile .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.booking-profile .pagination-arrow,
+.booking-profile .pagination-number {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    text-align: center;
+}
+
+.booking-profile .pagination-arrow:hover,
+.booking-profile .pagination-number:hover {
+    background-color: #f1f1f1;
+}
+
+.booking-profile .pagination-number.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* ---------- Past Rating Section ---------- */
+.booking-profile .past-rating {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.booking-profile .past-rating .feedback-text {
+    font-style: italic;
+    color: #6f7173;
+    margin: 0;
+    padding: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 0.5rem;
+}
+
+.booking-profile .past-rating .star-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* ---------- Responsive Styles ---------- */
+@media (min-width: 900px) {
+    .booking-profile .booking-container {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 900px) {
+    .booking-profile .booking-header {
+        padding: 1% 3% 2% 1%;
+    }
+
+    .booking-profile .booking-header div {
+        font-size: 32px;
+    }
+
+    .booking-profile .booking-sidebar {
+        padding: 10% !important;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 1.5rem;
+    }
+
+    .booking-profile .booking-content {
+        padding: 5% !important;
+    }
+
+    .booking-profile .booking-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-profile .card-info h3 {
+        font-size: 1rem;
+    }
+
+    .booking-profile .card-info p,
+    .booking-profile .booking-dates,
+    .booking-profile .rating {
+        font-size: 0.8rem;
+    }
+
+    .booking-profile .total-price {
+        font-size: 0.9rem;
+    }
+
+    .booking-profile .cancel-btn,
+    .booking-profile .complete-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .booking-profile .no-bookings h3 {
+        font-size: 1.2rem;
+    }
+
+    .booking-profile .no-bookings p {
+        font-size: 0.9rem;
+    }
+
+    .booking-profile .browse-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .booking-profile {
+        padding: 3% 3%;
+    }
+
+    .booking-profile .booking-header div {
+        font-size: 28px;
+    }
+
+    .booking-profile .booking-sidebar {
+        padding: 5% !important;
+        gap: 1rem;
+    }
+
+    .booking-profile .booking-title {
+        font-size: 0.9rem;
+    }
+
+    .booking-profile .card-image {
+        height: 160px;
+    }
+
+    .booking-profile .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .booking-profile .pagination-arrow,
+    .booking-profile .pagination-number {
+        padding: 0.3rem 0.6rem;
+        min-width: 30px;
+        font-size: 0.8rem;
+    }
+}

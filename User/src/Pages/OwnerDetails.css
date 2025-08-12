@@ -1,26 +1,4 @@
-/* ------------- CSS Variables ------------- */
-:root {
-  --primary-color: #0066cc;
-  --primary-hover: #0052a3;
-  --secondary-color: #f0f0f0;
-  --secondary-hover: #e0e0e0;
-  --text-dark: #333;
-  --text-medium: #666;
-  --text-light: #999;
-  --border-color: #eee;
-  --background-light: #f5f5f5;
-  --background-white: #ffffff;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --transition: all 0.2s ease;
-}
-
-/* --------------------------- Modal Overlay --------------------------- */
-.owner-details {
+.owner-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -34,273 +12,190 @@
   padding: 20px;
 }
 
-/* --------------------------- Modal Container --------------------------- */
-.owner-details .owner-modal {
-  background-color: var(--background-white);
-  border-radius: var(--radius-md);
+.owner-modal-overlay .owner-modal {
+  background-color: white;
+  border-radius: 12px;
   width: 100%;
   max-width: 450px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-/* --------------------------- Modal Header --------------------------- */
-.owner-details .owner-modal-header {
+.owner-modal-overlay .owner-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #eee;
 }
 
-.owner-details .owner-modal-header h2 {
+.owner-modal-overlay .owner-modal-header h2 {
   margin: 0;
   font-size: 1.25rem;
-  color: var(--text-dark);
+  color: #333;
 }
 
-.owner-details .close-button {
+.owner-modal-overlay .close-button {
   background: none;
   border: none;
   cursor: pointer;
   padding: 5px;
-  transition: var(--transition);
 }
 
-.owner-details .close-button:hover {
-  opacity: 0.8;
-}
-
-.owner-details .close-button img {
+.owner-modal-overlay .close-button img {
   width: 20px;
   height: 20px;
   opacity: 0.7;
 }
 
-/* --------------------------- Profile Section --------------------------- */
-.owner-details .owner-profile-section {
+.owner-modal-overlay .owner-profile-section {
   display: flex;
   padding: 20px;
   align-items: center;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #eee;
 }
 
-.owner-details .owner-avatar-container {
+.owner-modal-overlay .owner-avatar-container {
   margin-right: 16px;
 }
 
-.owner-details .owner-avatar {
+.owner-modal-overlay .owner-avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--background-light);
+  border: 2px solid #f5f5f5;
 }
 
-.owner-details .owner-info {
-  flex: 1;
+.owner-modal-overlay .owner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0 !important;
 }
 
-.owner-details .owner-name {
-  margin: 0 0 4px 0;
+.owner-modal-overlay .owner-name {
+  margin: 0 !important;
   font-size: 1.1rem;
-  color: var(--text-dark);
+  color: #333;
 }
 
-.owner-details .owner-role {
-  margin: 0 0 8px 0;
+.owner-modal-overlay .owner-role {
+  /* margin: 0 0 8px 0; */
   font-size: 0.9rem;
-  color: var(--text-medium);
+  color: #666;
 }
 
-.owner-details .owner-rating {
+.owner-modal-overlay .owner-rating {
   display: flex;
   align-items: center;
 }
 
-.owner-details .rating-text {
+.owner-modal-overlay .rating-text {
   margin-left: 8px;
   font-size: 0.85rem;
-  color: var(--text-medium);
+  color: #666;
 }
 
-/* --------------------------- Details Section --------------------------- */
-.owner-details .owner-details-section {
+.owner-modal-overlay .owner-details-section {
   padding: 20px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #eee;
 }
 
-.owner-details .detail-row {
+.owner-modal-overlay .detail-row {
   display: flex;
   margin-bottom: 12px;
 }
 
-.owner-details .detail-row:last-child {
+.owner-modal-overlay .detail-row:last-child {
   margin-bottom: 0;
 }
 
-.owner-details .detail-label {
+.owner-modal-overlay .detail-label {
   width: 120px;
   font-size: 0.9rem;
-  color: var(--text-medium);
+  color: #666;
   font-weight: 500;
 }
 
-.owner-details .detail-value {
+.owner-modal-overlay .detail-value {
   flex: 1;
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: #333;
 }
 
-.owner-details .detail-value.link {
-  color: var(--primary-color);
+.owner-modal-overlay .detail-value.link {
+  color: #0066cc;
   text-decoration: none;
-  transition: var(--transition);
 }
 
-.owner-details .detail-value.link:hover {
+.owner-modal-overlay .detail-value.link:hover {
   text-decoration: underline;
 }
 
-/* --------------------------- Recent Searches Section --------------------------- */
-.owner-details .recent-searches-section {
+.owner-modal-overlay .recent-searches-section {
   padding: 20px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #eee;
 }
 
-.owner-details .recent-searches-section h4 {
+.owner-modal-overlay .recent-searches-section h4 {
   margin: 0 0 12px 0;
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: #444;
 }
 
-.owner-details .city-tags {
+.owner-modal-overlay .city-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.owner-details .city-tag {
-  background-color: var(--background-light);
+.owner-modal-overlay .city-tag {
+  background-color: #f5f5f5;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.8rem;
-  color: var(--text-medium);
-  transition: var(--transition);
+  color: #555;
 }
 
-.owner-details .city-tag:hover {
-  background-color: var(--secondary-color);
-}
-
-/* --------------------------- Action Buttons --------------------------- */
-.owner-details .owner-actions {
+.owner-modal-overlay .owner-actions {
   display: flex;
   padding: 16px;
   gap: 12px;
 }
 
-.owner-details .action-button {
+.owner-modal-overlay .action-button {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 12px;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   border: none;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   gap: 8px;
-  transition: var(--transition);
 }
 
-.owner-details .action-button img {
+.owner-modal-overlay .action-button img {
   width: 18px;
   height: 18px;
 }
 
-.owner-details .action-button.primary {
-  background-color: var(--primary-color);
+.owner-modal-overlay .action-button.primary {
+  background-color: #0066cc;
   color: white;
 }
 
-.owner-details .action-button.primary:hover {
-  background-color: var(--primary-hover);
+.owner-modal-overlay .action-button.primary:hover {
+  background-color: #0052a3;
 }
 
-.owner-details .action-button.secondary {
-  background-color: var(--secondary-color);
-  color: var(--text-dark);
+.owner-modal-overlay .action-button.secondary {
+  background-color: #f0f0f0;
+  color: #333;
 }
 
-.owner-details .action-button.secondary:hover {
-  background-color: var(--secondary-hover);
-}
-
-/* --------------------------- Star Rating --------------------------- */
-.owner-details .star-rating {
-  display: inline-flex;
-  align-items: center;
-}
-
-.owner-details .star-rating_star {
-  display: inline-block;
-  color: #ddd;
-}
-
-.owner-details .star-rating_star--full {
-  color: #ffc107;
-}
-
-.owner-details .star-rating_star--half {
-  position: relative;
-  color: #ddd;
-}
-
-.owner-details .star-rating_star--half::before {
-  content: '★';
-  position: absolute;
-  left: 0;
-  width: 50%;
-  overflow: hidden;
-  color: #ffc107;
-}
-
-.owner-details .star-rating--small {
-  font-size: 0.9rem;
-}
-
-.owner-details .star-rating--medium {
-  font-size: 1.1rem;
-}
-
-/* --------------------------- Responsive Styles --------------------------- */
-@media (max-width: 480px) {
-  .owner-details  .owner-modal {
-    max-width: 100%;
-  }
-  
-  .owner-details .owner-profile-section {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .owner-details .owner-avatar-container {
-    margin-right: 0;
-    margin-bottom: 16px;
-  }
-  
-  .owner-details .detail-row {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .owner-details .detail-label {
-    width: 100%;
-  }
-
-  .owner-details .owner-actions {
-    flex-direction: column;
-  }
+.owner-modal-overlay .action-button.secondary:hover {
+  background-color: #e0e0e0;
 }

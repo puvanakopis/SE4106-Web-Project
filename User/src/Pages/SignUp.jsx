@@ -5,14 +5,12 @@ import upload_area from '../Assets/upload_area.png';
 const SignUp = () => {
   const [image, setImage] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
-    mobile: '',
     password: '',
     confirmPassword: '',
-    address: '',
     photo: null,
+    role: 'student',
   });
 
   const imageHandler = (e) => {
@@ -27,53 +25,62 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
+
+    console.log('Form data:', formData);
+    alert('Registration form submitted!');
+
+    setFormData({
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      photo: null,
+      role: 'student',
+    });
+    setImage(false);
   };
 
   return (
-    // Main container with fade-in animation
-    <div className="signup-container fade-in">
+    <div className="signup-container">
+      <div className="sub-container">
+        <form onSubmit={handleSubmit} className="signup-form">
+          <h2 className="form-title">Sign Up</h2>
 
-      {/* Sub-container with slide-in-right animation */}
-      <div className="sub-container slide-in-right delay-100">
+          {/* Role Selection */}
+          <div className="form-group">
+            <label>Register As</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="role-dropdown"
+            >
+              <option value="student">Student</option>
+              <option value="lecturer">Lecturer</option>
+            </select>
+          </div>
 
-        {/* Signup form with scale-up animation */}
-        <form onSubmit={handleSubmit} className="signup-form scale-up delay-200">
-
-          {/* Form title with slide-in-left animation */}
-          <h2 className="form-title slide-in-left delay-300">Sign Up</h2>
-
-          {/* Input fields grid */}
-          <div className="form-grid">
-            {/* First Name - slide-in-left */}
-            <div className="form-group slide-in-left delay-400">
-              <label>First Name</label>
+          {/* Name and Email Row */}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Full Name *</label>
               <input
                 type="text"
-                name="firstName"
-                value={formData.firstName}
+                name="fullName"
+                value={formData.fullName}
                 onChange={handleChange}
                 required
-                placeholder="Enter your first name"
+                placeholder="Enter your full name"
               />
             </div>
 
-            {/* Last Name - slide-in-right */}
-            <div className="form-group slide-in-right delay-400">
-              <label>Last Name</label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                placeholder="Enter your last name"
-              />
-            </div>
-
-            {/* Email Address - slide-in-left */}
-            <div className="form-group slide-in-left delay-500">
-              <label>Email Address</label>
+            <div className="form-group">
+              <label>Email Address *</label>
               <input
                 type="email"
                 name="email"
@@ -83,36 +90,12 @@ const SignUp = () => {
                 placeholder="Enter your email"
               />
             </div>
+          </div>
 
-            {/* Mobile Number - slide-in-right */}
-            <div className="form-group slide-in-right delay-500">
-              <label>Mobile Number</label>
-              <input
-                type="text"
-                name="mobile"
-                value={formData.mobile}
-                onChange={handleChange}
-                required
-                placeholder="Enter your mobile number"
-              />
-            </div>
-
-            {/* Address - slide-in-left (full width) */}
-            <div className="form-group full-width slide-in-left delay-600">
-              <label>Address</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                required
-                placeholder="Enter your address"
-              />
-            </div>
-
-            {/* Password - slide-in-right */}
-            <div className="form-group slide-in-right delay-600">
-              <label>Password</label>
+          {/* Password and Confirm Password Row */}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Password *</label>
               <input
                 type="password"
                 name="password"
@@ -123,10 +106,9 @@ const SignUp = () => {
                 minLength="6"
               />
             </div>
-
-            {/* Confirm Password - slide-in-left */}
-            <div className="form-group slide-in-left delay-700">
-              <label>Confirm Password</label>
+            
+            <div className="form-group">
+              <label>Confirm Password *</label>
               <input
                 type="password"
                 name="confirmPassword"
@@ -139,8 +121,8 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/* Profile Photo Upload - fade-in */}
-          <div className="form-group fade-in delay-800">
+          {/* Profile Photo Upload */}
+          <div className="form-group">
             <label>Profile Photo</label>
             <label htmlFor="file-input" className="uploadProfile">
               <img
@@ -158,13 +140,13 @@ const SignUp = () => {
             />
           </div>
 
-          {/* Submit Button - scale-up */}
-          <div className="form-action scale-up delay-900">
+          {/* Submit Button */}
+          <div className="form-action">
             <button type="submit">Sign Up</button>
           </div>
 
-          {/* Footer: Login Link - fade-in */}
-          <div className="form-footer fade-in delay-1000">
+          {/* Login Link */}
+          <div className="form-footer">
             <p>
               Have An Account? <a href="/login">Log In</a>
             </p>

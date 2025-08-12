@@ -1,0 +1,210 @@
+.PopularRooms {
+    margin: 0 8%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 6rem;
+}
+
+.PopularRooms .section-header {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.PopularRooms .section-header h2 {
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+}
+
+.PopularRooms .section-header p {
+    color: var(--text-medium);
+    font-size: 1.1rem;
+}
+
+.PopularRooms .featured-properties {
+    margin-top: 4rem;
+    width: 100%;
+}
+
+.PopularRooms .properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    margin: 0 auto 3rem;
+}
+
+.PopularRooms .card {
+    background-color: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+    cursor: pointer;
+
+}
+
+.PopularRooms .card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.PopularRooms .card .image {
+    width: 100%;
+    height: 14rem;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.PopularRooms .card:hover .image {
+    transform: scale(1.03);
+}
+
+.PopularRooms .property-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 10;
+}
+
+
+/* Save Button */
+.PopularRooms .save-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--background-light);
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-medium);
+}
+.PopularRooms .save-button:hover {
+  background-color: var(--primary-color);
+  color: var(--background-white);
+  transform: scale(1.05);
+}
+.PopularRooms .save-button.saved {
+  background-color: var(--primary-color);
+  color: var(--background-white);
+}
+.PopularRooms .save-button :hover .icon-heart-outline {
+  color: var(--primary-color);
+}
+.PopularRooms .save-button.saved:hover {
+  background-color: var(--primary-hover);
+}
+.PopularRooms .icon-heart-filled,
+.PopularRooms .icon-heart-outline {
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.PopularRooms .room-info {
+    padding: 1.25rem;
+}
+
+.PopularRooms .room-info h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-dark);
+}
+
+.PopularRooms .room-info p {
+    font-size: 0.875rem;
+    color: var(--text-medium);
+    margin-bottom: 0.25rem;
+}
+
+.PopularRooms .room-info .rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.PopularRooms .room-info .rating .star-icon {
+    color: #f59e0b;
+    font-size: 0.9rem;
+}
+
+.PopularRooms .room-info .price-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.PopularRooms .room-info .price-action p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.PopularRooms .room-info .price-action button {
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.PopularRooms .room-info .price-action button:hover {
+    background-color: var(--primary-hover);
+}
+
+.PopularRooms .view-all-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 2rem auto 0;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.PopularRooms .view-all-button:hover {
+    background-color: var(--primary-hover);
+}
+
+.PopularRooms .view-all-button .arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.PopularRooms .view-all-button:hover .arrow-icon {
+    transform: translateX(3px);
+}

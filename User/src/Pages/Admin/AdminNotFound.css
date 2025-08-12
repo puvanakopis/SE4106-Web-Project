@@ -1,0 +1,95 @@
+.admin-not-found-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.admin-error-content {
+  background-color: var(--error-bg-white) !important;
+  border-radius: var(--error-radius-md);
+  padding: 3rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--error-shadow-sm);
+  text-align: center;
+}
+
+.admin-error-header {
+  margin-bottom: 2rem;
+}
+
+.admin-error-code {
+  font-size: 5rem;
+  font-weight: 700;
+  color: var(--error-primary);
+  margin: 0;
+  line-height: 1;
+}
+
+.admin-error-title {
+  font-size: 2rem;
+  color: var(--error-text-dark);
+  margin: 1rem 0 0.5rem;
+}
+
+.admin-error-message {
+  font-size: 1.25rem;
+  color: var(--error-text-medium);
+  margin-bottom: 0;
+}
+
+.admin-error-details {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.admin-error-details p {
+  color: var(--error-text-medium);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.admin-error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.admin-error-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--error-radius-sm);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.admin-error-button.primary {
+  background-color: var(--error-primary);
+  color: white;
+}
+
+.admin-error-button.primary:hover {
+  background-color: var(--error-primary-hover);
+  transform: translateY(-2px);
+}
+
+.admin-error-button {
+  background-color: var(--error-bg-white);
+  color: var(--error-primary);
+  border: 1px solid var(--error-primary);
+}
+
+.admin-error-button:hover {
+  background-color: var(--error-bg-light);
+}
+
+@media (max-width: 768px) {
+  .admin-error-code {
+    font-size: 4rem;
+  }
+  
+  .admin-error-title {
+    font-size: 1.75rem;
+  }
+}

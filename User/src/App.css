@@ -1,0 +1,38 @@
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+
+  --light-color: #e0e7ff;
+
+
+  --text-dark: #111827;
+  --text-medium: #4b5563;
+  --text-light: #6b7280;
+
+
+  --border-color: #e5e7eb;
+
+  --background-light: #f9fafb;
+  --background-white: #ffffff;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --transition: all 0.2s ease;
+
+
+  /* Page not Found */
+  --error-primary: #3b82f6;
+  --error-primary-hover: #2563eb;
+  --error-text-dark: #111827;
+  --error-text-medium: #4b5563;
+  --error-text-light: #6b7280;
+  --error-border: #e5e7eb;
+  --error-bg-light: #f9fafb;
+  --error-bg-white: #ffffff;
+  --error-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --error-radius-sm: 0.25rem;
+  --error-radius-md: 0.5rem;
+}

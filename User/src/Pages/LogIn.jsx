@@ -1,58 +1,66 @@
 import './Login.css';
-import { AuthContext } from '../Context/AuthContext';
-import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { useState, useContext } from 'react';
+import { AuthContext } from '../Context/AuthContext';
 
 const Login = () => {
-  // ------------------ Context & State ------------------
-  const { formData, setFormData, login, error, isLoggedIn } = useContext(AuthContext);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState(null);
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
+  const { login, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
-  // ------------------ Handler Functions ------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: value 
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    setError(null);
+    
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
     try {
-      await login();
-    } finally {
-      setIsLoading(false);
+      const user = await login(formData.email, formData.password);
+      
+      // Check if user is trying to access correct portal
+      if ((isAdminLogin && user.role !== 'admin') || (!isAdminLogin && user.role === 'admin')) {
+        setError(`Please use the ${user.role} login portal`);
+        return;
+      }
+
+      // Redirect based on role
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      setError(err.message || 'Login failed');
     }
   };
 
-  // ------------------ Effect Hooks ------------------
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate('/');
-    }
-  }, [isLoggedIn, navigate]);
-
-  useEffect(() => {
-    if (error) {
-      alert(error);
-    }
-  }, [error]);
-
-  // ------------------ Render ------------------
   return (
-    /* Main container with fade-in animation */
-    <div className="login-container fade-in">
-      
-      {/* Sub-container with slide-in-right animation */}
-      <div className="sub-container slide-in-right delay-100">
+    <div className={`login-container ${isAdminLogin ? 'admin-login' : ''}`}>
+      <div className="sub-container">
+        <form onSubmit={handleSubmit} className="login-form">
+          <h2 className="form-title">
+            {isAdminLogin ? 'Admin Login' : 'User Login'}
+          </h2>
 
-        {/* Login form with scale-up animation */}
-        <form onSubmit={handleSubmit} className="login-form scale-up delay-200">
-          <h2 className="form-title slide-in-left delay-300">Login</h2>
+          {error && <div className="error-message">{error}</div>}
 
-          {/* Email input field */}
-          <div className="form-group full-width slide-in-left delay-400">
+          <div className="form-group">
             <label>Email Address</label>
             <input
               type="email"
@@ -64,8 +72,7 @@ const Login = () => {
             />
           </div>
 
-          {/* Password input field */}
-          <div className="form-group full-width slide-in-right delay-500">
+          <div className="form-group">
             <label>Password</label>
             <input
               type="password"
@@ -76,25 +83,40 @@ const Login = () => {
               placeholder="Enter your password"
             />
 
-            {/* Forgot password link */}
-            <div className="forgot-password fade-in delay-600">
-              <a href="/forgot-password">Forgot Password?</a>
-            </div>
+            {!isAdminLogin && (
+              <div className="forgot-password">
+                <a href="/forgot-password">Forgot Password?</a>
+              </div>
+            )}
           </div>
 
-          {/* Submit button */}
-          <div className="form-action scale-up delay-700">
-            <button type="submit" disabled={isLoading}>
-              {isLoading ? 'Logging in...' : 'Login'}
+          <div className="form-action">
+            <button type="submit" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </div>
 
-          {/* Link to signup page */}
-          <div className="form-footer fade-in delay-800">
-            <p>
-              Don't have an account? <a href="/signup">Create one</a>
-            </p>
+          <div className="toggle-login-type">
+            <button 
+              type="button" 
+              onClick={() => {
+                setIsAdminLogin(!isAdminLogin);
+                setFormData({ email: '', password: '' });
+                setError(null);
+              }}
+              className="toggle-button"
+            >
+              {isAdminLogin ? 'Switch to User Login' : 'Switch to Admin Login'}
+            </button>
           </div>
+
+          {!isAdminLogin && (
+            <div className="form-footer">
+              <p>
+                Don't have an account? <a href="/signup">Create one</a>
+              </p>
+            </div>
+          )}
         </form>
       </div>
     </div>

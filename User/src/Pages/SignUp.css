@@ -1,48 +1,33 @@
-:root {
-    --primary-color: #3b82f6;
-    --primary-hover: #2563eb;
-    --success-color: #10b981;
-    --error-color: #ef4444;
-    --text-dark: #111827;
-    --text-medium: #4b5563;
-    --text-light: #6b7280;
-    --border-color: #e5e7eb;
-    --border-dark: #d1d5db;
-    --background-light: #f9fafb;
-    --background-white: #ffffff;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --radius-sm: 0.25rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 1rem;
-    --transition: all 0.2s ease;
-}
-
 /* ---------------------  Main Container --------------------- */
 .signup-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 2rem;
     background-color: var(--background-light);
 }
 
 /* ---------------------  Sub Container --------------------- */
 .signup-container .sub-container {
-
-    max-width: fit-content;
-    padding: 4rem;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    width: 100%;
+    max-width: 600px;
     background-color: var(--background-white);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
+    padding: 4rem;
     box-shadow: var(--shadow-md);
+}
+
+/* -------------------   FORM STYLES ------------------- */
+.signup-container .signup-form {
+    width: 100%;
 }
 
 /*   Form Title */
 .signup-form .form-title {
-    display: flex;
+     display: flex;
     justify-self: center;
     align-self: center;
     margin-bottom: 2rem;
@@ -57,12 +42,40 @@
     border-bottom: 3px solid var(--primary-color);
 }
 
-/*    Form Layout Grid */
-.signup-form .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+/* Role Dropdown */
+.role-dropdown {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--background-white);
+    color: var(--text-dark);
+    transition: var(--transition);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1em;
+}
+
+.role-dropdown:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Form Row Styles */
+.signup-form .form-row {
+    display: flex;
     gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.signup-form .form-row .form-group {
+    flex: 1;
 }
 
 /* Form Group Styles */
@@ -80,6 +93,7 @@
 }
 
 .signup-form .form-group input {
+    width: 100%;
     transition: var(--transition);
     padding: 10px 14px;
     font-size: 16px;
@@ -96,11 +110,6 @@
     border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/*   Full Width Form Group */
-.signup-form .form-group.full-width {
-    grid-column: span 2;
 }
 
 /*  Profile Photo Upload */
@@ -167,28 +176,6 @@
     color: var(--primary-hover);
 }
 
-/* Validation Feedback */
-.password-match {
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-    padding-left: 0.25rem;
-}
-
-.password-match.valid {
-    color: var(--success-color);
-}
-
-.password-match.invalid {
-    color: var(--error-color);
-}
-
-.error-message {
-    color: var(--error-color);
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-    padding-left: 0.25rem;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .signup-container {
@@ -201,12 +188,9 @@
         margin-top: 2rem;
     }
 
-    .signup-form .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .signup-form .form-group.full-width {
-        grid-column: span 1;
+    .signup-form .form-row {
+        flex-direction: column;
+        gap: 0;
     }
 
     .signup-form .form-title {

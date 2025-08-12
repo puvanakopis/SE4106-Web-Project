@@ -1,0 +1,27 @@
+.star-rating {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  color: #fbbf24; 
+}
+
+.star-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  transition: var(--transition);
+  stroke-width: 2;
+}
+
+.star-icon[fill="none"] {
+  color: transparent;
+  stroke: #d1d5db;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .star-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
