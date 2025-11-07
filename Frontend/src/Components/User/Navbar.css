@@ -51,12 +51,22 @@
   position: relative;
 }
 
+.navbar__profile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: var(--primary-color) 2px solid;
+  cursor: pointer;
+  border-radius: 100%;
+}
+
 .navbar__profile-button {
   display: none;
   border: none;
   background: none;
   padding: 0;
-  cursor: pointer;
 }
 
 .navbar__profile-image {

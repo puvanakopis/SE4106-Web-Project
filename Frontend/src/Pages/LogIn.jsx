@@ -33,9 +33,10 @@ const Login = () => {
     try {
       const user = await login(formData.email, formData.password);
       
-      // Check if user is trying to access correct portal
       if ((isAdminLogin && user.role !== 'admin') || (!isAdminLogin && user.role === 'admin')) {
         setError(`Please use the ${user.role} login portal`);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         return;
       }
 

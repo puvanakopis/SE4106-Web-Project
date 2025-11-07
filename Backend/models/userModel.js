@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['student', 'lecturer', 'admin'],
+    enum: ['student', 'lecturer' , 'admin'],
     default: 'student'
   },
   photo: {
@@ -54,7 +54,7 @@ userSchema.pre('save', async function (next) {
         { new: true, upsert: true }
       );
 
-      const number = String(counter.seq).padStart(2, '0'); // 01, 02, 03
+      const number = String(counter.seq).padStart(2, '0');
       this._id = `user_${number}`;
     }
 

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './SignUp.css';
 import upload_area from '../Assets/upload_area.png';
+import { AuthContext } from '../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const [image, setImage] = useState(false);
@@ -12,6 +14,11 @@ const SignUp = () => {
     photo: null,
     role: 'student',
   });
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  const { register } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const imageHandler = (e) => {
     setImage(e.target.files[0]);
@@ -23,26 +30,34 @@ const SignUp = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      setError("Passwords don't match!");
       return;
     }
 
-    console.log('Form data:', formData);
-    alert('Registration form submitted!');
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
 
-    setFormData({
-      fullName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      photo: null,
-      role: 'student',
-    });
-    setImage(false);
+    try {
+      setLoading(true);
+      await register(formData);
+      
+      if (formData.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      setError(err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,6 +65,8 @@ const SignUp = () => {
       <div className="sub-container">
         <form onSubmit={handleSubmit} className="signup-form">
           <h2 className="form-title">Sign Up</h2>
+
+          {error && <div className="error-message">{error}</div>}
 
           {/* Role Selection */}
           <div className="form-group">
@@ -142,7 +159,9 @@ const SignUp = () => {
 
           {/* Submit Button */}
           <div className="form-action">
-            <button type="submit">Sign Up</button>
+            <button type="submit" disabled={loading}>
+              {loading ? 'Signing Up...' : 'Sign Up'}
+            </button>
           </div>
 
           {/* Login Link */}
