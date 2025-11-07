@@ -2,13 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roomsData } from '../../Assets/assets';
 import { FaTimes, FaFilter } from 'react-icons/fa';
-import { scrollToTop } from '../scrollToTop';
 import './Accommodation.css';
 
 import AccommodationBanner from '../../Components/User/Accommodation/AccommodationBanner';
 import FiltersSidebar from '../../Components/User/Accommodation/FiltersSidebar';
 import ResultsHeader from '../../Components/User/Accommodation/ResultsHeader';
-import RoomCard from '../../Components/User/Accommodation/RoomCard';
+import AccommodationCard from '../../Components/User/Accommodation/AccommodationCard';
 import Pagination from '../../Components/User/Accommodation/Pagination';
 
 const Accommodation = () => {
@@ -167,7 +166,6 @@ const Accommodation = () => {
 
   const handleRoomClick = (roomId) => {
     navigate(`/room/${roomId}`);
-    scrollToTop();
   };
 
   const canResetFilters = !(
@@ -247,7 +245,7 @@ const Accommodation = () => {
           ) : (
             <>
               {paginatedRooms.map(room => (
-                <RoomCard
+                <AccommodationCard
                   key={room._id}
                   room={room}
                   saved={savedRooms.includes(room._id)}

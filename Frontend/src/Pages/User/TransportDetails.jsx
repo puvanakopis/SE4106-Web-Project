@@ -9,7 +9,6 @@ import StarRating from '../../Components/Rating/StarRating';
 import GoogleMapEmbed from '../../Components/GoogleMap/GoogleMap';
 import PaymentPopup from '../../Components/PaymentPopup/PaymentPopup';
 import OwnerDetails from '../OwnerDetails';
-import { scrollToTop } from '../scrollToTop';
 import './TransportDetails.css';
 
 // Default owner data structure
@@ -115,7 +114,6 @@ const TransportDetails = () => {
   // Handle book now button click
   const handleBookNow = () => {
     if (!isLoggedIn) {
-      scrollToTop()
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
@@ -159,7 +157,6 @@ const TransportDetails = () => {
   // Handle contact owner button click
   const handleContactOwner = () => {
     if (!isLoggedIn) {
-      scrollToTop()
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }

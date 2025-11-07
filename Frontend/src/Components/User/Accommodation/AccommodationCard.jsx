@@ -1,8 +1,8 @@
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import StarRating from '../../Rating/StarRating';
-import './RoomCard.css';
+import './AccommodationCard.css';
 
-const RoomCard = ({ room, saved, onSave, onClick }) => (
+const AccommodationCard = ({ room, saved, onSave, onClick }) => (
   <article className="acc-room-card" onClick={onClick}>
     
     
@@ -76,4 +76,4 @@ const RoomCard = ({ room, saved, onSave, onClick }) => (
   </article>
 );
 
-export default RoomCard;
+export default AccommodationCard;

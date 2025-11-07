@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { vehicleData } from '../../../Assets/assets';
-import { scrollToTop } from '../../../Pages/scrollToTop';
 import StarRating from '../../Rating/StarRating';
 import './PopularTransport.css';
 
@@ -40,7 +39,6 @@ const PopularTransport = () => {
               key={vehicle.vehicle_id}
               onClick={() => {
                 navigate(`/transport/${vehicle.vehicle_id}`)
-                scrollToTop()
               }}
             >
               <img
@@ -93,7 +91,6 @@ const PopularTransport = () => {
           className="view-all-button"
           onClick={() => {
             navigate('/transport')
-            scrollToTop()
           }}
         >
           View All Transport Options <FaArrowRight className="arrow-icon" />

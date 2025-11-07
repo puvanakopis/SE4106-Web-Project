@@ -1,19 +1,11 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const {
-  register,
-  login,
-  getMe,
-  updateProfile,
-  registerValidation,
-  loginValidation
-} = require('../controllers/authController');
+const { register, login, logout, getMe, updateProfile, changePassword, deleteAccount, registerValidation, loginValidation, updateProfileValidation, changePasswordValidation } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Multer setup for profile image
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => {
@@ -29,10 +21,12 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter });
 
-// Routes
 router.post('/register', upload.single('photo'), registerValidation, register);
 router.post('/login', loginValidation, login);
 router.get('/me', protect, getMe);
-router.put('/profile', protect, upload.single('photo'), updateProfile);
+router.put('/profile', protect, upload.single('photo'), updateProfileValidation, updateProfile);
+router.put('/change-password', protect, changePasswordValidation, changePassword);
+router.delete('/delete-account', protect, deleteAccount);
+router.post('/logout', protect, logout);
 
 module.exports = router;

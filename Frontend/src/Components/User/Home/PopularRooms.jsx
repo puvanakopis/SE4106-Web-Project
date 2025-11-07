@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { roomsData } from '../../../Assets/assets';
 import { FaArrowRight, FaHeart, FaRegHeart } from 'react-icons/fa';
-import { scrollToTop } from '../../../Pages/scrollToTop';
 import StarRating from '../../Rating/StarRating';
 import './PopularRooms.css';
 
@@ -40,7 +39,6 @@ const PopularRooms = () => {
                             key={room._id}
                             onClick={() => {
                                 navigate(`/room/${room._id}`)
-                                scrollToTop()
                             }}
                         >
                             <img
@@ -93,7 +91,6 @@ const PopularRooms = () => {
                     className="view-all-button"
                     onClick={() => {
                         navigate('/accommodation')
-                        scrollToTop()
                     }}
                 >
                     View All Accommodations <FaArrowRight className="arrow-icon" />

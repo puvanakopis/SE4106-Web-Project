@@ -1,54 +1,71 @@
 import './Login.css';
-import { useNavigate } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { AuthContext } from '../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
+
+  const navigate = useNavigate();
+
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const [error, setError] = useState(null);
-  const [isAdminLogin, setIsAdminLogin] = useState(false);
+
   const { login, loading } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: value 
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    
+
     if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
+      toast.error('Please fill in all fields');
       return;
     }
 
     try {
       const user = await login(formData.email, formData.password);
-      
+
       if ((isAdminLogin && user.role !== 'admin') || (!isAdminLogin && user.role === 'admin')) {
-        setError(`Please use the ${user.role} login portal`);
+        toast.warning(`Please use the ${user.role} login portal`);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         return;
       }
 
-      // Redirect based on role
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+      toast.success(`Welcome back, ${user.name || user.email}!`);
+
+      navigate('/');
+
     } catch (err) {
-      setError(err.message || 'Login failed');
+      toast.error(err.message || 'Login failed');
     }
+  };
+
+  const handleToggleLoginType = () => {
+    setIsAdminLogin(!isAdminLogin);
+    setFormData({ email: '', password: '' });
+    toast.info(`Switched to ${!isAdminLogin ? 'Admin' : 'User'} Login`);
+  };
+
+  const handleForgotPasswordClick = () => {
+    toast.info('Redirecting to password recovery...');
+    navigate('/forgot-password');
+  };
+
+  const handleSignupClick = () => {
+    toast.info('Redirecting to signup...');
+    navigate('/signup');
   };
 
   return (
@@ -58,9 +75,6 @@ const Login = () => {
           <h2 className="form-title">
             {isAdminLogin ? 'Admin Login' : 'User Login'}
           </h2>
-
-          {error && <div className="error-message">{error}</div>}
-
           <div className="form-group">
             <label>Email Address</label>
             <input
@@ -86,7 +100,16 @@ const Login = () => {
 
             {!isAdminLogin && (
               <div className="forgot-password">
-                <a href="/forgot-password">Forgot Password?</a>
+                <a
+                  href="/forgot-password"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleForgotPasswordClick();
+                    navigate('/forgot-password');
+                  }}
+                >
+                  Forgot Password?
+                </a>
               </div>
             )}
           </div>
@@ -98,13 +121,9 @@ const Login = () => {
           </div>
 
           <div className="toggle-login-type">
-            <button 
-              type="button" 
-              onClick={() => {
-                setIsAdminLogin(!isAdminLogin);
-                setFormData({ email: '', password: '' });
-                setError(null);
-              }}
+            <button
+              type="button"
+              onClick={handleToggleLoginType}
               className="toggle-button"
             >
               {isAdminLogin ? 'Switch to User Login' : 'Switch to Admin Login'}
@@ -114,7 +133,17 @@ const Login = () => {
           {!isAdminLogin && (
             <div className="form-footer">
               <p>
-                Don't have an account? <a href="/signup">Create one</a>
+                Don't have an account?{' '}
+                <a
+                  href="/signup"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSignupClick();
+                    navigate('/signup');
+                  }}
+                >
+                  Create one
+                </a>
               </p>
             </div>
           )}

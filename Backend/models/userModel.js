@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Name cannot be more than 100 characters']
   },
+  displayName: {
+    type: String,
+    trim: true,
+    maxlength: [50, 'Display name cannot be more than 50 characters']
+  },
   email: {
     type: String,
     required: [true, 'Email is required'],
@@ -25,9 +30,17 @@ const userSchema = new mongoose.Schema({
     minlength: [6, 'Password must be at least 6 characters'],
     select: false
   },
+  phone: {
+    type: String,
+    default: ''
+  },
+  address: {
+    type: String,
+    default: ''
+  },
   role: {
     type: String,
-    enum: ['student', 'lecturer' , 'admin'],
+    enum: ['student', 'lecturer', 'admin'],
     default: 'student'
   },
   photo: {
@@ -44,7 +57,6 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-
 userSchema.pre('save', async function (next) {
   try {
     if (this.isNew) {
@@ -56,6 +68,10 @@ userSchema.pre('save', async function (next) {
 
       const number = String(counter.seq).padStart(2, '0');
       this._id = `user_${number}`;
+    }
+
+    if (this.isNew && !this.displayName) {
+      this.displayName = this.fullName;
     }
 
     if (!this.isModified('password')) return next();

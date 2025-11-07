@@ -1,27 +1,109 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import "./ProfileInfo.css";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ProfileInfo = () => {
+  const navigator = useNavigate()
+
   const [activeSection, setActiveSection] = useState("account-info");
-  const { user } = useContext(AuthContext);
-  
-  // Form state for editable fields
   const [formData, setFormData] = useState({
     fullName: user?.fullName || "",
     displayName: user?.displayName || "",
     email: user?.email || "",
-    phone: user?.PhoneNumber || "",
+    phone: user?.phone || "",
     role: user?.role || "",
     address: user?.address || ""
   });
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [deletePassword, setDeletePassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const { user, updateProfile, changePassword, deleteAccount, logout } = useContext(AuthContext);
+
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await updateProfile(formData);
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        toast.error('New passwords do not match');
+        return;
+      }
+
+      await changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
+
+      toast.success('Password updated successfully!');
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAccountDelete = async (e) => {
+    e.preventDefault();
+
+    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await deleteAccount(deletePassword);
+      toast.success('Account deleted successfully!');
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+      logout()
+      navigator('/')
+    }
   };
 
   if (!user) {
@@ -31,7 +113,7 @@ const ProfileInfo = () => {
   return (
     <div className="profile">
       <div className="user_name">
-        <div>Hi, {user.displayName}</div>
+        <div>Hi, {user.displayName || user.fullName}</div>
       </div>
 
       <div className="profile-container">
@@ -60,51 +142,54 @@ const ProfileInfo = () => {
         {/* -------------- account info Section -------------- */}
         {activeSection === "account-info" && (
           <div className="profile-form-section">
-            <form className="profile-form">
+            <form className="profile-form" onSubmit={handleProfileUpdate}>
               <div className="form-group">
                 <label>Full Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleInputChange}
+                  required
                 />
               </div>
 
               <div className="form-group">
                 <label>Display Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="displayName"
                   value={formData.displayName}
                   onChange={handleInputChange}
+                  placeholder="Name to display publicly"
                 />
               </div>
 
               <div className="form-group">
                 <label>Email Address</label>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  disabled
+                  required
                 />
               </div>
 
               <div className="form-group">
                 <label>Phone Number</label>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
+                  placeholder="Your phone number"
                 />
               </div>
 
               <div className="form-group">
                 <label>Role</label>
-                <select 
+                <select
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
@@ -118,16 +203,23 @@ const ProfileInfo = () => {
 
               <div className="form-group">
                 <label>Address</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
+                  placeholder="Your address"
                 />
               </div>
 
               <div className="form-group button-group">
-                <button type="submit" className="save-button-div">Save</button>
+                <button
+                  type="submit"
+                  className="save-button-div"
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
               </div>
             </form>
           </div>
@@ -136,7 +228,7 @@ const ProfileInfo = () => {
         {/* -------------- delete Section -------------- */}
         {activeSection === "delete" && (
           <div className="profile-form-section">
-            <form className="profile-form">
+            <form className="profile-form" onSubmit={handleAccountDelete}>
               <div className="form-group delete">
                 <label>⚠️ Delete Account Warning</label>
                 <div>
@@ -146,11 +238,22 @@ const ProfileInfo = () => {
 
               <div className="form-group">
                 <label>Confirm Password</label>
-                <input type="password" />
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="form-group button-group">
-                <button type="submit" className="save-button-div">Delete Account</button>
+                <button
+                  type="submit"
+                  className="save-button-div delete-btn"
+                  disabled={loading || !deletePassword}
+                >
+                  {loading ? 'Deleting...' : 'Delete Account Permanently'}
+                </button>
               </div>
             </form>
           </div>
@@ -159,24 +262,48 @@ const ProfileInfo = () => {
         {/* -------------- password Section -------------- */}
         {activeSection === "password" && (
           <div className="profile-form-section">
-            <form className="profile-form">
+            <form className="profile-form" onSubmit={handlePasswordUpdate}>
               <div className="form-group">
                 <label>Current Password</label>
-                <input type="password" />
+                <input
+                  type="password"
+                  name="currentPassword"
+                  value={passwordData.currentPassword}
+                  onChange={handlePasswordChange}
+                  required
+                />
               </div>
 
               <div className="form-group">
                 <label>New Password</label>
-                <input type="password" />
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+                  required
+                />
               </div>
 
               <div className="form-group">
                 <label>Confirm New Password</label>
-                <input type="password" />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordChange}
+                  required
+                />
               </div>
 
               <div className="form-group button-group">
-                <button type="submit" className="save-button-div">Update Password</button>
+                <button
+                  type="submit"
+                  className="save-button-div"
+                  disabled={loading}
+                >
+                  {loading ? 'Updating...' : 'Update Password'}
+                </button>
               </div>
             </form>
           </div>

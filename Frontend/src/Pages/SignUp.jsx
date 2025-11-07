@@ -3,9 +3,12 @@ import './SignUp.css';
 import upload_area from '../Assets/upload_area.png';
 import { AuthContext } from '../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SignUp = () => {
   const [image, setImage] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -14,15 +17,18 @@ const SignUp = () => {
     photo: null,
     role: 'student',
   });
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  
+
   const { register } = useContext(AuthContext);
+  
   const navigate = useNavigate();
 
   const imageHandler = (e) => {
-    setImage(e.target.files[0]);
-    setFormData({ ...formData, photo: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setFormData({ ...formData, photo: file });
+      toast.success('Profile photo uploaded successfully!');
+    }
   };
 
   const handleChange = (e) => {
@@ -32,29 +38,25 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match!");
+      toast.error("Passwords don't match!");
       return;
     }
 
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
+      toast.error("Password must be at least 6 characters long");
       return;
     }
 
     try {
       setLoading(true);
       await register(formData);
-      
-      if (formData.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+
+      toast.success('Account created successfully! Welcome!');
+      navigate('/');
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      toast.error(err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -65,8 +67,6 @@ const SignUp = () => {
       <div className="sub-container">
         <form onSubmit={handleSubmit} className="signup-form">
           <h2 className="form-title">Sign Up</h2>
-
-          {error && <div className="error-message">{error}</div>}
 
           {/* Role Selection */}
           <div className="form-group">
@@ -123,7 +123,7 @@ const SignUp = () => {
                 minLength="6"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Confirm Password *</label>
               <input

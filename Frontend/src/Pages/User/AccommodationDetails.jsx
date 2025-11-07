@@ -9,8 +9,7 @@ import StarRating from '../../Components/Rating/StarRating';
 import GoogleMapEmbed from '../../Components/GoogleMap/GoogleMap';
 import PaymentPopup from '../../Components/PaymentPopup/PaymentPopup';
 import OwnerDetails from '../OwnerDetails';
-import { scrollToTop } from '../scrollToTop';
-import './RoomDetails.css';
+import './AccommodationDetails.css';
 
 // Default owner data structure
 const defaultOwner = {
@@ -24,7 +23,7 @@ const defaultOwner = {
 };
 
 
-const RoomDetails = () => {
+const AccommodationDetails = () => {
   // Router hooks
   const { id } = useParams();
   const navigate = useNavigate();
@@ -116,7 +115,6 @@ const RoomDetails = () => {
   // Handle book now button click
   const handleBookNow = () => {
     if (!isLoggedIn) {
-      scrollToTop()
       navigate('/login', { state: { from: `/rooms/${id}` } });
       return;
     }
@@ -160,7 +158,6 @@ const RoomDetails = () => {
   // Handle contact owner button click
   const handleContactOwner = () => {
     if (!isLoggedIn) {
-      scrollToTop()
       navigate('/login', { state: { from: `/rooms/${id}` } });
       return;
     }
@@ -515,4 +512,4 @@ const RoomDetails = () => {
   );
 };
 
-export default RoomDetails;
+export default AccommodationDetails;

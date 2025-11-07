@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { scrollToTop } from './scrollToTop';
 import './NotFound.css';
 
 const NotFound = () => {
@@ -23,8 +22,8 @@ const NotFound = () => {
                     </p>
 
                     <div className="error-actions">
-                        <Link to="/" className="error-button primary" onClick={scrollToTop} >Return Home</Link>
-                        <Link to="/about" className="error-button" onClick={scrollToTop}>About Our Service</Link>
+                        <Link to="/" className="error-button primary"  >Return Home</Link>
+                        <Link to="/about" className="error-button">About Our Service</Link>
                     </div>
                 </div>
             </section>

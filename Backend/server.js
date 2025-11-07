@@ -4,7 +4,7 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-const seedAdmin = require('./utils/seedAdmin'); // Import the seed function
+const seedAdmin = require('./utils/seedAdmin');
 
 const app = express();
 
@@ -16,6 +16,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoute'));
+app.use('/api/owners', require('./routes/ownerRoutes'));
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
@@ -24,9 +25,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 })
   .then(async () => {
     console.log('MongoDB connected');
-
-    // Seed admin user after DB connection
-    await seedAdmin(); // <-- call the seed function here
+    await seedAdmin();
   })
   .catch(err => console.log('MongoDB connection error:', err));
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { scrollToTop } from '../scrollToTop.js';
 import './AdminNotFound.css';
 
 const AdminNotFound = () => {
@@ -22,7 +21,7 @@ const AdminNotFound = () => {
                     </p>
 
                     <div className="admin-error-actions">
-                        <Link to="/admin" className="admin-error-button primary" onClick={scrollToTop}>Admin Dashboard</Link>
+                        <Link to="/" className="admin-error-button primary">Admin Dashboard</Link>
                     </div>
                 </div>
             </section>

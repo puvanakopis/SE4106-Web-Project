@@ -5,7 +5,7 @@ const ResultsHeader = ({ count }) => (
   <div className="acc-results-header full-width">
     <div className="results-header-content">
       <p className="results-count">
-        Found <strong>{count}</strong> Rooms
+        Found <strong>{count}</strong> Accommodations
       </p>
     </div>
   </div>
