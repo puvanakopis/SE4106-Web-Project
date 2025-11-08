@@ -38,7 +38,6 @@ const upload = multer({
 
 const uploadTransportImages = upload.array('vehicle_images', 10);
 
-
 const createTransport = async (req, res) => {
     try {
         uploadTransportImages(req, res, async function (err) {
@@ -144,7 +143,6 @@ const createTransport = async (req, res) => {
     }
 };
 
-
 const getTransports = async (req, res) => {
     try {
         const {
@@ -204,7 +202,6 @@ const getTransports = async (req, res) => {
     }
 };
 
-
 const getTransport = async (req, res) => {
     try {
         const transport = await Transport.findById(req.params.id)
@@ -223,7 +220,6 @@ const getTransport = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
-
 
 const getTransportsByOwner = async (req, res) => {
     try {
@@ -253,7 +249,6 @@ const getTransportsByOwner = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
-
 
 const updateTransport = async (req, res) => {
     try {
@@ -356,7 +351,6 @@ const updateTransport = async (req, res) => {
     }
 };
 
-
 const deleteTransport = async (req, res) => {
     try {
         const transport = await Transport.findById(req.params.id);
@@ -405,7 +399,6 @@ const deleteTransport = async (req, res) => {
     }
 };
 
-
 const updateTransportRating = async (req, res) => {
     try {
         const { rating } = req.body;
@@ -451,7 +444,6 @@ const updateTransportRating = async (req, res) => {
     }
 };
 
-
 const deleteTransportImage = async (req, res) => {
     try {
         const { id, imageIndex } = req.params;
@@ -495,6 +487,191 @@ const deleteTransportImage = async (req, res) => {
     }
 };
 
+const updateTransportAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isAvailable } = req.body;
+
+        if (typeof isAvailable !== 'boolean') {
+            return res.status(400).json({
+                success: false,
+                message: "isAvailable must be a boolean value"
+            });
+        }
+
+        const transport = await Transport.findByIdAndUpdate(
+            id,
+            {
+                isAvailable,
+                lastUpdated: Date.now()
+            },
+            { new: true, runValidators: true }
+        ).populate('owner_id', 'fullName displayName profile_pic phoneNumber email');
+
+        if (!transport) {
+            return res.status(404).json({
+                success: false,
+                message: "Transport not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `Transport ${isAvailable ? 'marked as available' : 'marked as unavailable'}`,
+            transport
+        });
+    } catch (error) {
+        console.error("Update transport availability error:", error);
+
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
+            return res.status(400).json({
+                success: false,
+                message: messages.join(', ')
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+const updateTransportStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const validStatuses = ["Active", "Inactive", "Blocked"];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Status must be one of: Active, Inactive, Blocked"
+            });
+        }
+
+        const transport = await Transport.findByIdAndUpdate(
+            id,
+            {
+                status,
+                lastUpdated: Date.now()
+            },
+            { new: true, runValidators: true }
+        ).populate('owner_id', 'fullName displayName profile_pic phoneNumber email');
+
+        if (!transport) {
+            return res.status(404).json({
+                success: false,
+                message: "Transport not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `Transport status updated to ${status}`,
+            transport
+        });
+    } catch (error) {
+        console.error("Update transport status error:", error);
+
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
+            return res.status(400).json({
+                success: false,
+                message: messages.join(', ')
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+const toggleTransportAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const transport = await Transport.findById(id);
+        if (!transport) {
+            return res.status(404).json({
+                success: false,
+                message: "Transport not found"
+            });
+        }
+
+        const newAvailability = !transport.isAvailable;
+
+        transport.isAvailable = newAvailability;
+        transport.lastUpdated = Date.now();
+        await transport.save();
+
+        await transport.populate('owner_id', 'fullName displayName profile_pic phoneNumber email');
+
+        res.json({
+            success: true,
+            message: `Transport ${newAvailability ? 'marked as available' : 'marked as unavailable'}`,
+            transport
+        });
+    } catch (error) {
+        console.error("Toggle transport availability error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+const getTransportStats = async (req, res) => {
+    try {
+        const totalTransports = await Transport.countDocuments();
+        const availableTransports = await Transport.countDocuments({ isAvailable: true });
+        const activeTransports = await Transport.countDocuments({ status: "Active" });
+        const blockedTransports = await Transport.countDocuments({ status: "Blocked" });
+
+        const typeStats = await Transport.aggregate([
+            {
+                $group: {
+                    _id: "$vehicle_type",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const statusStats = await Transport.aggregate([
+            {
+                $group: {
+                    _id: "$status",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        res.json({
+            success: true,
+            stats: {
+                totalTransports,
+                availableTransports,
+                occupiedTransports: totalTransports - availableTransports,
+                activeTransports,
+                blockedTransports,
+                inactiveTransports: await Transport.countDocuments({ status: "Inactive" }),
+                typeStats,
+                statusStats,
+                occupancyRate: totalTransports > 0 ? ((totalTransports - availableTransports) / totalTransports * 100).toFixed(2) : 0
+            }
+        });
+    } catch (error) {
+        console.error("Get transport stats error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
 module.exports = {
     createTransport,
     getTransports,
@@ -504,5 +681,10 @@ module.exports = {
     deleteTransport,
     updateTransportRating,
     deleteTransportImage,
+    uploadTransportImages,
+    updateTransportAvailability,
+    updateTransportStatus,
+    toggleTransportAvailability,
+    getTransportStats,
     uploadTransportImages
 };

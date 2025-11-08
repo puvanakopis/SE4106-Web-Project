@@ -107,7 +107,7 @@ const transportSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Active", "Inactive", "Under Maintenance"],
+        enum: ["Active", "Inactive"],
         default: "Active"
     },
     createdDate: {
