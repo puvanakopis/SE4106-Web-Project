@@ -10,6 +10,11 @@ const transportSchema = new mongoose.Schema({
         ref: 'Owner',
         required: true
     },
+    vehicle_name: {
+        type: String,
+        required: true,
+        trim: true
+    },
     vehicle_type: {
         type: String,
         required: true,
@@ -33,7 +38,8 @@ const transportSchema = new mongoose.Schema({
     seating_capacity: {
         type: Number,
         required: true,
-        min: 1
+        min: 1,
+        max: 50
     },
     year: {
         type: Number,
@@ -67,7 +73,8 @@ const transportSchema = new mongoose.Schema({
     }],
     address: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     location: {
         latitude: {
@@ -82,7 +89,8 @@ const transportSchema = new mongoose.Schema({
     description: {
         type: String,
         trim: true,
-        maxlength: 1000
+        maxlength: 1000,
+        default: ""
     },
     totalReviews: {
         type: Number,
@@ -107,7 +115,7 @@ const transportSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Active", "Inactive"],
+        enum: ["Active", "Inactive", "Blocked"],
         default: "Active"
     },
     createdDate: {
@@ -120,21 +128,20 @@ const transportSchema = new mongoose.Schema({
     }
 });
 
-
+// Auto-generate ID
 transportSchema.pre("save", async function (next) {
     const doc = this;
 
     if (!doc._id) {
         try {
             const counter = await Counter.findOneAndUpdate(
-                { id: "transportId" },
+                { id: "transport" },
                 { $inc: { seq: 1 } },
                 { new: true, upsert: true }
             );
 
-            const seqNumber = String(counter.seq).padStart(2, "0");
+            const seqNumber = String(counter.seq).padStart(4, "0");
             doc._id = `transport_${seqNumber}`;
-
             next();
         } catch (err) {
             next(err);
@@ -144,17 +151,18 @@ transportSchema.pre("save", async function (next) {
     }
 });
 
-
+// Update lastUpdated timestamp
 transportSchema.pre("save", function (next) {
     this.lastUpdated = Date.now();
     next();
 });
 
-
+// Indexes for better performance
 transportSchema.index({ owner_id: 1 });
 transportSchema.index({ vehicle_type: 1 });
 transportSchema.index({ isAvailable: 1 });
 transportSchema.index({ rental_price_per_day: 1 });
 transportSchema.index({ location: "2dsphere" });
+transportSchema.index({ registration_number: 1 }, { unique: true });
 
 module.exports = mongoose.model("Transport", transportSchema);
