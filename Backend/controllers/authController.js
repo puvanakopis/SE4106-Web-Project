@@ -54,7 +54,6 @@ const changePasswordValidation = [
     .isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
 ];
 
-
 const register = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -66,37 +65,22 @@ const register = async (req, res) => {
     if (existingUser) return res.status(400).json({ success: false, message: 'User already exists with this email' });
 
     let userData = { fullName, email, password, role };
+    let user;
 
-    let photoPath = null;
     if (req.file) {
-      const user = await User.create(userData);
+      user = await User.create(userData);
+
       const fileExtension = getFileExtension(req.file.filename);
       const newFilename = `profile-${user._id}.${fileExtension}`;
       const newFilePath = path.join(path.dirname(req.file.path), newFilename);
 
       fs.renameSync(req.file.path, newFilePath);
-      photoPath = `uploads/${newFilename}`;
+      const photoPath = `uploads/${newFilename}`;
 
       user.photo = photoPath;
       await user.save();
     } else {
-      const user = await User.create(userData);
-      const token = generateToken(user._id);
-
-      return res.status(201).json({
-        success: true,
-        token,
-        user: {
-          id: user._id,
-          fullName: user.fullName,
-          displayName: user.displayName,
-          email: user.email,
-          phone: user.phone,
-          address: user.address,
-          role: user.role,
-          photo: user.photo
-        }
-      });
+      user = await User.create(userData);
     }
 
     const token = generateToken(user._id);
@@ -196,9 +180,12 @@ const updateProfile = async (req, res) => {
     }
 
     if (req.file) {
-      if (req.user.photo) {
-        const oldPhotoPath = path.join(__dirname, '..', req.user.photo);
-        if (fs.existsSync(oldPhotoPath)) fs.unlinkSync(oldPhotoPath);
+      const currentUser = await User.findById(req.user.id);
+      if (currentUser.photo) {
+        const oldPhotoPath = path.join(__dirname, '..', currentUser.photo);
+        if (fs.existsSync(oldPhotoPath)) {
+          fs.unlinkSync(oldPhotoPath);
+        }
       }
 
       const fileExtension = getFileExtension(req.file.filename);
@@ -242,10 +229,10 @@ const deleteAccount = async (req, res) => {
 
     if (user.photo) {
       const photoPath = path.join(__dirname, '..', user.photo);
-      if (fs.existsSync(photoPath)) fs.unlinkSync(photoPath);
+      if (fs.existsSync(photoPath)) {
+        fs.unlinkSync(photoPath);
+      }
     }
-
-    await User.findByIdAndDelete(req.user.id);
 
     user.isActive = false;
     await user.save();

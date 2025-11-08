@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 export const AuthContext = createContext();
 
@@ -9,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [isUser, setIsUser] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = 'http://localhost:5000/api/auth';
+  const API_BASE_URL = 'http://localhost:5000/api';
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }) => {
         submitData.append('photo', formData.photo);
       }
 
-      const response = await fetch(`${API_BASE_URL}/register`, {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         body: submitData,
       });
@@ -121,7 +122,7 @@ export const AuthProvider = ({ children }) => {
         submitData.append('photo', formData.photo);
       }
 
-      const response = await fetch(`${API_BASE_URL}/profile`, {
+      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -153,7 +154,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/change-password`, {
+      const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -162,7 +163,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({
           currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword,
-          confirmPassword: passwordData.confirmPassword // Add this
+          confirmPassword: passwordData.confirmPassword
         }),
       });
 
@@ -187,7 +188,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${API_BASE_URL}/delete-account`, {
+      const response = await fetch(`${API_BASE_URL}/auth/delete-account`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +220,7 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       if (!token) return null;
 
-      const response = await fetch(`${API_BASE_URL}/me`, {
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -246,7 +247,7 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         try {
-          const response = await fetch(`${API_BASE_URL}/logout`, {
+          const response = await fetch(`${API_BASE_URL}/auth/logout`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -283,6 +284,123 @@ export const AuthProvider = ({ children }) => {
   };
 
 
+
+  // Fetch all owners
+  const getOwners = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/owners`);
+      if (response.data.success) {
+        return response.data.owners;
+      }
+      throw new Error('Failed to fetch owners');
+    } catch (err) {
+      console.error('Error fetching owners:', err);
+      throw new Error(err.response?.data?.message || 'Failed to load owners');
+    }
+  };
+
+  // Add new owner
+  const addOwner = async (ownerData) => {
+    try {
+      const submitData = new FormData();
+      submitData.append('fullName', ownerData.fullName);
+      submitData.append('displayName', ownerData.displayName);
+      submitData.append('email', ownerData.email);
+      submitData.append('phoneNumber', ownerData.phoneNumber);
+      submitData.append('address', ownerData.address);
+      submitData.append('verified', ownerData.verified);
+      submitData.append('status', ownerData.status);
+      submitData.append('bankDetails[accountNumber]', ownerData.bankDetails.accountNumber);
+      submitData.append('bankDetails[bankName]', ownerData.bankDetails.bankName);
+      submitData.append('bankDetails[branch]', ownerData.bankDetails.branch);
+
+      if (ownerData.profile_pic) {
+        submitData.append('profile_pic', ownerData.profile_pic);
+      }
+
+      const response = await axios.post(`${API_BASE_URL}/owners`, submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.data.success) {
+        return response.data;
+      }
+      throw new Error('Failed to add owner');
+    } catch (err) {
+      console.error('Error adding owner:', err);
+      throw new Error(err.response?.data?.message || 'Failed to add owner');
+    }
+  };
+
+  // Update owner
+  const updateOwner = async (ownerId, ownerData) => {
+    try {
+      const submitData = new FormData();
+      submitData.append('fullName', ownerData.fullName);
+      submitData.append('displayName', ownerData.displayName);
+      submitData.append('email', ownerData.email);
+      submitData.append('phoneNumber', ownerData.phoneNumber);
+      submitData.append('address', ownerData.address);
+      submitData.append('verified', ownerData.verified);
+      submitData.append('status', ownerData.status);
+      submitData.append('bankDetails[accountNumber]', ownerData.bankDetails.accountNumber);
+      submitData.append('bankDetails[bankName]', ownerData.bankDetails.bankName);
+      submitData.append('bankDetails[branch]', ownerData.bankDetails.branch);
+
+      if (ownerData.profile_pic) {
+        submitData.append('profile_pic', ownerData.profile_pic);
+      }
+
+      const response = await axios.put(`${API_BASE_URL}/owners/${ownerId}`, submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.data.success) {
+        return response.data;
+      }
+      throw new Error('Failed to update owner');
+    } catch (err) {
+      console.error('Error updating owner:', err);
+      throw new Error(err.response?.data?.message || 'Failed to update owner');
+    }
+  };
+
+  // Delete owner
+  const deleteOwner = async (ownerId) => {
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/owners/${ownerId}`);
+      if (response.data.success) {
+        return response.data;
+      }
+      throw new Error('Failed to delete owner');
+    } catch (err) {
+      console.error('Error deleting owner:', err);
+      throw new Error(err.response?.data?.message || 'Failed to delete owner');
+    }
+  };
+
+  // Update owner status
+  const updateOwnerStatus = async (ownerId, status) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/owners/${ownerId}`, {
+        status: status
+      });
+
+      if (response.data.success) {
+        return response.data;
+      }
+      throw new Error('Failed to update owner status');
+    } catch (err) {
+      console.error('Error updating owner status:', err);
+      throw new Error(err.response?.data?.message || 'Failed to update owner status');
+    }
+  };
+
+
   return (
     <AuthContext.Provider value={{
       isLoggedIn,
@@ -296,7 +414,14 @@ export const AuthProvider = ({ children }) => {
       changePassword,
       deleteAccount,
       logout,
-      getCurrentUser
+      getCurrentUser,
+
+      // Owner management functions
+      getOwners,
+      addOwner,
+      updateOwner,
+      deleteOwner,
+      updateOwnerStatus,
     }}>
       {children}
     </AuthContext.Provider>

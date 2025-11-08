@@ -1,47 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './AdminOwner.css';
 import OwnerProperties from './AdminOwnerProperties';
-import { ownerData as initialOwnerData, roomsData } from '../../Assets/assets';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {AuthContext} from '../../Context/AuthContext'; 
 
 const AdminOwner = () => {
-  const [owners, setOwners] = useState([...initialOwnerData]);
-
-  // State for form
-  const [formData, setFormData] = useState({
-    id: '',
-    FullName: '',
-    DisplayName: '',
-    email: '',
-    PhoneNumber: '',
-    Address: '',
-    profile_pic: null,
-    bankDetails: {
-      accountNumber: '',
-      bankName: '',
-      branch: ''
-    },
-    Status: 'Active',
-    verified: false
-  });
-
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [owners, setOwners] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [showProperties, setShowProperties] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState('add');
+  const [imagePreview, setImagePreview] = useState(null);
+  
+  const { getOwners, addOwner, updateOwner, deleteOwner, updateOwnerStatus } = useContext (AuthContext);
 
-  // Filter owners based on search term
+  const [formData, setFormData] = useState({
+    fullName: '',
+    displayName: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    profile_pic: null,
+    bankDetails: {
+      accountNumber: '',
+      bankName: '',
+      branch: ''
+    },
+    status: 'Active',
+    verified: false
+  });
+
+  const loadOwners = async () => {
+    try {
+      setLoading(true);
+      const ownersData = await getOwners();
+      setOwners(ownersData);
+    } catch (err) {
+      toast.error(err.message || 'Failed to load owners');
+      console.error('Error fetching owners:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOwners();
+  }, []);
+
   const filteredOwners = owners.filter(owner =>
     owner.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    owner.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    owner.PhoneNumber.includes(searchTerm)
+    owner.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    owner.phoneNumber.includes(searchTerm)
   );
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
 
     if (name.startsWith('bankDetails.')) {
       const bankField = name.split('.')[1];
@@ -52,6 +69,8 @@ const AdminOwner = () => {
           [bankField]: value
         }
       }));
+    } else if (type === 'checkbox') {
+      setFormData(prev => ({ ...prev, [name]: checked }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -61,121 +80,112 @@ const AdminOwner = () => {
     const { name, files } = e.target;
     if (files && files[0]) {
       setIsUploading(true);
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(files[0]);
+
       setFormData(prev => ({ ...prev, [name]: files[0] }));
       setIsUploading(false);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
-    // Validation
-    if (!formData.FullName || !formData.email || !formData.PhoneNumber || !formData.Address) {
-      setError('Full Name, Email, Phone and Address are required');
+    if (!formData.fullName || !formData.email || !formData.phoneNumber || !formData.address) {
+      toast.error('Please fill in all required fields');
       return;
     }
 
     if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      setError('Please enter a valid email address');
+      toast.error('Please enter a valid email address');
       return;
     }
 
-    // Create profile picture URL if not provided
-    const currentOwner = isEditing ? owners.find(o => o.id === formData.id) : null;
-    const profilePicUrl = formData.profile_pic
-      ? URL.createObjectURL(formData.profile_pic)
-      : (isEditing
-        ? currentOwner?.profile_pic
-        : `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.FullName)}&background=random&color=fff`);
+    try {
+      setLoading(true);
 
-    if (isEditing) {
-      // Update existing owner
-      const updatedOwners = owners.map(owner =>
-        owner.id === formData.id ? {
-          ...owner,
-          FullName: formData.FullName,
-          DisplayName: formData.DisplayName || formData.FullName.split(' ')[0],
-          email: formData.email,
-          PhoneNumber: formData.PhoneNumber,
-          Address: formData.Address,
-          profile_pic: profilePicUrl,
-          bankDetails: formData.bankDetails,
-          Status: formData.Status,
-          verified: formData.verified
-        } : owner
-      );
-      setOwners(updatedOwners);
-      setSuccess('Owner updated successfully!');
-    } else {
-      // Add new owner
-      const newId = `owner_${owners.length + 1}`.padStart(3, '0');
-      const newOwner = {
-        id: newId,
-        FullName: formData.FullName,
-        DisplayName: formData.DisplayName || formData.FullName.split(' ')[0],
-        email: formData.email,
-        PhoneNumber: formData.PhoneNumber,
-        Address: formData.Address,
-        role: "Owner",
-        profile_pic: profilePicUrl,
-        bankDetails: formData.bankDetails,
-        verified: formData.verified,
-        Status: "Active",
-        totalReviews: 0,
-        averageRating: 0,
-        ratingCount: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 },
-        creatDate: new Date().toISOString().split('T')[0]
-      };
-      setOwners([...owners, newOwner]);
-      setSuccess('Owner added successfully!');
+      if (isEditing) {
+        await updateOwner(formData._id, formData);
+        toast.success('Owner updated successfully!');
+      } else {
+        await addOwner(formData);
+        toast.success('Owner added successfully!');
+      }
+
+      await loadOwners();
+      resetForm();
+    } catch (err) {
+      toast.error(err.message || 'Failed to save owner');
+      console.error('Error saving owner:', err);
+    } finally {
+      setLoading(false);
     }
-
-    // Reset form
-    resetForm();
   };
 
   const handleEdit = (owner) => {
     setFormData({
-      id: owner.id,
-      FullName: owner.FullName,
-      DisplayName: owner.DisplayName,
+      _id: owner._id,
+      fullName: owner.fullName,
+      displayName: owner.displayName || '',
       email: owner.email,
-      PhoneNumber: owner.PhoneNumber,
-      Address: owner.Address,
+      phoneNumber: owner.phoneNumber,
+      address: owner.address,
       profile_pic: null,
       bankDetails: owner.bankDetails || {
         accountNumber: '',
         bankName: '',
         branch: ''
       },
-      Status: owner.Status,
+      status: owner.status,
       verified: owner.verified || false
     });
+
+    if (owner.profile_pic) {
+      setImagePreview(`http://localhost:5000${owner.profile_pic}?t=${Date.now()}`);
+    } else {
+      setImagePreview(null);
+    }
+
     setIsEditing(true);
     setActiveTab('add');
   };
 
-  const handleDelete = (ownerId) => {
+  const handleDelete = async (ownerId) => {
     if (window.confirm('Are you sure you want to delete this owner?')) {
-      setOwners(owners.filter(owner => owner.id !== ownerId));
-      setSuccess('Owner deleted successfully!');
-      if (isEditing && formData.id === ownerId) {
-        resetForm();
+      try {
+        setLoading(true);
+        await deleteOwner(ownerId);
+        setOwners(owners.filter(owner => owner._id !== ownerId));
+        toast.success('Owner deleted successfully!');
+        if (isEditing && formData._id === ownerId) {
+          resetForm();
+        }
+      } catch (err) {
+        toast.error(err.message || 'Failed to delete owner');
+        console.error('Error deleting owner:', err);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
-  const handleStatusToggle = (ownerId) => {
-    setOwners(owners.map(owner =>
-      owner.id === ownerId
-        ? { ...owner, Status: owner.Status === "Active" ? "Blocked" : "Active" }
-        : owner
-    ));
-    setSuccess(`Owner ${owners.find(o => o.id === ownerId).Status === "Active" ? 'blocked' : 'activated'} successfully!`);
+  const handleStatusToggle = async (ownerId) => {
+    try {
+      const owner = owners.find(o => o._id === ownerId);
+      const newStatus = owner.status === "Active" ? "Blocked" : "Active";
+
+      await updateOwnerStatus(ownerId, newStatus);
+      setOwners(owners.map(owner =>
+        owner._id === ownerId ? { ...owner, status: newStatus } : owner
+      ));
+    } catch (err) {
+      toast.error(err.message || 'Failed to update owner status');
+      console.error('Error updating owner status:', err);
+    }
   };
 
   const handleViewProperties = (owner) => {
@@ -185,33 +195,30 @@ const AdminOwner = () => {
 
   const resetForm = () => {
     setFormData({
-      id: '',
-      FullName: '',
-      DisplayName: '',
+      fullName: '',
+      displayName: '',
       email: '',
-      PhoneNumber: '',
-      Address: '',
+      phoneNumber: '',
+      address: '',
       profile_pic: null,
       bankDetails: {
         accountNumber: '',
         bankName: '',
         branch: ''
       },
-      Status: 'Active',
+      status: 'Active',
       verified: false
     });
+    setImagePreview(null);
     setIsEditing(false);
     setIsUploading(false);
   };
 
-  // Owner statistics
   const calculateOwnerStats = () => {
     const totalOwners = owners.length;
-    const activeOwners = owners.filter(owner => owner.Status === "Active").length;
+    const activeOwners = owners.filter(owner => owner.status === "Active").length;
     const blockedOwners = totalOwners - activeOwners;
-    const ownersWithProperties = owners.filter(owner =>
-      roomsData.some(room => room.owner.id === owner.id)
-    ).length;
+    const ownersWithProperties = owners.filter(owner => owner.properties && owner.properties.length > 0).length;
 
     return {
       totalOwners,
@@ -223,6 +230,15 @@ const AdminOwner = () => {
 
   const ownerStats = calculateOwnerStats();
 
+  if (loading && owners.length === 0) {
+    return (
+      <div className="dashboard-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading dashboard data...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="owner-management-container">
       <h1 className="title">Owner Management</h1>
@@ -231,27 +247,36 @@ const AdminOwner = () => {
       <div className="tabs">
         <button
           className={`tab-button ${activeTab === 'add' ? 'active' : ''}`}
-          onClick={() => setActiveTab('add')}
+          onClick={() => {
+            setActiveTab('add');
+          }}
         >
           {isEditing ? 'Edit Owner' : 'Add Owner'}
         </button>
         <button
           className={`tab-button ${activeTab === 'view' ? 'active' : ''}`}
-          onClick={() => setActiveTab('view')}
+          onClick={() => {
+            setActiveTab('view');
+          }}
         >
           View All Owners
         </button>
         <button
           className={`tab-button ${activeTab === 'stats' ? 'active' : ''}`}
-          onClick={() => setActiveTab('stats')}
+          onClick={() => {
+            setActiveTab('stats');
+          }}
         >
           Statistics
         </button>
       </div>
 
+      {/* Loading State */}
+      {loading && <div className="loading">Loading...</div>}
+
       {/* Add/Edit Owner Form */}
       {activeTab === 'add' && (
-        <form onSubmit={handleSubmit} className="owner-form">
+        <form onSubmit={handleSubmit} className="owner-form" encType="multipart/form-data">
           {/* Owner Statistics Summary */}
           <div className="stats-summary">
             <div className="stat-card">
@@ -280,8 +305,46 @@ const AdminOwner = () => {
             </div>
           </div>
 
-          {error && <div className="alert-error">{error}</div>}
-          {success && <div className="alert-success">{success}</div>}
+          <div className="form-section">
+            <h2 className="section-title">Profile Picture</h2>
+            <div className="profile-picture-upload">
+              <div className="image-preview">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Profile preview" className="preview-image" />
+                ) : (
+                  <div className="placeholder-image">
+                    <i className="fas fa-user"></i>
+                    <span>No image selected</span>
+                  </div>
+                )}
+              </div>
+              <div className="upload-controls">
+                <label htmlFor="profile_pic" className="file-upload-label">
+                  {isUploading ? 'Uploading...' : 'Choose Profile Picture'}
+                </label>
+                <input
+                  type="file"
+                  id="profile_pic"
+                  name="profile_pic"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="file-input"
+                />
+                {formData.profile_pic && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({ ...prev, profile_pic: null }));
+                      setImagePreview(null);
+                    }}
+                    className="remove-image-btn"
+                  >
+                    Remove Image
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
 
           <div className="form-section">
             <h2 className="section-title">Basic Information</h2>
@@ -290,8 +353,8 @@ const AdminOwner = () => {
                 <label>Full Name*</label>
                 <input
                   type="text"
-                  name="FullName"
-                  value={formData.FullName}
+                  name="fullName"
+                  value={formData.fullName}
                   onChange={handleChange}
                   required
                 />
@@ -301,8 +364,8 @@ const AdminOwner = () => {
                 <label>Display Name</label>
                 <input
                   type="text"
-                  name="DisplayName"
-                  value={formData.DisplayName}
+                  name="displayName"
+                  value={formData.displayName}
                   onChange={handleChange}
                   placeholder="Will use first name if empty"
                 />
@@ -323,8 +386,8 @@ const AdminOwner = () => {
                 <label>Phone Number*</label>
                 <input
                   type="tel"
-                  name="PhoneNumber"
-                  value={formData.PhoneNumber}
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
                   onChange={handleChange}
                   required
                 />
@@ -334,45 +397,26 @@ const AdminOwner = () => {
                 <label>Address*</label>
                 <input
                   type="text"
-                  name="Address"
-                  value={formData.Address}
+                  name="address"
+                  value={formData.address}
                   onChange={handleChange}
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label>Profile Picture {isUploading && '(Uploading...)'}</label>
-                <input
-                  type="file"
-                  name="profile_pic"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  disabled={isUploading}
-                />
-                {isEditing && !formData.profile_pic && (
-                  <div className="small-text">
-                    Current: {owners.find(o => o.id === formData.id)?.profile_pic ? 'Image uploaded' : 'Using default avatar'}
-                  </div>
-                )}
-              </div>
-
-                <div className="form-group">
-                  <label>Verified Owner</label>
-                  <select
+                <label>Verified Owner</label>
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
                     name="verified"
-                    value={formData.verified ? "yes" : "no"}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        verified: e.target.value === "yes"
-                      })
-                    }
-                  >
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                  </select>
-                </div>
+                    checked={formData.verified}
+                    onChange={handleChange}
+                  />
+                  <span className="checkmark"></span>
+                  Verified
+                </label>
+              </div>
             </div>
           </div>
 
@@ -414,21 +458,25 @@ const AdminOwner = () => {
               <div className="form-group">
                 <label>Status</label>
                 <select
-                  name="Status"
-                  value={formData.Status}
+                  name="status"
+                  value={formData.status}
                   onChange={handleChange}
                   className="status-select"
                 >
                   <option value="Active">Active</option>
-                  <option value="Block">Block</option>
+                  <option value="Blocked">Blocked</option>
                 </select>
               </div>
             </div>
           )}
 
           <div className="form-actions">
-            <button type="submit" className="submit-button" disabled={isUploading}>
-              {isUploading ? 'Processing...' : isEditing ? 'Update Owner' : 'Add Owner'}
+            <button
+              type="submit"
+              className="submit-button"
+              disabled={loading || isUploading}
+            >
+              {loading ? 'Processing...' : isEditing ? 'Update Owner' : 'Add Owner'}
             </button>
 
             {isEditing && (
@@ -436,7 +484,7 @@ const AdminOwner = () => {
                 type="button"
                 onClick={resetForm}
                 className="submit-button cancel-button"
-                disabled={isUploading}
+                disabled={loading || isUploading}
               >
                 Cancel
               </button>
@@ -461,9 +509,11 @@ const AdminOwner = () => {
             </div>
           </div>
 
-          {filteredOwners.length === 0 ? (
+          {loading ? (
+            <div className="loading">Loading owners...</div>
+          ) : filteredOwners.length === 0 ? (
             <div className="no-results">
-              No owners found matching your search
+              {searchTerm ? 'No owners found matching your search' : 'No owners found'}
             </div>
           ) : (
             <table className="owners-table">
@@ -480,32 +530,38 @@ const AdminOwner = () => {
               </thead>
               <tbody>
                 {filteredOwners.map(owner => (
-                  <tr key={owner.id} className={owner.Status === "Blocked" ? 'blocked' : ''}>
+                  <tr key={owner._id} className={owner.status === "Blocked" ? 'blocked' : ''}>
                     <td>
                       <img
-                        src={owner.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.FullName)}&background=random&color=fff`}
-                        alt={owner.FullName}
+                        src={owner.profile_pic
+                          ? `http://localhost:5000${owner.profile_pic}?t=${Date.now()}`
+                          : `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.fullName)}&background=random&color=fff`
+                        }
+                        alt={owner.fullName}
                         className="owner-thumbnail"
+                        onError={(e) => {
+                          e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.fullName)}&background=random&color=fff`;
+                        }}
                       />
                     </td>
                     <td>
-                      <div>{owner.id}</div>
+                      <div>{owner._id}</div>
                     </td>
                     <td>
-                      <div className="owner-name">{owner.FullName}</div>
-                      <div className="small-text">{owner.DisplayName}</div>
+                      <div className="owner-name">{owner.fullName}</div>
+                      <div className="small-text">{owner.displayName}</div>
                       <div className="small-text">{owner.email}</div>
                     </td>
                     <td>
-                      <div>{owner.PhoneNumber}</div>
-                      <div className="small-text">{owner.Address}</div>
+                      <div>{owner.phoneNumber}</div>
+                      <div className="small-text">{owner.address}</div>
                     </td>
                     <td>
                       <button
-                        onClick={() => handleStatusToggle(owner.id)}
-                        className={`status-badge ${owner.Status === "Blocked" ? 'blocked' : 'active'}`}
+                        onClick={() => handleStatusToggle(owner._id)}
+                        className={`status-badge ${owner.status === "Blocked" ? 'blocked' : 'active'}`}
                       >
-                        {owner.Status}
+                        {owner.status}
                       </button>
                     </td>
                     <td>
@@ -528,7 +584,7 @@ const AdminOwner = () => {
                           Properties
                         </button>
                         <button
-                          onClick={() => handleDelete(owner.id)}
+                          onClick={() => handleDelete(owner._id)}
                           className="action-button delete"
                         >
                           Delete
@@ -560,12 +616,12 @@ const AdminOwner = () => {
                     cy="60"
                     r="50"
                     style={{
-                      strokeDashoffset: 314 - (314 * (ownerStats.activeOwners / ownerStats.totalOwners))
+                      strokeDashoffset: 314 - (314 * (ownerStats.activeOwners / Math.max(ownerStats.totalOwners, 1)))
                     }}
                   ></circle>
                 </svg>
                 <div className="percentage">
-                  {Math.round((ownerStats.activeOwners / ownerStats.totalOwners) * 100)}%
+                  {Math.round((ownerStats.activeOwners / Math.max(ownerStats.totalOwners, 1)) * 100)}%
                 </div>
               </div>
               <p>{ownerStats.activeOwners} of {ownerStats.totalOwners} owners active</p>
@@ -584,22 +640,22 @@ const AdminOwner = () => {
             <div className="stat-card">
               <h3>Owners with Properties</h3>
               <div className="big-number">{ownerStats.ownersWithProperties}</div>
-              <p>{Math.round((ownerStats.ownersWithProperties / ownerStats.totalOwners) * 100)}% of total</p>
+              <p>{Math.round((ownerStats.ownersWithProperties / Math.max(ownerStats.totalOwners, 1)) * 100)}% of total</p>
             </div>
           </div>
 
           <div className="chart-container">
             <h3>Owner Status Distribution</h3>
             <div className="bar-chart">
-              <div className="bar" style={{ height: `${(ownerStats.activeOwners / ownerStats.totalOwners) * 100}%` }}>
+              <div className="bar" style={{ height: `${(ownerStats.activeOwners / Math.max(ownerStats.totalOwners, 1)) * 100}%` }}>
                 <div className="bar-label">Active</div>
                 <div className="bar-value">{ownerStats.activeOwners}</div>
               </div>
-              <div className="bar" style={{ height: `${(ownerStats.blockedOwners / ownerStats.totalOwners) * 100}%` }}>
+              <div className="bar" style={{ height: `${(ownerStats.blockedOwners / Math.max(ownerStats.totalOwners, 1)) * 100}%` }}>
                 <div className="bar-label">Blocked</div>
                 <div className="bar-value">{ownerStats.blockedOwners}</div>
               </div>
-              <div className="bar" style={{ height: `${(ownerStats.ownersWithProperties / ownerStats.totalOwners) * 100}%` }}>
+              <div className="bar" style={{ height: `${(ownerStats.ownersWithProperties / Math.max(ownerStats.totalOwners, 1)) * 100}%` }}>
                 <div className="bar-label">With Properties</div>
                 <div className="bar-value">{ownerStats.ownersWithProperties}</div>
               </div>
@@ -612,7 +668,9 @@ const AdminOwner = () => {
       {showProperties && (
         <OwnerProperties
           owner={selectedOwner}
-          onClose={() => setShowProperties(false)}
+          onClose={() => {
+            setShowProperties(false);
+          }}
         />
       )}
     </div>

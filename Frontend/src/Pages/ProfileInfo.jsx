@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 const ProfileInfo = () => {
   const navigator = useNavigate()
 
+  const { user, updateProfile, changePassword, deleteAccount, logout } = useContext(AuthContext);
+
   const [activeSection, setActiveSection] = useState("account-info");
   const [formData, setFormData] = useState({
     fullName: user?.fullName || "",
@@ -24,9 +26,7 @@ const ProfileInfo = () => {
   const [deletePassword, setDeletePassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { user, updateProfile, changePassword, deleteAccount, logout } = useContext(AuthContext);
 
-  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({

@@ -77,9 +77,9 @@ ownerSchema.pre("save", async function (next) {
     if (!doc._id) {
         try {
             const counter = await Counter.findOneAndUpdate(
-                { id: "ownerId" },          
-                { $inc: { seq: 1 } },       
-                { new: true, upsert: true } 
+                { id: "ownerId" },
+                { $inc: { seq: 1 } },
+                { new: true, upsert: true }
             );
 
             const seqNumber = String(counter.seq).padStart(2, "0");
