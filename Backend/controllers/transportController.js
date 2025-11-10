@@ -4,7 +4,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const uploadPath = path.join(__dirname, '../uploads/transports');
@@ -85,9 +84,11 @@ const createTransport = async (req, res) => {
             if (req.files && req.files.length > 0) {
                 const updatedImages = [];
 
-                for (const file of req.files) {
+                for (let i = 0; i < req.files.length; i++) {
+                    const file = req.files[i];
                     const oldPath = file.path;
-                    const newFilename = transport._id + '-' + Date.now() + path.extname(file.originalname);
+                    const imageNumber = i + 1;
+                    const newFilename = `${transport._id}_${imageNumber}${path.extname(file.originalname)}`;
                     const newPath = path.join(path.dirname(oldPath), newFilename);
 
                     try {
@@ -271,14 +272,28 @@ const updateTransport = async (req, res) => {
             }
 
             if (req.files && req.files.length > 0) {
-                const newImages = req.files.map(file =>
-                    `/uploads/transports/${path.basename(file.path)}`
-                );
+                const transport = await Transport.findById(req.params.id);
+                const existingImagesCount = transport ? transport.vehicle_images.length : 0;
+                const newImages = [];
+
+                for (let i = 0; i < req.files.length; i++) {
+                    const file = req.files[i];
+                    const imageNumber = existingImagesCount + i + 1;
+                    const newFilename = `${req.params.id}_${imageNumber}${path.extname(file.originalname)}`;
+                    const newPath = path.join(path.dirname(file.path), newFilename);
+
+                    try {
+                        fs.renameSync(file.path, newPath);
+                        newImages.push(`/uploads/transports/${newFilename}`);
+                    } catch (renameErr) {
+                        console.error('Error renaming file:', renameErr);
+                        newImages.push(`/uploads/transports/${path.basename(file.path)}`);
+                    }
+                }
 
                 if (updateData.replaceImages === 'true') {
                     const existingTransport = await Transport.findById(req.params.id);
                     if (existingTransport && existingTransport.vehicle_images) {
-
                         existingTransport.vehicle_images.forEach(imagePath => {
                             const fullPath = path.join(__dirname, '..', imagePath);
                             if (fs.existsSync(fullPath)) {
@@ -288,7 +303,6 @@ const updateTransport = async (req, res) => {
                     }
                     updateData.vehicle_images = newImages;
                 } else {
-
                     const existingTransport = await Transport.findById(req.params.id);
                     const existingImages = existingTransport ? existingTransport.vehicle_images : [];
                     updateData.vehicle_images = [...existingImages, ...newImages];
@@ -302,7 +316,6 @@ const updateTransport = async (req, res) => {
             ).populate('owner_id', 'fullName displayName profile_pic phoneNumber email averageRating totalReviews');
 
             if (!transport) {
-
                 if (req.files && req.files.length > 0) {
                     req.files.forEach(file => {
                         if (fs.existsSync(file.path)) {
@@ -373,7 +386,7 @@ const deleteTransport = async (req, res) => {
             if (fs.existsSync(uploadDir)) {
                 const files = fs.readdirSync(uploadDir);
                 files.forEach(file => {
-                    if (file.startsWith(req.params.id + '-')) {
+                    if (file.startsWith(req.params.id + '_')) {
                         try {
                             fs.unlinkSync(path.join(uploadDir, file));
                         } catch (cleanupErr) {
@@ -471,6 +484,25 @@ const deleteTransportImage = async (req, res) => {
         }
 
         transport.vehicle_images.splice(index, 1);
+        
+        // Rename remaining images to maintain proper numbering
+        for (let i = 0; i < transport.vehicle_images.length; i++) {
+            const oldImagePath = transport.vehicle_images[i];
+            const oldFullPath = path.join(__dirname, '..', oldImagePath);
+            const newFilename = `${id}_${i + 1}${path.extname(oldImagePath)}`;
+            const newImagePath = `/uploads/transports/${newFilename}`;
+            const newFullPath = path.join(__dirname, '..', newImagePath);
+            
+            if (fs.existsSync(oldFullPath)) {
+                try {
+                    fs.renameSync(oldFullPath, newFullPath);
+                    transport.vehicle_images[i] = newImagePath;
+                } catch (renameErr) {
+                    console.error('Error renaming file during renumbering:', renameErr);
+                }
+            }
+        }
+        
         await transport.save();
 
         res.json({

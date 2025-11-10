@@ -56,7 +56,12 @@ const Transport = () => {
         const data = await response.json();
         
         if (data.success) {
-          setTransports(data.transports);
+          // Process images to ensure full URLs
+          const processedTransports = data.transports.map(transport => ({
+            ...transport,
+            vehicle_images: processVehicleImages(transport.vehicle_images)
+          }));
+          setTransports(processedTransports);
         } else {
           throw new Error(data.message || 'Failed to fetch transports');
         }
@@ -64,7 +69,11 @@ const Transport = () => {
         console.error('Error fetching transports:', err);
         setError(err.message);
         // Fallback to mock data if backend fails
-        setTransports(vehicleData);
+        const processedMockData = vehicleData.map(vehicle => ({
+          ...vehicle,
+          vehicle_images: processVehicleImages(vehicle.vehicle_images)
+        }));
+        setTransports(processedMockData);
       } finally {
         setLoading(false);
       }
@@ -72,6 +81,30 @@ const Transport = () => {
 
     fetchTransports();
   }, []);
+
+  // Helper function to process vehicle images
+  const processVehicleImages = (images) => {
+    if (!images || !Array.isArray(images)) {
+      return ['/default-vehicle-image.jpg'];
+    }
+    
+    return images.map(image => {
+      if (!image) return '/default-vehicle-image.jpg';
+      
+      // If image already has full URL, return as is
+      if (image.startsWith('http')) {
+        return image;
+      }
+      
+      // If image starts with /uploads, make it absolute path
+      if (image.startsWith('/uploads')) {
+        return `http://localhost:5000${image}`;
+      }
+      
+      // If it's just a filename, construct the path
+      return `http://localhost:5000/uploads/transports/${image}`;
+    });
+  };
 
   // Filter and sort vehicles
   const filteredTransports = useMemo(() => {
@@ -307,7 +340,9 @@ const Transport = () => {
                       // Ensure all required fields are present
                       averageRating: vehicle.averageRating || 0,
                       totalReviews: vehicle.totalReviews || 0,
-                      isAvailable: vehicle.isAvailable !== false
+                      isAvailable: vehicle.isAvailable !== false,
+                      // Process images for this specific vehicle
+                      vehicle_images: processVehicleImages(vehicle.vehicle_images)
                     }}
                     saved={savedVehicles.includes(vehicle._id)}
                     onSave={toggleSaveVehicle}

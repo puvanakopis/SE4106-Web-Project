@@ -29,15 +29,40 @@ const TransportDetails = () => {
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isBooking, setIsBooking] = useState(false);
 
-  const API_BASE_URL = 'http://localhost:5000/api';
+  const API_BASE_URL = 'http://localhost:5000';
+
+  // Fixed image URL function - matches the logic from Transport.js
+  const processVehicleImages = (images) => {
+    if (!images || !Array.isArray(images)) {
+      return [assets.defaultTransportImage];
+    }
+    
+    return images.map(image => {
+      if (!image) return assets.defaultTransportImage;
+      
+      // If image already has full URL, return as is
+      if (image.startsWith('http')) {
+        return image;
+      }
+      
+      // If image starts with /uploads, make it absolute path
+      if (image.startsWith('/uploads')) {
+        return `${API_BASE_URL}${image}`;
+      }
+      
+      // If it's just a filename, construct the path
+      return `${API_BASE_URL}/uploads/transports/${image}`;
+    });
+  };
 
   const fetchTransportData = async () => {
     try {
       setIsLoading(true);
       setError('');
-      console.log(id)
-      const response = await fetch(`${API_BASE_URL}/transports/${id}`, {
+      
+      const response = await fetch(`${API_BASE_URL}/api/transports/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -52,9 +77,18 @@ const TransportDetails = () => {
       const result = await response.json();
 
       if (result.success) {
-        setTransport(result.transport);
-        if (result.transport.vehicle_images && result.transport.vehicle_images.length > 0) {
-          setMainImage(`${API_BASE_URL}${result.transport.vehicle_images[0]}`);
+        const processedTransport = {
+          ...result.transport,
+          vehicle_images: processVehicleImages(result.transport.vehicle_images)
+        };
+        
+        setTransport(processedTransport);
+        
+        // Set main image
+        if (processedTransport.vehicle_images && processedTransport.vehicle_images.length > 0) {
+          setMainImage(processedTransport.vehicle_images[0]);
+        } else {
+          setMainImage(assets.defaultTransportImage);
         }
       } else {
         throw new Error(result.message || 'Failed to fetch transport details');
@@ -125,22 +159,22 @@ const TransportDetails = () => {
     setShowPaymentPopup(true);
   };
 
-  const handlePaymentSuccess = async () => {
+  const createTransportBooking = async (paymentDetails = {}) => {
     try {
-      // const bookingData = {
-      //   transport_id: transport._id,
-      //   owner_id: transport.owner_id._id,
-      //   start_date: startDate.toISOString().split('T')[0],
-      //   end_date: endDate.toISOString().split('T')[0],
-      //   total_amount: totalCost,
-      //   deposit_amount: transport.deposit_amount,
-      //   payment_method: paymentMethod,
-      //   status: 'confirmed'
-      // };
+      setIsBooking(true);
+      
+      const bookingData = {
+        renter: user.id,
+        transport: id,
+        booking_start: startDate.toISOString(),
+        booking_end: endDate.toISOString(),
+        totalPrice: totalCost,
+        isPaid: true,
+        paymentMethod: paymentMethod,
+        ...paymentDetails
+      };
 
-      // Example API call - implement based on your booking endpoint
-      /*
-      const response = await fetch(`${API_BASE_URL}/bookings`, {
+      const response = await fetch(`${API_BASE_URL}/api/transport-bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,42 +183,59 @@ const TransportDetails = () => {
         body: JSON.stringify(bookingData)
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to create booking');
+        throw new Error(result.message || 'Failed to create booking');
       }
-      */
 
-      // For now, using context to store booking locally
-      const newBooking = {
-        id: `t-${Date.now()}`,
-        type: 'transport',
-        item: transport,
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0],
-        status: 'confirmed',
-        totalPrice: totalCost,
-        bookingDate: new Date().toISOString().split('T')[0],
-        paymentMethod: paymentMethod,
-        userId: user.id
-      };
+      if (result.success) {
+        const newBooking = {
+          id: result.booking._id || `t-${Date.now()}`,
+          type: 'transport',
+          item: transport,
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
+          status: result.booking.booking_status || 'confirmed',
+          totalPrice: totalCost,
+          bookingDate: new Date().toISOString().split('T')[0],
+          paymentMethod: paymentMethod,
+          userId: user.id,
+          bookingId: result.booking._id
+        };
 
-      addBooking(newBooking);
+        addBooking(newBooking);
 
-      // Reset form
-      setStartDate(null);
-      setEndDate(null);
-      setTotalDays(0);
-      setTotalCost(0);
-      setPaymentMethod('credit_card');
-      setShowPaymentPopup(false);
+        setStartDate(null);
+        setEndDate(null);
+        setTotalDays(0);
+        setTotalCost(0);
+        setPaymentMethod('credit_card');
+        setShowPaymentPopup(false);
+
+        alert('Booking confirmed successfully!');
+        
+      } else {
+        throw new Error(result.message || 'Booking failed');
+      }
 
     } catch (error) {
-      console.error('Booking error:', error);
-      setBookingError('Failed to complete booking. Please try again.');
+      console.error('Booking creation error:', error);
+      setBookingError(error.message || 'Failed to complete booking. Please try again.');
+    } finally {
+      setIsBooking(false);
     }
   };
 
-  // Handle contact owner button click
+  const handlePaymentSuccess = async (paymentData = {}) => {
+    try {
+      await createTransportBooking(paymentData);
+    } catch (error) {
+      console.error('Payment success handling error:', error);
+      setBookingError('Failed to process booking after payment. Please contact support.');
+    }
+  };
+
   const handleContactOwner = () => {
     if (!isLoggedIn) {
       navigate('/login', { state: { from: `/transport/${id}` } });
@@ -200,7 +251,6 @@ const TransportDetails = () => {
     setShowOwnerDetails(true);
   };
 
-  // Prepare booking details for payment popup
   const getBookingDetails = () => {
     if (!transport) return null;
 
@@ -208,16 +258,12 @@ const TransportDetails = () => {
       type: 'transport',
       itemName: `${transport.brand} ${transport.model}`,
       duration: `${totalDays} day${totalDays !== 1 ? 's' : ''}`,
-      totalAmount: totalDays > 0 ? totalCost + transport.deposit_amount : 0,
-      bookingId: `T-${Date.now()}`
+      totalAmount: totalDays > 0 ? totalCost + (transport.deposit_amount || 0) : 0,
+      bookingId: `T-${Date.now()}`,
+      dailyRate: transport.rental_price_per_day,
+      deposit: transport.deposit_amount || 0,
+      rentalCost: totalCost
     };
-  };
-
-  // Format image URLs
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return assets.defaultTransportImage;
-    if (imagePath.startsWith('http')) return imagePath;
-    return `${API_BASE_URL}${imagePath}`;
   };
 
   if (isLoading) {
@@ -244,7 +290,6 @@ const TransportDetails = () => {
     );
   }
 
-  // Transport not found state
   if (!transport) {
     return (
       <div className="transport-not-found">
@@ -262,12 +307,12 @@ const TransportDetails = () => {
     );
   }
 
-  const images = transport.vehicle_images?.map(getImageUrl) || [];
+  // Use processed images from transport state
+  const images = transport.vehicle_images || [];
   const owner = transport.owner_id;
 
   return (
     <main className="transport-details">
-      {/* Owner Details Modal */}
       {showOwnerDetails && (
         <OwnerDetails
           owner={owner}
@@ -275,7 +320,6 @@ const TransportDetails = () => {
         />
       )}
 
-      {/* Payment Popup Modal */}
       {showPaymentPopup && (
         <PaymentPopup
           isOpen={showPaymentPopup}
@@ -283,10 +327,10 @@ const TransportDetails = () => {
           bookingDetails={getBookingDetails()}
           onPaymentSuccess={handlePaymentSuccess}
           paymentMethod={paymentMethod}
+          isLoading={isBooking}
         />
       )}
 
-      {/* Vehicle Header Section */}
       <header className="transport-header">
         <h1 className="transport-title">
           <div className='transport-name'>{transport.brand} {transport.model}</div>
@@ -312,7 +356,6 @@ const TransportDetails = () => {
         </div>
       </header>
 
-      {/* Vehicle Gallery Section */}
       <section className="transport-gallery">
         <div className="transport-gallery__main">
           <img
@@ -321,6 +364,7 @@ const TransportDetails = () => {
             className="transport-gallery__main-image"
             loading="lazy"
             onError={(e) => {
+              console.error('Failed to load main image:', mainImage);
               e.target.src = assets.defaultTransportImage;
             }}
           />
@@ -340,6 +384,7 @@ const TransportDetails = () => {
                   className="transport-gallery__thumbnail-image"
                   loading="lazy"
                   onError={(e) => {
+                    console.error('Failed to load thumbnail:', img);
                     e.target.src = assets.defaultTransportImage;
                   }}
                 />
@@ -349,10 +394,8 @@ const TransportDetails = () => {
         )}
       </section>
 
-      {/* Main Content Area */}
       <div className="transport-content">
         <section className="transport-specs">
-          {/* Vehicle Specifications */}
           <div className="transport-Content">
             <h2 className="transport-section-title">Vehicle Specifications</h2>
             <div className="specs-grid">
@@ -402,7 +445,6 @@ const TransportDetails = () => {
               </div>
             </div>
 
-            {/* Features Section */}
             {transport.features && transport.features.length > 0 && (
               <div className="specs-item">
                 <h3 className="specs-title">Features</h3>
@@ -416,13 +458,11 @@ const TransportDetails = () => {
               </div>
             )}
 
-            {/* Address */}
             <div className="address-section">
               <h3 className="specs-title">Address</h3>
               <p className="specs-text">{transport.address}</p>
             </div>
 
-            {/* Description Section */}
             <div className="description-section">
               <h3 className="specs-title">Description</h3>
               <p className="specs-text">
@@ -431,7 +471,6 @@ const TransportDetails = () => {
             </div>
           </div>
 
-          {/* Map Section */}
           <div className="transport-Content map">
             <h3 className="transport-section-title">Location</h3>
             <div className="map-container">
@@ -443,7 +482,6 @@ const TransportDetails = () => {
             </div>
           </div>
 
-          {/* Reviews Section */}
           <section className="transport-Content transport-reviews">
             <h2 className="transport-section-title">Reviews</h2>
 
@@ -454,7 +492,6 @@ const TransportDetails = () => {
                 <span>{transport.totalReviews || 0} review{transport.totalReviews !== 1 ? 's' : ''}</span>
               </div>
 
-              {/* Rating Distribution */}
               <div className="rating-distribution">
                 {[5, 4, 3, 2, 1].map(star => {
                   const count = transport.ratingCount?.[star] || 0;
@@ -479,12 +516,11 @@ const TransportDetails = () => {
             </div>
           </section>
 
-          {/* Owner Section */}
           <section className="transport-Content transport-host">
             <h2 className="transport-section-title">Vehicle Owner</h2>
             <div className="host-profile">
               <img
-                src={owner?.profile_pic || assets.defaultAvatar}
+                src={owner?.profile_pic ? processVehicleImages([owner.profile_pic])[0] : assets.defaultAvatar}
                 alt={`${owner?.displayName || owner?.fullName}'s profile`}
                 className="host-avatar"
                 onError={(e) => {
@@ -519,7 +555,6 @@ const TransportDetails = () => {
           </section>
         </section>
 
-        {/* Right Column - Booking Card */}
         <aside className="transport-booking">
           <div className="booking-card">
             <div className="booking-card-header">
@@ -594,7 +629,7 @@ const TransportDetails = () => {
               <div className="booking-summary__item booking-summary__item--total">
                 <span>Total Amount:</span>
                 <span>Rs {totalDays > 0
-                  ? (totalCost + transport.deposit_amount).toLocaleString()
+                  ? (totalCost + (transport.deposit_amount || 0)).toLocaleString()
                   : 0}</span>
               </div>
             </div>
@@ -606,11 +641,12 @@ const TransportDetails = () => {
             <button
               className={`booking-button ${!transport.isAvailable ? 'booking-button--disabled' : ''}`}
               onClick={handleBookNow}
-              disabled={!transport.isAvailable || totalDays === 0 || transport.status !== 'Active'}
+              disabled={!transport.isAvailable || totalDays === 0 || transport.status !== 'Active' || isBooking}
             >
-              {!transport.isAvailable ? 'Not Available' :
-                transport.status !== 'Active' ? transport.status :
-                  'Book Now'}
+              {isBooking ? 'Processing...' : 
+               !transport.isAvailable ? 'Not Available' :
+               transport.status !== 'Active' ? transport.status :
+               'Book Now'}
             </button>
 
             {transport.status !== 'Active' && (

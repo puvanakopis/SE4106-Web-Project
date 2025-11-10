@@ -128,7 +128,6 @@ const transportSchema = new mongoose.Schema({
     }
 });
 
-// Auto-generate ID
 transportSchema.pre("save", async function (next) {
     const doc = this;
 
@@ -140,7 +139,7 @@ transportSchema.pre("save", async function (next) {
                 { new: true, upsert: true }
             );
 
-            const seqNumber = String(counter.seq).padStart(4, "0");
+            const seqNumber = String(counter.seq).padStart(2, "0");
             doc._id = `transport_${seqNumber}`;
             next();
         } catch (err) {
