@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { assets, vehicleData } from '../../Assets/assets';
+import { assets } from '../../Assets/assets';
 import { useBookings } from '../../Context/BookingContext';
 import { AuthContext } from '../../Context/AuthContext';
 import StarRating from '../../Components/Rating/StarRating';
@@ -11,28 +11,13 @@ import PaymentPopup from '../../Components/PaymentPopup/PaymentPopup';
 import OwnerDetails from '../OwnerDetails';
 import './TransportDetails.css';
 
-// Default owner data structure
-const defaultOwner = {
-  name: 'Vehicle Owner',
-  email: 'contact@example.com',
-  phone: '+1 (555) 123-4567',
-  joinDate: '2020-05-15',
-  avatar: assets.hostIcon,
-  rating: 4.8,
-  reviews: 42,
-};
-
 const TransportDetails = () => {
-  // Router hooks
   const { id } = useParams();
   const navigate = useNavigate();
-
-  // Context hooks
   const { addBooking } = useBookings();
-  const { isLoggedIn, user } = useContext(AuthContext);
+  const { isLoggedIn, user, token } = useContext(AuthContext);
 
-  // State management
-  const [vehicle, setVehicle] = useState(null);
+  const [transport, setTransport] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -42,37 +27,84 @@ const TransportDetails = () => {
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
-  const [ownerData, setOwnerData] = useState(defaultOwner);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [isBooking, setIsBooking] = useState(false);
 
-  // Fetch vehicle data on component mount
-  useEffect(() => {
-    const fetchVehicleData = async () => {
-      try {
-        setIsLoading(true);
-        const foundVehicle = vehicleData.find(v => v.vehicle_id === id);
+  const API_BASE_URL = 'http://localhost:5000';
 
-        if (foundVehicle) {
-          setVehicle(foundVehicle);
-          setMainImage(foundVehicle.vehicle_images[0]);
-          setOwnerData({
-            ...defaultOwner,
-            ...foundVehicle.owner
-          });
-        } else {
-          throw new Error('Vehicle not found');
-        }
-      } catch (error) {
-        console.error('Error fetching vehicle data:', error);
-      } finally {
-        setIsLoading(false);
+  // Fixed image URL function - matches the logic from Transport.js
+  const processVehicleImages = (images) => {
+    if (!images || !Array.isArray(images)) {
+      return [assets.defaultTransportImage];
+    }
+    
+    return images.map(image => {
+      if (!image) return assets.defaultTransportImage;
+      
+      // If image already has full URL, return as is
+      if (image.startsWith('http')) {
+        return image;
       }
-    };
+      
+      // If image starts with /uploads, make it absolute path
+      if (image.startsWith('/uploads')) {
+        return `${API_BASE_URL}${image}`;
+      }
+      
+      // If it's just a filename, construct the path
+      return `${API_BASE_URL}/uploads/transports/${image}`;
+    });
+  };
 
-    fetchVehicleData();
+  const fetchTransportData = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      
+      const response = await fetch(`${API_BASE_URL}/api/transports/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch transport: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        const processedTransport = {
+          ...result.transport,
+          vehicle_images: processVehicleImages(result.transport.vehicle_images)
+        };
+        
+        setTransport(processedTransport);
+        
+        // Set main image
+        if (processedTransport.vehicle_images && processedTransport.vehicle_images.length > 0) {
+          setMainImage(processedTransport.vehicle_images[0]);
+        } else {
+          setMainImage(assets.defaultTransportImage);
+        }
+      } else {
+        throw new Error(result.message || 'Failed to fetch transport details');
+      }
+    } catch (error) {
+      console.error('Error fetching transport data:', error);
+      setError(error.message || 'Failed to load transport details');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransportData();
   }, [id]);
 
-  // Handle start date selection
   const handleStartDateChange = (date) => {
     setStartDate(date);
     setBookingError('');
@@ -88,7 +120,6 @@ const TransportDetails = () => {
     }
   };
 
-  // Handle end date selection
   const handleEndDateChange = (date) => {
     setEndDate(date);
     setBookingError('');
@@ -100,18 +131,16 @@ const TransportDetails = () => {
     }
   };
 
-  // Calculate total days and cost
   const calculateTotal = (start, end) => {
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     setTotalDays(diffDays);
-    if (vehicle) {
-      const cost = diffDays * vehicle.rental_price_per_day;
+    if (transport) {
+      const cost = diffDays * transport.rental_price_per_day;
       setTotalCost(cost);
     }
   };
 
-  // Handle book now button click
   const handleBookNow = () => {
     if (!isLoggedIn) {
       navigate('/login', { state: { from: `/transport/${id}` } });
@@ -130,39 +159,91 @@ const TransportDetails = () => {
     setShowPaymentPopup(true);
   };
 
-  // Handle successful payment
-  const handlePaymentSuccess = () => {
-    const newBooking = {
-      id: `t-${Date.now()}`,
-      type: 'transport',
-      item: vehicle,
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
-      status: 'confirmed',
-      totalPrice: totalCost,
-      bookingDate: new Date().toISOString().split('T')[0],
-      paymentMethod: paymentMethod,
-      userId: user.id
-    };
+  const createTransportBooking = async (paymentDetails = {}) => {
+    try {
+      setIsBooking(true);
+      
+      const bookingData = {
+        renter: user.id,
+        transport: id,
+        booking_start: startDate.toISOString(),
+        booking_end: endDate.toISOString(),
+        totalPrice: totalCost,
+        isPaid: true,
+        paymentMethod: paymentMethod,
+        ...paymentDetails
+      };
 
-    addBooking(newBooking);
-    setStartDate(null);
-    setEndDate(null);
-    setTotalDays(0);
-    setTotalCost(0);
-    setPaymentMethod('credit_card');
-    setShowPaymentPopup(false);
+      const response = await fetch(`${API_BASE_URL}/api/transport-bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to create booking');
+      }
+
+      if (result.success) {
+        const newBooking = {
+          id: result.booking._id || `t-${Date.now()}`,
+          type: 'transport',
+          item: transport,
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
+          status: result.booking.booking_status || 'confirmed',
+          totalPrice: totalCost,
+          bookingDate: new Date().toISOString().split('T')[0],
+          paymentMethod: paymentMethod,
+          userId: user.id,
+          bookingId: result.booking._id
+        };
+
+        addBooking(newBooking);
+
+        setStartDate(null);
+        setEndDate(null);
+        setTotalDays(0);
+        setTotalCost(0);
+        setPaymentMethod('credit_card');
+        setShowPaymentPopup(false);
+
+        alert('Booking confirmed successfully!');
+        
+      } else {
+        throw new Error(result.message || 'Booking failed');
+      }
+
+    } catch (error) {
+      console.error('Booking creation error:', error);
+      setBookingError(error.message || 'Failed to complete booking. Please try again.');
+    } finally {
+      setIsBooking(false);
+    }
   };
 
-  // Handle contact owner button click
+  const handlePaymentSuccess = async (paymentData = {}) => {
+    try {
+      await createTransportBooking(paymentData);
+    } catch (error) {
+      console.error('Payment success handling error:', error);
+      setBookingError('Failed to process booking after payment. Please contact support.');
+    }
+  };
+
   const handleContactOwner = () => {
     if (!isLoggedIn) {
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
 
-    if (!vehicle?.owner) {
-      console.warn('No owner data available for this vehicle');
+    if (!transport?.owner_id) {
+      console.warn('No owner data available for this transport');
       alert('Owner information is not currently available. Please try again later.');
       return;
     }
@@ -170,36 +251,51 @@ const TransportDetails = () => {
     setShowOwnerDetails(true);
   };
 
-  // Prepare booking details for payment popup
   const getBookingDetails = () => {
-    if (!vehicle) return null;
+    if (!transport) return null;
 
     return {
       type: 'transport',
-      itemName: `${vehicle.brand} ${vehicle.model}`,
+      itemName: `${transport.brand} ${transport.model}`,
       duration: `${totalDays} day${totalDays !== 1 ? 's' : ''}`,
-      totalAmount: totalDays > 0 ? totalCost + vehicle.deposit_amount : 0,
-      bookingId: `T-${Date.now()}`
+      totalAmount: totalDays > 0 ? totalCost + (transport.deposit_amount || 0) : 0,
+      bookingId: `T-${Date.now()}`,
+      dailyRate: transport.rental_price_per_day,
+      deposit: transport.deposit_amount || 0,
+      rentalCost: totalCost
     };
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="transport-loading">
         <div className="loading-spinner"></div>
-        <p>Loading vehicle details...</p>
+        <p>Loading transport details...</p>
       </div>
     );
   }
 
-  // Vehicle not found state
-  if (!vehicle) {
+  if (error) {
+    return (
+      <div className="transport-error">
+        <h2 className="transport-error__title">Error Loading Transport</h2>
+        <p className="transport-error__message">{error}</p>
+        <button
+          className="back-button"
+          onClick={() => navigate('/transport')}
+        >
+          Browse Available Vehicles
+        </button>
+      </div>
+    );
+  }
+
+  if (!transport) {
     return (
       <div className="transport-not-found">
-        <h2 className="transport-not-found__title">Vehicle not found</h2>
+        <h2 className="transport-not-found__title">Transport not found</h2>
         <p className="transport-not-found__message">
-          Please check the ID or go back to the transport list.
+          The transport you're looking for doesn't exist or has been removed.
         </p>
         <button
           className="back-button"
@@ -211,19 +307,19 @@ const TransportDetails = () => {
     );
   }
 
-  const images = vehicle.vehicle_images || [];
+  // Use processed images from transport state
+  const images = transport.vehicle_images || [];
+  const owner = transport.owner_id;
 
   return (
     <main className="transport-details">
-      {/* ---------------------------- Owner Details Modal ---------------------------- */}
       {showOwnerDetails && (
         <OwnerDetails
-          owner={ownerData}
+          owner={owner}
           onClose={() => setShowOwnerDetails(false)}
         />
       )}
 
-      {/* ---------------------------- Payment Popup Modal ---------------------------- */}
       {showPaymentPopup && (
         <PaymentPopup
           isOpen={showPaymentPopup}
@@ -231,171 +327,188 @@ const TransportDetails = () => {
           bookingDetails={getBookingDetails()}
           onPaymentSuccess={handlePaymentSuccess}
           paymentMethod={paymentMethod}
+          isLoading={isBooking}
         />
       )}
 
-      {/* ---------------------------- Vehicle Header Section ---------------------------- */}
       <header className="transport-header">
         <h1 className="transport-title">
-          <div className='transport-name'>{vehicle.brand} {vehicle.model}</div>
-          <div className="transport-type">{vehicle.vehicle_type}</div>
+          <div className='transport-name'>{transport.brand} {transport.model}</div>
+          <div className="transport-type">{transport.vehicle_type}</div>
         </h1>
 
         <div className="transport-meta">
-          <StarRating rating={vehicle.averageRating} />
-          <span className="transport-review-count">{vehicle.totalReviews || 200} + reviews</span>
+          <StarRating rating={transport.averageRating} />
+          <span className="transport-review-count">
+            {transport.totalReviews || 0} review{transport.totalReviews !== 1 ? 's' : ''}
+          </span>
+          {!transport.isAvailable && (
+            <span className="transport-status-badge">Not Available</span>
+          )}
+          {transport.status !== 'Active' && (
+            <span className="transport-status-badge">{transport.status}</span>
+          )}
         </div>
 
         <div className="transport-location">
           <img src={assets.locationIcon} alt="Location icon" className="transport-location__icon" />
-          <span className="transport-location__text">{vehicle.address}</span>
+          <span className="transport-location__text">{transport.address}</span>
         </div>
       </header>
 
-      {/* ---------------------------- Vehicle Gallery Section ---------------------------- */}
       <section className="transport-gallery">
         <div className="transport-gallery__main">
           <img
-            src={mainImage}
-            alt={`${vehicle.brand} ${vehicle.model}`}
+            src={mainImage || assets.defaultTransportImage}
+            alt={`${transport.brand} ${transport.model}`}
             className="transport-gallery__main-image"
             loading="lazy"
+            onError={(e) => {
+              console.error('Failed to load main image:', mainImage);
+              e.target.src = assets.defaultTransportImage;
+            }}
           />
         </div>
-        <div className="transport-gallery__thumbnails">
-          {images.slice(0, 4).map((img, index) => (
-            <button
-              key={index}
-              className={`transport-gallery__thumbnail ${mainImage === img ? 'transport-gallery__thumbnail--active' : ''}`}
-              onClick={() => setMainImage(img)}
-              aria-label={`View image ${index + 1}`}
-            >
-              <img
-                src={img}
-                alt={`Thumbnail ${index + 1}`}
-                className="transport-gallery__thumbnail-image"
-                loading="lazy"
-              />
-            </button>
-          ))}
-        </div>
+        {images.length > 0 && (
+          <div className="transport-gallery__thumbnails">
+            {images.slice(0, 4).map((img, index) => (
+              <button
+                key={index}
+                className={`transport-gallery__thumbnail ${mainImage === img ? 'transport-gallery__thumbnail--active' : ''}`}
+                onClick={() => setMainImage(img)}
+                aria-label={`View image ${index + 1}`}
+              >
+                <img
+                  src={img}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="transport-gallery__thumbnail-image"
+                  loading="lazy"
+                  onError={(e) => {
+                    console.error('Failed to load thumbnail:', img);
+                    e.target.src = assets.defaultTransportImage;
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* ---------------------------- Main Content Area ---------------------------- */}
       <div className="transport-content">
-
         <section className="transport-specs">
-          {/* ---------- Vehicle Specifications ---------- */}
           <div className="transport-Content">
             <h2 className="transport-section-title">Vehicle Specifications</h2>
             <div className="specs-grid">
               <div className="specs-item">
                 <span className="specs-title">Vehicle Type</span>
-                <span className="specs-value">{vehicle.vehicle_type}</span>
+                <span className="specs-value">{transport.vehicle_type}</span>
               </div>
 
               <div className="specs-item">
                 <span className="specs-title">Brand</span>
-                <span className="specs-value">{vehicle.brand}</span>
+                <span className="specs-value">{transport.brand}</span>
               </div>
 
               <div className="specs-item">
                 <span className="specs-title">Model</span>
-                <span className="specs-value">{vehicle.model}</span>
+                <span className="specs-value">{transport.model}</span>
               </div>
 
               <div className="specs-item">
                 <span className="specs-title">Year</span>
-                <span className="specs-value">{vehicle.year}</span>
+                <span className="specs-value">{transport.year}</span>
               </div>
 
               <div className="specs-item">
                 <span className="specs-title">Fuel Type</span>
-                <span className="specs-value">{vehicle.fuel_type}</span>
+                <span className="specs-value">{transport.fuel_type}</span>
               </div>
 
               <div className="specs-item">
                 <span className="specs-title">Seating Capacity</span>
-                <span className="specs-value">{vehicle.seating_capacity}</span>
+                <span className="specs-value">{transport.seating_capacity}</span>
               </div>
 
               <div className="specs-item">
                 <span className="specs-title">Registration Number</span>
-                <span className="specs-value">{vehicle.registration_number}</span>
+                <span className="specs-value">{transport.registration_number}</span>
               </div>
 
               <div className="specs-item">
                 <span className="specs-title">Daily Rate</span>
-                <span className="specs-value">Rs {vehicle.rental_price_per_day.toLocaleString()}</span>
+                <span className="specs-value">Rs {transport.rental_price_per_day?.toLocaleString()}</span>
+              </div>
+
+              <div className="specs-item">
+                <span className="specs-title">Security Deposit</span>
+                <span className="specs-value">Rs {transport.deposit_amount?.toLocaleString()}</span>
               </div>
             </div>
 
-            {/* Features Section */}
-            <div className="specs-item">
-              <h3 className="specs-title">Features</h3>
-              <div className="features-list ">
-                {vehicle.features?.map((item, index) => (
-                  <div key={index} className="specs-value">
-                    <span>{item}</span>
-                  </div>
-                ))}
+            {transport.features && transport.features.length > 0 && (
+              <div className="specs-item">
+                <h3 className="specs-title">Features</h3>
+                <div className="features-list">
+                  {transport.features.map((item, index) => (
+                    <div key={index} className="feature-item">
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Address */}
             <div className="address-section">
               <h3 className="specs-title">Address</h3>
-              <p className="specs-text">{vehicle.address}</p>
+              <p className="specs-text">{transport.address}</p>
             </div>
 
-            {/*  Description Section  */}
             <div className="description-section">
               <h3 className="specs-title">Description</h3>
               <p className="specs-text">
-                {vehicle.description || 'No description provided yet. Please check back later for more information.'}
+                {transport.description || 'No description provided yet. Please check back later for more information.'}
               </p>
             </div>
           </div>
 
-
-          {/* ---------- Map Section ---------- */}
           <div className="transport-Content map">
             <h3 className="transport-section-title">Location</h3>
             <div className="map-container">
               <GoogleMapEmbed
-                address={vehicle.address}
+                address={transport.address}
+                latitude={transport.location?.latitude}
+                longitude={transport.location?.longitude}
               />
             </div>
           </div>
 
-          {/* ---------- Reviews ----------  */}
           <section className="transport-Content transport-reviews">
             <h2 className="transport-section-title">Reviews</h2>
 
             <div className="reviews-summary">
               <div className="reviews-overview">
-                <span className="reviews-average">{vehicle.averageRating.toFixed(1)}</span>
-                <StarRating rating={vehicle.averageRating} />
-                <span>{vehicle.totalReviews} + reviews</span>
+                <span className="reviews-average">{transport.averageRating?.toFixed(1) || '0.0'}</span>
+                <StarRating rating={transport.averageRating} />
+                <span>{transport.totalReviews || 0} review{transport.totalReviews !== 1 ? 's' : ''}</span>
               </div>
 
-              {/* Rating Distribution */}
               <div className="rating-distribution">
                 {[5, 4, 3, 2, 1].map(star => {
-                  const count = vehicle.ratingCount[star] || 0;
-                  const percentage = vehicle.totalReviews
-                    ? (count / vehicle.totalReviews) * 100
+                  const count = transport.ratingCount?.[star] || 0;
+                  const percentage = transport.totalReviews
+                    ? (count / transport.totalReviews) * 100
                     : 0;
 
                   return (
                     <div className="rating-row" key={star}>
-                      <span className="star-label">{star}</span>
+                      <span className="star-label">{star} star{star !== 1 ? 's' : ''}</span>
                       <div className="bar-container">
                         <div
                           className="bar-fill"
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
+                      <span className="rating-count">({count})</span>
                     </div>
                   );
                 })}
@@ -403,22 +516,33 @@ const TransportDetails = () => {
             </div>
           </section>
 
-
-          {/* ---------- Owner ---------- */}
           <section className="transport-Content transport-host">
             <h2 className="transport-section-title">Vehicle Owner</h2>
             <div className="host-profile">
               <img
-                src={ownerData.profile_pic || assets.defaultAvatar}
-                alt={`${ownerData.DisplayName}'s profile`}
+                src={owner?.profile_pic ? processVehicleImages([owner.profile_pic])[0] : assets.defaultAvatar}
+                alt={`${owner?.displayName || owner?.fullName}'s profile`}
                 className="host-avatar"
+                onError={(e) => {
+                  e.target.src = assets.defaultAvatar;
+                }}
               />
               <div className="host-info">
-                <h4 className="host-name">Owned by {ownerData.DisplayName}</h4>
-                <div className="host-rating">
-                  <StarRating rating={ownerData.averageRating} size="small" />
-                  <span>{ownerData.totalReviews} + reviews</span>
-                </div>
+                <h4 className="host-name">
+                  Owned by {owner?.displayName || owner?.fullName || 'Vehicle Owner'}
+                </h4>
+                {owner?.averageRating && (
+                  <div className="host-rating">
+                    <StarRating rating={owner.averageRating} size="small" />
+                    <span>{owner.totalReviews || 0} review{owner.totalReviews !== 1 ? 's' : ''}</span>
+                  </div>
+                )}
+                {owner?.phoneNumber && (
+                  <div className="host-phone">
+                    <img src={assets.phoneIcon} alt="Phone" className="host-phone-icon" />
+                    <span>{owner.phoneNumber}</span>
+                  </div>
+                )}
               </div>
             </div>
             <button
@@ -431,11 +555,14 @@ const TransportDetails = () => {
           </section>
         </section>
 
-        {/* ---------------------------- Right Column - Booking Card ---------------------------- */}
         <aside className="transport-booking">
           <div className="booking-card">
-            <div className="transport-section-title">
-              Booking
+            <div className="booking-card-header">
+              <h3 className="transport-section-title">Booking</h3>
+              <div className="booking-price">
+                Rs {transport.rental_price_per_day?.toLocaleString()}
+                <span className="price-period"> / day</span>
+              </div>
             </div>
 
             <div className="booking-dates">
@@ -489,7 +616,7 @@ const TransportDetails = () => {
               </div>
               <div className="booking-summary__item">
                 <span>Daily Rate:</span>
-                <span>Rs {vehicle.rental_price_per_day.toLocaleString()}</span>
+                <span>Rs {transport.rental_price_per_day?.toLocaleString()}</span>
               </div>
               <div className="booking-summary__item booking-summary__item--subtotal">
                 <span>Subtotal:</span>
@@ -497,27 +624,36 @@ const TransportDetails = () => {
               </div>
               <div className="booking-summary__item">
                 <span>Security Deposit:</span>
-                <span>Rs {vehicle.deposit_amount.toLocaleString()}</span>
+                <span>Rs {transport.deposit_amount?.toLocaleString()}</span>
               </div>
               <div className="booking-summary__item booking-summary__item--total">
                 <span>Total Amount:</span>
                 <span>Rs {totalDays > 0
-                  ? (totalCost + vehicle.deposit_amount).toLocaleString()
+                  ? (totalCost + (transport.deposit_amount || 0)).toLocaleString()
                   : 0}</span>
               </div>
             </div>
 
             <div className="booking-deposit">
-              <span>Security Deposit: Rs {vehicle.deposit_amount.toLocaleString()} (refundable when vehicle is returned)</span>
+              <span>Security Deposit: Rs {transport.deposit_amount?.toLocaleString()} (refundable when vehicle is returned)</span>
             </div>
 
             <button
-              className="booking-button"
+              className={`booking-button ${!transport.isAvailable ? 'booking-button--disabled' : ''}`}
               onClick={handleBookNow}
-              disabled={!vehicle.isAvailable || totalDays === 0}
+              disabled={!transport.isAvailable || totalDays === 0 || transport.status !== 'Active' || isBooking}
             >
-              {vehicle.isAvailable ? 'Book Now' : 'Not Available'}
+              {isBooking ? 'Processing...' : 
+               !transport.isAvailable ? 'Not Available' :
+               transport.status !== 'Active' ? transport.status :
+               'Book Now'}
             </button>
+
+            {transport.status !== 'Active' && (
+              <div className="booking-notice">
+                This vehicle is currently {transport.status.toLowerCase()}.
+              </div>
+            )}
           </div>
         </aside>
       </div>

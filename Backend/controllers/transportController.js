@@ -4,7 +4,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const uploadPath = path.join(__dirname, '../uploads/transports');
@@ -37,7 +36,6 @@ const upload = multer({
 });
 
 const uploadTransportImages = upload.array('vehicle_images', 10);
-
 
 const createTransport = async (req, res) => {
     try {
@@ -86,9 +84,11 @@ const createTransport = async (req, res) => {
             if (req.files && req.files.length > 0) {
                 const updatedImages = [];
 
-                for (const file of req.files) {
+                for (let i = 0; i < req.files.length; i++) {
+                    const file = req.files[i];
                     const oldPath = file.path;
-                    const newFilename = transport._id + '-' + Date.now() + path.extname(file.originalname);
+                    const imageNumber = i + 1;
+                    const newFilename = `${transport._id}_${imageNumber}${path.extname(file.originalname)}`;
                     const newPath = path.join(path.dirname(oldPath), newFilename);
 
                     try {
@@ -143,7 +143,6 @@ const createTransport = async (req, res) => {
         });
     }
 };
-
 
 const getTransports = async (req, res) => {
     try {
@@ -204,7 +203,6 @@ const getTransports = async (req, res) => {
     }
 };
 
-
 const getTransport = async (req, res) => {
     try {
         const transport = await Transport.findById(req.params.id)
@@ -223,7 +221,6 @@ const getTransport = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
-
 
 const getTransportsByOwner = async (req, res) => {
     try {
@@ -254,7 +251,6 @@ const getTransportsByOwner = async (req, res) => {
     }
 };
 
-
 const updateTransport = async (req, res) => {
     try {
         uploadTransportImages(req, res, async function (err) {
@@ -276,14 +272,28 @@ const updateTransport = async (req, res) => {
             }
 
             if (req.files && req.files.length > 0) {
-                const newImages = req.files.map(file =>
-                    `/uploads/transports/${path.basename(file.path)}`
-                );
+                const transport = await Transport.findById(req.params.id);
+                const existingImagesCount = transport ? transport.vehicle_images.length : 0;
+                const newImages = [];
+
+                for (let i = 0; i < req.files.length; i++) {
+                    const file = req.files[i];
+                    const imageNumber = existingImagesCount + i + 1;
+                    const newFilename = `${req.params.id}_${imageNumber}${path.extname(file.originalname)}`;
+                    const newPath = path.join(path.dirname(file.path), newFilename);
+
+                    try {
+                        fs.renameSync(file.path, newPath);
+                        newImages.push(`/uploads/transports/${newFilename}`);
+                    } catch (renameErr) {
+                        console.error('Error renaming file:', renameErr);
+                        newImages.push(`/uploads/transports/${path.basename(file.path)}`);
+                    }
+                }
 
                 if (updateData.replaceImages === 'true') {
                     const existingTransport = await Transport.findById(req.params.id);
                     if (existingTransport && existingTransport.vehicle_images) {
-
                         existingTransport.vehicle_images.forEach(imagePath => {
                             const fullPath = path.join(__dirname, '..', imagePath);
                             if (fs.existsSync(fullPath)) {
@@ -293,7 +303,6 @@ const updateTransport = async (req, res) => {
                     }
                     updateData.vehicle_images = newImages;
                 } else {
-
                     const existingTransport = await Transport.findById(req.params.id);
                     const existingImages = existingTransport ? existingTransport.vehicle_images : [];
                     updateData.vehicle_images = [...existingImages, ...newImages];
@@ -307,7 +316,6 @@ const updateTransport = async (req, res) => {
             ).populate('owner_id', 'fullName displayName profile_pic phoneNumber email averageRating totalReviews');
 
             if (!transport) {
-
                 if (req.files && req.files.length > 0) {
                     req.files.forEach(file => {
                         if (fs.existsSync(file.path)) {
@@ -356,7 +364,6 @@ const updateTransport = async (req, res) => {
     }
 };
 
-
 const deleteTransport = async (req, res) => {
     try {
         const transport = await Transport.findById(req.params.id);
@@ -379,7 +386,7 @@ const deleteTransport = async (req, res) => {
             if (fs.existsSync(uploadDir)) {
                 const files = fs.readdirSync(uploadDir);
                 files.forEach(file => {
-                    if (file.startsWith(req.params.id + '-')) {
+                    if (file.startsWith(req.params.id + '_')) {
                         try {
                             fs.unlinkSync(path.join(uploadDir, file));
                         } catch (cleanupErr) {
@@ -404,7 +411,6 @@ const deleteTransport = async (req, res) => {
         });
     }
 };
-
 
 const updateTransportRating = async (req, res) => {
     try {
@@ -451,7 +457,6 @@ const updateTransportRating = async (req, res) => {
     }
 };
 
-
 const deleteTransportImage = async (req, res) => {
     try {
         const { id, imageIndex } = req.params;
@@ -479,6 +484,25 @@ const deleteTransportImage = async (req, res) => {
         }
 
         transport.vehicle_images.splice(index, 1);
+        
+        // Rename remaining images to maintain proper numbering
+        for (let i = 0; i < transport.vehicle_images.length; i++) {
+            const oldImagePath = transport.vehicle_images[i];
+            const oldFullPath = path.join(__dirname, '..', oldImagePath);
+            const newFilename = `${id}_${i + 1}${path.extname(oldImagePath)}`;
+            const newImagePath = `/uploads/transports/${newFilename}`;
+            const newFullPath = path.join(__dirname, '..', newImagePath);
+            
+            if (fs.existsSync(oldFullPath)) {
+                try {
+                    fs.renameSync(oldFullPath, newFullPath);
+                    transport.vehicle_images[i] = newImagePath;
+                } catch (renameErr) {
+                    console.error('Error renaming file during renumbering:', renameErr);
+                }
+            }
+        }
+        
         await transport.save();
 
         res.json({
@@ -495,6 +519,191 @@ const deleteTransportImage = async (req, res) => {
     }
 };
 
+const updateTransportAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isAvailable } = req.body;
+
+        if (typeof isAvailable !== 'boolean') {
+            return res.status(400).json({
+                success: false,
+                message: "isAvailable must be a boolean value"
+            });
+        }
+
+        const transport = await Transport.findByIdAndUpdate(
+            id,
+            {
+                isAvailable,
+                lastUpdated: Date.now()
+            },
+            { new: true, runValidators: true }
+        ).populate('owner_id', 'fullName displayName profile_pic phoneNumber email');
+
+        if (!transport) {
+            return res.status(404).json({
+                success: false,
+                message: "Transport not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `Transport ${isAvailable ? 'marked as available' : 'marked as unavailable'}`,
+            transport
+        });
+    } catch (error) {
+        console.error("Update transport availability error:", error);
+
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
+            return res.status(400).json({
+                success: false,
+                message: messages.join(', ')
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+const updateTransportStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const validStatuses = ["Active", "Inactive", "Blocked"];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Status must be one of: Active, Inactive, Blocked"
+            });
+        }
+
+        const transport = await Transport.findByIdAndUpdate(
+            id,
+            {
+                status,
+                lastUpdated: Date.now()
+            },
+            { new: true, runValidators: true }
+        ).populate('owner_id', 'fullName displayName profile_pic phoneNumber email');
+
+        if (!transport) {
+            return res.status(404).json({
+                success: false,
+                message: "Transport not found"
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `Transport status updated to ${status}`,
+            transport
+        });
+    } catch (error) {
+        console.error("Update transport status error:", error);
+
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
+            return res.status(400).json({
+                success: false,
+                message: messages.join(', ')
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+const toggleTransportAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const transport = await Transport.findById(id);
+        if (!transport) {
+            return res.status(404).json({
+                success: false,
+                message: "Transport not found"
+            });
+        }
+
+        const newAvailability = !transport.isAvailable;
+
+        transport.isAvailable = newAvailability;
+        transport.lastUpdated = Date.now();
+        await transport.save();
+
+        await transport.populate('owner_id', 'fullName displayName profile_pic phoneNumber email');
+
+        res.json({
+            success: true,
+            message: `Transport ${newAvailability ? 'marked as available' : 'marked as unavailable'}`,
+            transport
+        });
+    } catch (error) {
+        console.error("Toggle transport availability error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+const getTransportStats = async (req, res) => {
+    try {
+        const totalTransports = await Transport.countDocuments();
+        const availableTransports = await Transport.countDocuments({ isAvailable: true });
+        const activeTransports = await Transport.countDocuments({ status: "Active" });
+        const blockedTransports = await Transport.countDocuments({ status: "Blocked" });
+
+        const typeStats = await Transport.aggregate([
+            {
+                $group: {
+                    _id: "$vehicle_type",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const statusStats = await Transport.aggregate([
+            {
+                $group: {
+                    _id: "$status",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        res.json({
+            success: true,
+            stats: {
+                totalTransports,
+                availableTransports,
+                occupiedTransports: totalTransports - availableTransports,
+                activeTransports,
+                blockedTransports,
+                inactiveTransports: await Transport.countDocuments({ status: "Inactive" }),
+                typeStats,
+                statusStats,
+                occupancyRate: totalTransports > 0 ? ((totalTransports - availableTransports) / totalTransports * 100).toFixed(2) : 0
+            }
+        });
+    } catch (error) {
+        console.error("Get transport stats error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
 module.exports = {
     createTransport,
     getTransports,
@@ -504,5 +713,10 @@ module.exports = {
     deleteTransport,
     updateTransportRating,
     deleteTransportImage,
+    uploadTransportImages,
+    updateTransportAvailability,
+    updateTransportStatus,
+    toggleTransportAvailability,
+    getTransportStats,
     uploadTransportImages
 };

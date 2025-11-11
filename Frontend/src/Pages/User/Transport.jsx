@@ -17,6 +17,11 @@ const Transport = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [showSavedNotification, setShowSavedNotification] = useState(false);
+  
+  // Backend data states
+  const [transports, setTransports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   // Search and filter states
   const [searchName, setSearchName] = useState('');
@@ -25,7 +30,7 @@ const Transport = () => {
   const [searchMaxPrice, setSearchMaxPrice] = useState('');
 
   // Filter options
-  const vehicleTypes = ['Motorbike', 'Car', 'Van', 'Bus'];
+  const vehicleTypes = ['Motorbike', 'Car', 'Scooter', 'Bicycle', 'Van', 'Truck', 'Other'];
   const priceRanges = ['0 to 2000', '2000 to 4000', '4000 to 6000'];
   const sortOptions = ['Price Low to High', 'Price High to Low', 'Seating Capacity'];
 
@@ -37,13 +42,78 @@ const Transport = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const transportsPerPage = 9;
 
+  // Fetch transports from backend
+  useEffect(() => {
+    const fetchTransports = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/api/transports');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch transports');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Process images to ensure full URLs
+          const processedTransports = data.transports.map(transport => ({
+            ...transport,
+            vehicle_images: processVehicleImages(transport.vehicle_images)
+          }));
+          setTransports(processedTransports);
+        } else {
+          throw new Error(data.message || 'Failed to fetch transports');
+        }
+      } catch (err) {
+        console.error('Error fetching transports:', err);
+        setError(err.message);
+        // Fallback to mock data if backend fails
+        const processedMockData = vehicleData.map(vehicle => ({
+          ...vehicle,
+          vehicle_images: processVehicleImages(vehicle.vehicle_images)
+        }));
+        setTransports(processedMockData);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransports();
+  }, []);
+
+  // Helper function to process vehicle images
+  const processVehicleImages = (images) => {
+    if (!images || !Array.isArray(images)) {
+      return ['/default-vehicle-image.jpg'];
+    }
+    
+    return images.map(image => {
+      if (!image) return '/default-vehicle-image.jpg';
+      
+      // If image already has full URL, return as is
+      if (image.startsWith('http')) {
+        return image;
+      }
+      
+      // If image starts with /uploads, make it absolute path
+      if (image.startsWith('/uploads')) {
+        return `http://localhost:5000${image}`;
+      }
+      
+      // If it's just a filename, construct the path
+      return `http://localhost:5000/uploads/transports/${image}`;
+    });
+  };
+
   // Filter and sort vehicles
   const filteredTransports = useMemo(() => {
-    let result = [...vehicleData];
+    let result = [...transports];
 
     if (searchName.trim()) {
       result = result.filter(vehicle =>
-        `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchName.toLowerCase())
+        `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchName.toLowerCase()) ||
+        vehicle.address.toLowerCase().includes(searchName.toLowerCase())
       );
     }
 
@@ -90,6 +160,7 @@ const Transport = () => {
 
     return result;
   }, [
+    transports,
     searchName, 
     searchType, 
     searchMinPrice, 
@@ -158,7 +229,7 @@ const Transport = () => {
   };
 
   const handleVehicleClick = (vehicleId) => {
-    navigate(`/vehicle/${vehicleId}`);
+    navigate(`/transport/${vehicleId}`);
   };
 
   // Notification effect
@@ -180,6 +251,25 @@ const Transport = () => {
     !searchMinPrice &&
     !searchMaxPrice
   );
+
+  if (loading) {
+    return (
+      <div className="transport-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading available vehicles...</p>
+      </div>
+    );
+  }
+
+  if (error && transports.length === 0) {
+    return (
+      <div className="transport-error">
+        <h3>Error loading vehicles</h3>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>Try Again</button>
+      </div>
+    );
+  }
 
   return (
     <div className="transport">
@@ -243,11 +333,20 @@ const Transport = () => {
               <div className="transports-grid">
                 {paginatedTransports.map(vehicle => (
                   <TransportCard
-                    key={vehicle.vehicle_id}
-                    vehicle={vehicle}
-                    saved={savedVehicles.includes(vehicle.vehicle_id)}
+                    key={vehicle._id}
+                    vehicle={{
+                      ...vehicle,
+                      vehicle_id: vehicle._id,
+                      // Ensure all required fields are present
+                      averageRating: vehicle.averageRating || 0,
+                      totalReviews: vehicle.totalReviews || 0,
+                      isAvailable: vehicle.isAvailable !== false,
+                      // Process images for this specific vehicle
+                      vehicle_images: processVehicleImages(vehicle.vehicle_images)
+                    }}
+                    saved={savedVehicles.includes(vehicle._id)}
                     onSave={toggleSaveVehicle}
-                    onClick={() => handleVehicleClick(vehicle.vehicle_id)}
+                    onClick={() => handleVehicleClick(vehicle._id)}
                   />
                 ))}
               </div>
