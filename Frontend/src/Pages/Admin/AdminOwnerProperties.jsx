@@ -1,9 +1,9 @@
 import './AdminOwnerProperties.css';
-import { roomsData, vehicleData } from '../../Assets/assets';
+import { accommodationsData, vehicleData } from '../../Assets/assets';
 
-const AdminOwnerProperties = ({ owner, onClose, onEdit, onDelete, onBlockToggle, onAddRoom, onAddTransport }) => {
-  // Filter rooms owned by this specific owner
-  const ownedRooms = roomsData.filter(room => room.owner.id === owner.id);
+const AdminOwnerProperties = ({ owner, onClose, onEdit, onDelete, onBlockToggle, onAddAccommodation, onAddTransport }) => {
+  // Filter accommodations owned by this specific owner
+  const ownedAccommodations = accommodationsData.filter(accommodation => accommodation.owner.id === owner.id);
   
   // Filter vehicles owned by this specific owner
   const ownedTransports = vehicleData.filter(vehicle => vehicle.owner.id === owner.id);
@@ -34,14 +34,14 @@ const AdminOwnerProperties = ({ owner, onClose, onEdit, onDelete, onBlockToggle,
         
         <div className="properties-section">
           <div className="section-header">
-            <h3>Owned Rooms ({ownedRooms.length})</h3>
-            <button className="add-button" onClick={onAddRoom}>+ Add Room</button>
+            <h3>Owned Accommodations ({ownedAccommodations.length})</h3>
+            <button className="add-button" onClick={onAddAccommodation}>+ Add Accommodation</button>
           </div>
-          {ownedRooms.length > 0 ? (
+          {ownedAccommodations.length > 0 ? (
             <table className="properties-table">
               <thead>
                 <tr>
-                  <th>Room Name</th>
+                  <th>Accommodation Name</th>
                   <th>Type</th>
                   <th>Price/Month</th>
                   <th>Location</th>
@@ -50,30 +50,30 @@ const AdminOwnerProperties = ({ owner, onClose, onEdit, onDelete, onBlockToggle,
                 </tr>
               </thead>
               <tbody>
-                {ownedRooms.map(room => (
-                  <tr key={room._id}>
-                    <td>{room.roomName}</td>
-                    <td>{room.roomType}</td>
-                    <td>Rs. {room.pricePerMonth.toLocaleString()}</td>
-                    <td className="location-cell">{room.location}</td>
+                {ownedAccommodations.map(accommodation => (
+                  <tr key={accommodation._id}>
+                    <td>{accommodation.accommodationName}</td>
+                    <td>{accommodation.accommodationType}</td>
+                    <td>Rs. {accommodation.pricePerMonth.toLocaleString()}</td>
+                    <td className="location-cell">{accommodation.location}</td>
                     <td>
-                      <span className={`status-badge ${room.isAvailable ? 'available' : 'occupied'}`}>
-                        {room.isAvailable ? 'Available' : 'Occupied'}
+                      <span className={`status-badge ${accommodation.isAvailable ? 'available' : 'occupied'}`}>
+                        {accommodation.isAvailable ? 'Available' : 'Occupied'}
                       </span>
-                      {room.Status === "Blocked" && <span className="blocked-badge">Blocked</span>}
+                      {accommodation.Status === "Blocked" && <span className="blocked-badge">Blocked</span>}
                     </td>
                     <td className="actions-cell">
-                      <button className="action-button edit" onClick={() => onEdit(room)}>
+                      <button className="action-button edit" onClick={() => onEdit(accommodation)}>
                         Edit
                       </button>
-                      <button className="action-button delete" onClick={() => onDelete(room._id, 'room')}>
+                      <button className="action-button delete" onClick={() => onDelete(accommodation._id, 'accommodation')}>
                         Delete
                       </button>
                       <button 
-                        className={`action-button ${room.isAvailable ? 'block' : 'unblock'}`}
-                        onClick={() => onBlockToggle(room._id, 'room', !room.isAvailable)}
+                        className={`action-button ${accommodation.isAvailable ? 'block' : 'unblock'}`}
+                        onClick={() => onBlockToggle(accommodation._id, 'accommodation', !accommodation.isAvailable)}
                       >
-                        {room.isAvailable ? 'Block' : 'Unblock'}
+                        {accommodation.isAvailable ? 'Block' : 'Unblock'}
                       </button>
                     </td>
                   </tr>
@@ -81,7 +81,7 @@ const AdminOwnerProperties = ({ owner, onClose, onEdit, onDelete, onBlockToggle,
               </tbody>
             </table>
           ) : (
-            <p className="no-properties">No rooms owned by this user</p>
+            <p className="no-properties">No accommodations owned by this user</p>
           )}
         </div>
 

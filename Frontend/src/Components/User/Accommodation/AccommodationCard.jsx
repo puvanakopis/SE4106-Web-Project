@@ -2,28 +2,28 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import StarRating from '../../Rating/StarRating';
 import './AccommodationCard.css';
 
-const AccommodationCard = ({ room, saved, onSave, onClick }) => (
-  <article className="acc-room-card" onClick={onClick}>
+const AccommodationCard = ({ accommodation, saved, onSave, onClick }) => (
+  <article className="acc-accommodation-card" onClick={onClick}>
     
     
     {/* ------------- Image Section ------------- */}
-    <div className="room-image-container">
+    <div className="accommodation-image-container">
       <img
-        src={room.images[0]}
-        alt={`${room.name}`}
-        className="room-image"
+        src={accommodation.images[0]}
+        alt={`${accommodation.name}`}
+        className="accommodation-image"
         loading="lazy"
       />
-      <span className="room-badge">{room.roomType}</span>
+      <span className="accommodation-badge">{accommodation.accommodationType}</span>
 
       {/* Save Button */}
       <button
         className={`save-button ${saved ? 'saved' : ''}`}
         onClick={(e) => {
           e.stopPropagation();
-          onSave(room._id, e);
+          onSave(accommodation._id, e);
         }}
-        aria-label={saved ? 'Remove from saved' : 'Save this room'}
+        aria-label={saved ? 'Remove from saved' : 'Save this accommodation'}
       >
         {saved ? (
           <FaHeart className="icon-heart-filled" />
@@ -34,32 +34,32 @@ const AccommodationCard = ({ room, saved, onSave, onClick }) => (
     </div>
 
     {/* ------------- Content Section ------------- */}
-    <div className="room-simple-content">
+    <div className="accommodation-simple-content">
       {/* Title, Name, Address */}
-      <div className="room-main-info">
-        <h2 className="room-title">
-          {room.roomName}
+      <div className="accommodation-main-info">
+        <h2 className="accommodation-title">
+          {accommodation.accommodationName}
         </h2>
-        <div className="room-hotel-name">{room.location}</div>
+        <div className="accommodation-hotel-name">{accommodation.location}</div>
       </div>
 
       {/* Rating & Reviews */}
-      <div className="room-rating-reviews">
-        <StarRating rating={room.averageRating} />
-        <span className="reviews">{room.totalReviews} + reviews</span>
+      <div className="accommodation-rating-reviews">
+        <StarRating rating={accommodation.averageRating} />
+        <span className="reviews">{accommodation.totalReviews} + reviews</span>
       </div>
 
       {/* Amenities Preview */}
-      <div className="room-amenities-preview">
-        {room.amenities.slice(0, 3).map((item, index) => (
+      <div className="accommodation-amenities-preview">
+        {accommodation.amenities.slice(0, 3).map((item, index) => (
           <span key={index} className="amenity-tag">{item}</span>
         ))}
       </div>
 
       {/* Price & Button */}
-      <div className="room-bottom-row">
-        <div className="room-price-simple">
-          Rs {room.pricePerMonth.toLocaleString()}{' '}
+      <div className="accommodation-bottom-row">
+        <div className="accommodation-price-simple">
+          Rs {accommodation.pricePerMonth.toLocaleString()}{' '}
           <span className="price-period">/ month</span>
         </div>
         <button

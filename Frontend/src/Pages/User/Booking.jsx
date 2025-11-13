@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBookings } from '../../Context/BookingContext';
 import { AuthContext } from '../../Context/AuthContext';
-import Feedback from '../Feedback';
+import Feedback from './Feedback';
 import StarRating from '../../Components/Rating/StarRating';
 import './Booking.css';
 

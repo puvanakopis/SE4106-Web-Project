@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { assets } from '../Assets/assets';
+import { assets } from '../../Assets/assets';
 import './Feedback.css';
 
 const StarRating = ({ rating, size = 'medium' }) => {

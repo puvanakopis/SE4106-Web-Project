@@ -6,7 +6,7 @@ import { AuthContext } from '../Context/AuthContext';
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
- const navigator= useNavigate()
+  const navigator = useNavigate()
   const profileDropdownRef = useRef(null);
 
   const { isLoggedIn, user, logout } = useContext(AuthContext);
@@ -38,7 +38,7 @@ const Navbar = () => {
 
   const adminLinks = [
     { to: "/", label: "Dashboard" },
-    { to: "/room", label: "Room" },
+    { to: "/accommodation", label: "Accommodation" },
     { to: "/transport", label: "Transport" },
     { to: "/owner", label: "Owner" },
   ];
@@ -53,9 +53,7 @@ const Navbar = () => {
 
   const profileLinks = () => {
     if (!user) return [];
-    if (user.role === 'admin') {
-      return [{ to: "/profile", label: "Profile" }];
-    } else if (user.role === 'student' || user.role === 'lecturer') {
+    if (user.role === 'student' || user.role === 'lecturer') {
       return [
         { to: "/profile", label: "Profile" },
         { to: "/saved", label: "Saved" },

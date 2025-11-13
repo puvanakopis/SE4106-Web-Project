@@ -8,7 +8,7 @@ import { AuthContext } from '../../Context/AuthContext';
 import StarRating from '../../Components/Rating/StarRating';
 import GoogleMapEmbed from '../../Components/GoogleMap/GoogleMap';
 import PaymentPopup from '../../Components/PaymentPopup/PaymentPopup';
-import OwnerDetails from '../OwnerDetails';
+import OwnerDetails from './OwnerDetails';
 import './TransportDetails.css';
 
 const TransportDetails = () => {

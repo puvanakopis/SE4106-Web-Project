@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { roomsData, vehicleData, ownerData, upcomingBookings, pastBookings } from '../../Assets/assets';
+import { accommodationsData, vehicleData, ownerData, upcomingBookings, pastBookings } from '../../Assets/assets';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   // ----------------------- State Management -----------------------
-  const [rooms, setRooms] = useState([]);
-  const [roomBookings, setRoomBookings] = useState([]);
+  const [accommodations, setAccommodations] = useState([]);
+  const [accommodationBookings, setAccommodationBookings] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [vehicleBookings, setVehicleBookings] = useState([]);
   const [owners, setOwners] = useState([]);
@@ -21,15 +21,15 @@ const AdminDashboard = () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Set data from imported assets
-        setRooms(roomsData);
+        setAccommodations(accommodationsData);
         setVehicles(vehicleData);
         setOwners(ownerData);
 
         // Combine upcoming and past bookings
-        const allRoomBookings = [...upcomingBookings.roomBookings, ...pastBookings.roomBookings];
+        const allAccommodationBookings = [...upcomingBookings.accommodationBookings, ...pastBookings.accommodationBookings];
         const allVehicleBookings = [...upcomingBookings.vehicleBookings, ...pastBookings.vehicleBookings];
 
-        setRoomBookings(allRoomBookings);
+        setAccommodationBookings(allAccommodationBookings);
         setVehicleBookings(allVehicleBookings);
 
         setIsLoading(false);
@@ -43,17 +43,17 @@ const AdminDashboard = () => {
   }, []);
 
   // ----------------------- Data Processing -----------------------
-  const calculateRoomStats = () => {
-    const totalRooms = rooms.length;
-    const occupiedRooms = rooms.filter(room => !room.isAvailable).length;
-    const availableRooms = totalRooms - occupiedRooms;
-    const averageRating = rooms.reduce((sum, room) => sum + (room.averageRating || 0), 0) / totalRooms;
-    const averagePrice = rooms.reduce((sum, room) => sum + room.pricePerMonth, 0) / totalRooms;
+  const calculateAccommodationStats = () => {
+    const totalAccommodations = accommodations.length;
+    const occupiedAccommodations = accommodations.filter(accommodation => !accommodation.isAvailable).length;
+    const availableAccommodations = totalAccommodations - occupiedAccommodations;
+    const averageRating = accommodations.reduce((sum, accommodation) => sum + (accommodation.averageRating || 0), 0) / totalAccommodations;
+    const averagePrice = accommodations.reduce((sum, accommodation) => sum + accommodation.pricePerMonth, 0) / totalAccommodations;
 
     return {
-      totalRooms,
-      occupiedRooms,
-      availableRooms,
+      totalAccommodations,
+      occupiedAccommodations,
+      availableAccommodations,
       averageRating,
       averagePrice: Math.round(averagePrice)
     };
@@ -90,11 +90,11 @@ const AdminDashboard = () => {
   };
 
   const calculateBookingStats = () => {
-    const totalRoomBookings = roomBookings.length;
-    const confirmedRoomBookings = roomBookings.filter(b => b.booking_status === 'confirmed').length;
-    const canceledRoomBookings = roomBookings.filter(b => b.booking_status === 'canceled').length;
-    const completedRoomBookings = roomBookings.filter(b => b.booking_status === 'completed').length;
-    const roomRevenue = roomBookings.reduce((sum, booking) => sum + (booking.isPaid ? booking.totalPrice : 0), 0);
+    const totalAccommodationBookings = accommodationBookings.length;
+    const confirmedAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'confirmed').length;
+    const canceledAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'canceled').length;
+    const completedAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'completed').length;
+    const accommodationRevenue = accommodationBookings.reduce((sum, booking) => sum + (booking.isPaid ? booking.totalPrice : 0), 0);
 
     const totalVehicleBookings = vehicleBookings.length;
     const confirmedVehicleBookings = vehicleBookings.filter(b => b.booking_status === 'confirmed').length;
@@ -103,17 +103,17 @@ const AdminDashboard = () => {
     const vehicleRevenue = vehicleBookings.reduce((sum, booking) => sum + (booking.isPaid ? booking.totalPrice : 0), 0);
 
     return {
-      totalBookings: totalRoomBookings + totalVehicleBookings,
-      confirmedBookings: confirmedRoomBookings + confirmedVehicleBookings,
-      pendingBookings: canceledRoomBookings + canceledVehicleBookings,
-      completedBookings: completedRoomBookings + completedVehicleBookings,
-      totalRevenue: roomRevenue + vehicleRevenue,
-      roomStats: {
-        total: totalRoomBookings,
-        confirmed: confirmedRoomBookings,
-        pending: canceledRoomBookings,
-        completed: completedRoomBookings,
-        revenue: roomRevenue
+      totalBookings: totalAccommodationBookings + totalVehicleBookings,
+      confirmedBookings: confirmedAccommodationBookings + confirmedVehicleBookings,
+      pendingBookings: canceledAccommodationBookings + canceledVehicleBookings,
+      completedBookings: completedAccommodationBookings + completedVehicleBookings,
+      totalRevenue: accommodationRevenue + vehicleRevenue,
+      accommodationStats: {
+        total: totalAccommodationBookings,
+        confirmed: confirmedAccommodationBookings,
+        pending: canceledAccommodationBookings,
+        completed: completedAccommodationBookings,
+        revenue: accommodationRevenue
       },
       vehicleStats: {
         total: totalVehicleBookings,
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
     };
   };
 
-  const roomStats = calculateRoomStats();
+  const accommodationStats = calculateAccommodationStats();
   const vehicleStats = calculateVehicleStats();
   const ownerStats = calculateOwnerStats();
   const bookingStats = calculateBookingStats();
@@ -152,13 +152,13 @@ const AdminDashboard = () => {
   // ----------------------- Normalized Bookings Data -----------------------
   const getNormalizedBookings = () => {
     return [
-      ...roomBookings.map(booking => ({
+      ...accommodationBookings.map(booking => ({
         id: booking._id,
-        type: 'room',
+        type: 'accommodation',
         date: booking.booking_start,
         checkInDate: booking.booking_start,
         checkOutDate: booking.booking_end,
-        details: `${booking.room?.roomName || 'N/A'} (${booking.room?.roomType || 'N/A'})`,
+        details: `${booking.accommodation?.accommodationName || 'N/A'} (${booking.accommodation?.accommodationType || 'N/A'})`,
         customer: booking.renter?.displayNamename || 'N/A',
         days: booking.booking_start && booking.booking_end
           ? Math.ceil((new Date(booking.booking_end) - new Date(booking.booking_start)) / (1000 * 60 * 60 * 24))
@@ -186,11 +186,11 @@ const AdminDashboard = () => {
   // ----------------------- Recent Activities -----------------------
   const getRecentActivities = () => {
     return [
-      ...roomBookings.slice(0, 3).map(booking => ({
+      ...accommodationBookings.slice(0, 3).map(booking => ({
         id: booking._id,
-        type: 'room',
-        title: `Room Booking ${booking.booking_status}`,
-        description: `Booking for ${booking.room?.roomName || 'N/A'}`,
+        type: 'accommodation',
+        title: `Accommodation Booking ${booking.booking_status}`,
+        description: `Booking for ${booking.accommodation?.accommodationName || 'N/A'}`,
         date: booking.booking_start,
         status: booking.booking_status?.toLowerCase(),
         amount: booking.totalPrice
@@ -255,11 +255,11 @@ const AdminDashboard = () => {
           Overview
         </button>
         <button
-          className={`tab-button ${activeTab === 'rooms' ? 'active' : ''}`}
-          onClick={() => setActiveTab('rooms')}
+          className={`tab-button ${activeTab === 'accommodations' ? 'active' : ''}`}
+          onClick={() => setActiveTab('accommodations')}
           disabled={isLoading}
         >
-          Rooms
+          Accommodations
         </button>
         <button
           className={`tab-button ${activeTab === 'transport' ? 'active' : ''}`}
@@ -305,11 +305,11 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="summary-card total-rooms">
+            <div className="summary-card total-accommodations">
               <div className="card-content">
-                <h3>Total Rooms</h3>
-                <p>{roomStats.totalRooms}</p>
-                <span className="card-subtext">{roomStats.availableRooms} available</span>
+                <h3>Total Accommodations</h3>
+                <p>{accommodationStats.totalAccommodations}</p>
+                <span className="card-subtext">{accommodationStats.availableAccommodations} available</span>
               </div>
             </div>
 
@@ -329,9 +329,9 @@ const AdminDashboard = () => {
               <div className="doughnut-chart">
                 <div className="chart-visual">
                   <div
-                    className="chart-segment rooms"
+                    className="chart-segment accommodations"
                     style={{
-                      '--percentage': `${Math.round((bookingStats.roomStats.revenue / bookingStats.totalRevenue) * 100)}%`,
+                      '--percentage': `${Math.round((bookingStats.accommodationStats.revenue / bookingStats.totalRevenue) * 100)}%`,
                       '--color': '#3b82f6'
                     }}
                   > </div>
@@ -345,8 +345,8 @@ const AdminDashboard = () => {
                 </div>
                 <div className="chart-legend">
                   <div className="legend-item">
-                    <span className="color-dot rooms"></span>
-                    <span>Rooms: {formatCurrency(bookingStats.roomStats.revenue)}</span>
+                    <span className="color-dot accommodations"></span>
+                    <span>Accommodations: {formatCurrency(bookingStats.accommodationStats.revenue)}</span>
                   </div>
                   <div className="legend-item">
                     <span className="color-dot vehicles"></span>
@@ -367,7 +367,7 @@ const AdminDashboard = () => {
                 {recentActivities.map((activity, index) => (
                   <div key={`${activity.id}-${index}`} className={`activity-item ${activity.type}`}>
                     <div className="activity-icon">
-                      {activity.type === 'room' && '🛏️'}
+                      {activity.type === 'accommodation' && '🛏️'}
                       {activity.type === 'vehicle' && '🚗'}
                       {activity.type === 'owner' && '👤'}
                     </div>
@@ -392,42 +392,42 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* ----------------------- Rooms Tab ----------------------- */}
-      {activeTab === 'rooms' && (
-        <div className="rooms-tab">
+      {/* ----------------------- Accommodations Tab ----------------------- */}
+      {activeTab === 'accommodations' && (
+        <div className="accommodations-tab">
           <div className="stats-summary">
             <div className="stat-card">
               <div>
-                <h3>Total Rooms</h3>
-                <p>{roomStats.totalRooms}</p>
+                <h3>Total Accommodations</h3>
+                <p>{accommodationStats.totalAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Occupied</h3>
-                <p>{roomStats.occupiedRooms}</p>
+                <p>{accommodationStats.occupiedAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Available</h3>
-                <p>{roomStats.availableRooms}</p>
+                <p>{accommodationStats.availableAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Avg. Price</h3>
-                <p>{formatCurrency(roomStats.averagePrice)}</p>
+                <p>{formatCurrency(accommodationStats.averagePrice)}</p>
               </div>
             </div>
           </div>
 
           <div className="chart-container">
-            <h3>Room Type Distribution</h3>
+            <h3>Accommodation Type Distribution</h3>
             <div className="bar-chart">
               {['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'].map(type => {
-                const count = rooms.filter(r => r.roomType === type).length;
-                const percentage = (count / roomStats.totalRooms) * 100;
+                const count = accommodations.filter(r => r.accommodationType === type).length;
+                const percentage = (count / accommodationStats.totalAccommodations) * 100;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>
                     <div className="bar-label">{type}</div>
@@ -438,16 +438,16 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="recent-room-bookings">
-            <h3>Recent Room Bookings</h3>
-            {roomBookings.length === 0 ? (
-              <div className="empty-state">No room bookings found</div>
+          <div className="recent-accommodation-bookings">
+            <h3>Recent Accommodation Bookings</h3>
+            {accommodationBookings.length === 0 ? (
+              <div className="empty-state">No accommodation bookings found</div>
             ) : (
               <table className="bookings-table">
                 <thead>
                   <tr>
                     <th>Booking ID</th>
-                    <th>Room</th>
+                    <th>Accommodation</th>
                     <th>Guest</th>
                     <th>Dates</th>
                     <th>Amount</th>
@@ -455,12 +455,12 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {roomBookings.slice(0, 5).map(booking => (
+                  {accommodationBookings.slice(0, 5).map(booking => (
                     <tr key={booking._id}>
                       <td className="booking-id">{booking._id}</td>
                       <td>
-                        <div>{booking.room?.roomName || 'N/A'}</div>
-                        <div className="small-text">{booking.room?.roomType || 'N/A'}</div>
+                        <div>{booking.accommodation?.accommodationName || 'N/A'}</div>
+                        <div className="small-text">{booking.accommodation?.accommodationType || 'N/A'}</div>
                       </td>
                       <td>{booking.renter?.displayNamename || 'N/A'}</td>
                       <td>
@@ -721,27 +721,27 @@ const AdminDashboard = () => {
 
           <div className="bookings-breakdown">
             <div className="breakdown-card">
-              <h3>Room Bookings</h3>
+              <h3>Accommodation Bookings</h3>
               <div className="breakdown-stats">
                 <div>
                   <span>Total:</span>
-                  <span>{bookingStats.roomStats.total}</span>
+                  <span>{bookingStats.accommodationStats.total}</span>
                 </div>
                 <div>
                   <span>Completed:</span>
-                  <span>{bookingStats.roomStats.completed}</span>
+                  <span>{bookingStats.accommodationStats.completed}</span>
                 </div>
                 <div>
                   <span>Confirmed:</span>
-                  <span>{bookingStats.roomStats.confirmed}</span>
+                  <span>{bookingStats.accommodationStats.confirmed}</span>
                 </div>
                 <div>
                   <span>Canceled:</span>
-                  <span>{bookingStats.roomStats.pending}</span>
+                  <span>{bookingStats.accommodationStats.pending}</span>
                 </div>
                 <div>
                   <span>Revenue:</span>
-                  <span>{formatCurrency(bookingStats.roomStats.revenue)}</span>
+                  <span>{formatCurrency(bookingStats.accommodationStats.revenue)}</span>
                 </div>
               </div>
             </div>
@@ -794,7 +794,7 @@ const AdminDashboard = () => {
                   {normalizedBookings.slice(0, 10).map((booking, index) => (
                     <tr key={`${booking.id}-${index}`}>
                       <td>
-                        {booking.type === 'room' ? '🛏️ Room' : '🚗 Vehicle'}
+                        {booking.type === 'accommodation' ? '🛏️ Accommodation' : '🚗 Vehicle'}
                       </td>
                       <td className="booking-id">
                         {booking.id}

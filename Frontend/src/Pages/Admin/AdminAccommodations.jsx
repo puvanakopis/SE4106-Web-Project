@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { assets } from '../../Assets/assets';
-import { roomsData, ownerData, upcomingBookings, pastBookings } from '../../Assets/assets';
-import './AdminRooms.css';
+import { accommodationsData, ownerData, upcomingBookings, pastBookings } from '../../Assets/assets';
+import './AdminAccommodations.css';
 
-const AdminRooms = () => {
+const AdminAccommodations = () => {
   // State for form inputs
   const [formData, setFormData] = useState({
     _id: '',
-    roomName: '',
-    roomType: '',
+    accommodationName: '',
+    accommodationType: '',
     pricePerMonth: '',
     description: '',
     amenities: [],
@@ -21,7 +21,7 @@ const AdminRooms = () => {
     Status: 'Active'
   });
 
-  const [rooms, setRooms] = useState([]);
+  const [accommodations, setAccommodations] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [activeTab, setActiveTab] = useState('add');
@@ -29,11 +29,11 @@ const AdminRooms = () => {
   const [bookingStatusFilter, setBookingStatusFilter] = useState('all');
 
   // Combine upcoming and past bookings
-  const allBookings = [...upcomingBookings.roomBookings, ...pastBookings.roomBookings];
+  const allBookings = [...upcomingBookings.accommodationBookings, ...pastBookings.accommodationBookings];
 
   // Load initial data
   useEffect(() => {
-    setRooms(roomsData);
+    setAccommodations(accommodationsData);
     setBookings(allBookings);
   }, []);
 
@@ -47,26 +47,26 @@ const AdminRooms = () => {
     "Hot Water",
     "Fan",
     "Balcony",
-    "Attached Bathroom",
+    "Attached Bathaccommodation",
     "Meal Plan"
   ];
 
-  // Room statistics
-  const calculateRoomStats = () => {
-    const totalRooms = rooms.length;
-    const occupiedRooms = rooms.filter(room => !room.isAvailable).length;
-    const availableRooms = totalRooms - occupiedRooms;
-    const averageRating = rooms.reduce((sum, room) => sum + room.averageRating, 0) / totalRooms;
+  // Accommodation statistics
+  const calculateAccommodationStats = () => {
+    const totalAccommodations = accommodations.length;
+    const occupiedAccommodations = accommodations.filter(accommodation => !accommodation.isAvailable).length;
+    const availableAccommodations = totalAccommodations - occupiedAccommodations;
+    const averageRating = accommodations.reduce((sum, accommodation) => sum + accommodation.averageRating, 0) / totalAccommodations;
 
     return {
-      totalRooms,
-      occupiedRooms,
-      availableRooms,
+      totalAccommodations,
+      occupiedAccommodations,
+      availableAccommodations,
       averageRating: averageRating.toFixed(1),
     };
   };
 
-  const roomStats = calculateRoomStats();
+  const accommodationStats = calculateAccommodationStats();
 
   // Booking statistics
   const calculateBookingStats = () => {
@@ -143,17 +143,17 @@ const AdminRooms = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const newRoom = {
-      _id: editingId || `room_${Date.now()}`,
-      roomName: formData.roomName,
+    const newAccommodation = {
+      _id: editingId || `accommodation_${Date.now()}`,
+      accommodationName: formData.accommodationName,
       owner: formData.owner,
-      roomType: formData.roomType,
+      accommodationType: formData.accommodationType,
       pricePerMonth: Number(formData.pricePerMonth),
-      SecurityDeposit: formData.roomType === 'Single Bed' ? 10000 :
-        formData.roomType === 'Double Bed' ? 15000 :
-          formData.roomType === 'Triple Sharing' ? 20000 : 25000,
+      SecurityDeposit: formData.accommodationType === 'Single Bed' ? 10000 :
+        formData.accommodationType === 'Double Bed' ? 15000 :
+          formData.accommodationType === 'Triple Sharing' ? 20000 : 25000,
       amenities: formData.amenities,
-      images: imagePreviews.length > 0 ? imagePreviews : [assets.defaultRoom],
+      images: imagePreviews.length > 0 ? imagePreviews : [assets.defaultAccommodation],
       isAvailable: formData.isAvailable,
       location: formData.location,
       noOfBed: formData.noOfBed,
@@ -165,57 +165,57 @@ const AdminRooms = () => {
     };
 
     if (editingId) {
-      // Update existing room
-      setRooms(prev => prev.map(room => room._id === editingId ? newRoom : room));
+      // Update existing accommodation
+      setAccommodations(prev => prev.map(accommodation => accommodation._id === editingId ? newAccommodation : accommodation));
     } else {
-      // Add new room
-      setRooms(prev => [...prev, newRoom]);
+      // Add new accommodation
+      setAccommodations(prev => [...prev, newAccommodation]);
     }
 
     // Reset form
     resetForm();
   };
 
-  // Toggle room status between Active and Blocked
-  const toggleRoomStatus = (id) => {
-    setRooms(prev => prev.map(room =>
-      room._id === id ? {
-        ...room,
-        Status: room.Status === 'Active' ? 'Blocked' : 'Active'
-      } : room
+  // Toggle accommodation status between Active and Blocked
+  const toggleAccommodationStatus = (id) => {
+    setAccommodations(prev => prev.map(accommodation =>
+      accommodation._id === id ? {
+        ...accommodation,
+        Status: accommodation.Status === 'Active' ? 'Blocked' : 'Active'
+      } : accommodation
     ));
   };
-  // Edit room
-  const handleEdit = (room) => {
+  // Edit accommodation
+  const handleEdit = (accommodation) => {
     setFormData({
-      _id: room._id,
-      roomName: room.roomName,
-      owner: room.owner,
-      roomType: room.roomType,
-      pricePerMonth: room.pricePerMonth,
-      amenities: room.amenities || [],
-      isAvailable: room.isAvailable,
-      location: room.location,
-      noOfBed: room.noOfBed,
-      description: room.description || '',
+      _id: accommodation._id,
+      accommodationName: accommodation.accommodationName,
+      owner: accommodation.owner,
+      accommodationType: accommodation.accommodationType,
+      pricePerMonth: accommodation.pricePerMonth,
+      amenities: accommodation.amenities || [],
+      isAvailable: accommodation.isAvailable,
+      location: accommodation.location,
+      noOfBed: accommodation.noOfBed,
+      description: accommodation.description || '',
       customAmenity: '',
     });
-    setImagePreviews(room.images || []);
-    setEditingId(room._id);
+    setImagePreviews(accommodation.images || []);
+    setEditingId(accommodation._id);
     setActiveTab('add');
   };
 
-  // Delete room
+  // Delete accommodation
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this room?')) {
-      setRooms(prev => prev.filter(room => room._id !== id));
+    if (window.confirm('Are you sure you want to delete this accommodation?')) {
+      setAccommodations(prev => prev.filter(accommodation => accommodation._id !== id));
     }
   };
 
-  // Toggle room availability
+  // Toggle accommodation availability
   const toggleAvailability = (id) => {
-    setRooms(prev => prev.map(room =>
-      room._id === id ? { ...room, isAvailable: !room.isAvailable } : room
+    setAccommodations(prev => prev.map(accommodation =>
+      accommodation._id === id ? { ...accommodation, isAvailable: !accommodation.isAvailable } : accommodation
     ));
   };
 
@@ -230,8 +230,8 @@ const AdminRooms = () => {
   const resetForm = () => {
     setFormData({
       _id: '',
-      roomName: '',
-      roomType: '',
+      accommodationName: '',
+      accommodationType: '',
       pricePerMonth: '',
       description: '',
       amenities: [],
@@ -253,9 +253,9 @@ const AdminRooms = () => {
   };
 
   return (
-    <div className="rooms-container">
+    <div className="accommodations-container">
       {/* --------------------------- Page Title --------------------------- */}
-      <h1 className="title">Rooms & Bookings Management</h1>
+      <h1 className="title">Accommodations & Bookings Management</h1>
 
       {/* ---------------------------  Navigation Tabs --------------------------- */}
       <div className="tabs">
@@ -263,13 +263,13 @@ const AdminRooms = () => {
           className={`tab-button ${activeTab === 'add' ? 'active' : ''}`}
           onClick={() => setActiveTab('add')}
         >
-          {editingId ? 'Edit Room' : 'Add Room'}
+          {editingId ? 'Edit Accommodation' : 'Add Accommodation'}
         </button>
         <button
           className={`tab-button ${activeTab === 'view' ? 'active' : ''}`}
           onClick={() => setActiveTab('view')}
         >
-          View All Rooms
+          View All Accommodations
         </button>
         <button
           className={`tab-button ${activeTab === 'bookings' ? 'active' : ''}`}
@@ -285,27 +285,27 @@ const AdminRooms = () => {
         </button>
       </div>
 
-      {/*  ----------------- Add/Edit Room Form --------------------------- */}
+      {/*  ----------------- Add/Edit Accommodation Form --------------------------- */}
       {activeTab === 'add' && (
-        <form onSubmit={handleSubmit} className="room-form">
-          {/* Room Statistics Summary */}
+        <form onSubmit={handleSubmit} className="accommodation-form">
+          {/* Accommodation Statistics Summary */}
           <div className="stats-summary">
             <div className="stat-card">
               <div>
-                <h3>Total Rooms</h3>
-                <p>{roomStats.totalRooms}</p>
+                <h3>Total Accommodations</h3>
+                <p>{accommodationStats.totalAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Occupied</h3>
-                <p>{roomStats.occupiedRooms}</p>
+                <p>{accommodationStats.occupiedAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Available</h3>
-                <p>{roomStats.availableRooms}</p>
+                <p>{accommodationStats.availableAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
@@ -321,10 +321,10 @@ const AdminRooms = () => {
             <h2 className='section-title '>Basic Information</h2>
             <div className="form-grid">
               <div className="form-group">
-                <label>Room Name</label>
+                <label>Accommodation Name</label>
                 <input
-                  name="roomName"
-                  value={formData.roomName}
+                  name="accommodationName"
+                  value={formData.accommodationName}
                   onChange={handleInputChange}
                   required
                 />
@@ -353,14 +353,14 @@ const AdminRooms = () => {
               </div>
 
               <div className="form-group">
-                <label>Room Type</label>
+                <label>Accommodation Type</label>
                 <select
-                  name="roomType"
-                  value={formData.roomType}
+                  name="accommodationType"
+                  value={formData.accommodationType}
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="">Select Room Type</option>
+                  <option value="">Select Accommodation Type</option>
                   <option value="Single Bed">Single Bed</option>
                   <option value="Double Bed">Double Bed</option>
                   <option value="Triple Sharing">Triple Sharing</option>
@@ -410,7 +410,7 @@ const AdminRooms = () => {
                   name="location"
                   value={formData.location}
                   onChange={handleInputChange}
-                  placeholder="Enter room location..."
+                  placeholder="Enter accommodation location..."
                   rows="2"
                   required
                 />
@@ -422,7 +422,7 @@ const AdminRooms = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Enter detailed description of the room..."
+                  placeholder="Enter detailed description of the accommodation..."
                   rows="2"
                   required
                 />
@@ -473,26 +473,26 @@ const AdminRooms = () => {
             </div>
           </div>
 
-          {/* Room Images */}
+          {/* Accommodation Images */}
           <div className="form-section">
-            <h2 className='section-title '>Room Images</h2>
+            <h2 className='section-title '>Accommodation Images</h2>
             <div className="image-upload-container">
               <input
                 type="file"
                 multiple
                 accept="image/*"
                 onChange={handleImageUpload}
-                id="room-images"
+                id="accommodation-images"
                 style={{ display: 'none' }}
               />
-              <label htmlFor="room-images" className="upload-button">
+              <label htmlFor="accommodation-images" className="upload-button">
                 Choose Images (4 recommended)
               </label>
 
               <div className="image-preview-grid">
                 {imagePreviews.map((image, index) => (
                   <div key={index} className="image-preview">
-                    <img src={image} alt={`Room preview ${index}`} />
+                    <img src={image} alt={`Accommodation preview ${index}`} />
                     <button
                       type="button"
                       onClick={() => {
@@ -512,7 +512,7 @@ const AdminRooms = () => {
 
           <div className="form-actions">
             <button type="submit" className="submit-button">
-              {editingId ? 'Update Room' : 'Add Room'}
+              {editingId ? 'Update Accommodation' : 'Add Accommodation'}
             </button>
             {editingId && (
               <button
@@ -527,14 +527,14 @@ const AdminRooms = () => {
         </form>
       )}
 
-      {/* ----------------------------------- View All Rooms -----------------------------------*/}
+      {/* ----------------------------------- View All Accommodations -----------------------------------*/}
       {activeTab === 'view' && (
-        <div className="rooms-list">
-          {/* Rooms List Header */}
+        <div className="accommodations-list">
+          {/* Accommodations List Header */}
           <div className="list-header">
-            <h2 className='section-title '>All Rooms ({rooms.length})</h2>
+            <h2 className='section-title '>All Accommodations ({accommodations.length})</h2>
             <div className="search-filter">
-              <input className='search-input' type="text" placeholder="Search rooms..." />
+              <input className='search-input' type="text" placeholder="Search accommodations..." />
               <select>
                 <option>Filter by Type</option>
                 <option value='Single'>Single Bed</option>
@@ -545,14 +545,14 @@ const AdminRooms = () => {
             </div>
           </div>
 
-          {/* Rooms Table */}
-          <table className="rooms-table">
+          {/* Accommodations Table */}
+          <table className="accommodations-table">
             {/* Table Header */}
             <thead>
               <tr>
                 <th>Image</th>
                 <th>ID</th>
-                <th>Room Name</th>
+                <th>Accommodation Name</th>
                 <th>Type</th>
                 <th>Price</th>
                 <th>Owner</th>
@@ -565,47 +565,47 @@ const AdminRooms = () => {
 
             {/* Table Body */}
             <tbody>
-              {rooms.map((room) => (
-                <tr key={room._id} className={`table-row ${room.Status}`}>
+              {accommodations.map((accommodation) => (
+                <tr key={accommodation._id} className={`table-row ${accommodation.Status}`}>
                   <td>
                     <img
-                      src={room.images?.[0] || assets.defaultRoom}
-                      alt={room.roomType}
-                      className="room-thumbnail"
+                      src={accommodation.images?.[0] || assets.defaultAccommodation}
+                      alt={accommodation.accommodationType}
+                      className="accommodation-thumbnail"
                     />
                   </td>
-                  <td>{room._id}</td>
-                  <td>{room.roomName}</td>
-                  <td>{room.roomType}</td>
-                  <td>Rs {room.pricePerMonth}</td>
-                  <td>{room.owner?.FullName || 'N/A'}</td>
+                  <td>{accommodation._id}</td>
+                  <td>{accommodation.accommodationName}</td>
+                  <td>{accommodation.accommodationType}</td>
+                  <td>Rs {accommodation.pricePerMonth}</td>
+                  <td>{accommodation.owner?.FullName || 'N/A'}</td>
                   <td>
                     <button
-                      onClick={() => toggleAvailability(room._id)}
-                      className={`status-badge ${room.isAvailable ? 'available' : 'occupied'}`}
+                      onClick={() => toggleAvailability(accommodation._id)}
+                      className={`status-badge ${accommodation.isAvailable ? 'available' : 'occupied'}`}
                     >
-                      {room.isAvailable ? 'Available' : 'Occupied'}
+                      {accommodation.isAvailable ? 'Available' : 'Occupied'}
                     </button>
                   </td>
                   <td>
                     <span
-                      className={`status-badge ${room.Status === 'Blocked' ? 'blocked' : 'active'}`}
-                      onClick={() => toggleRoomStatus(room._id)}
+                      className={`status-badge ${accommodation.Status === 'Blocked' ? 'blocked' : 'active'}`}
+                      onClick={() => toggleAccommodationStatus(accommodation._id)}
                       style={{ cursor: 'pointer' }}
                     >
-                      {room.Status || 'Active'}
+                      {accommodation.Status || 'Active'}
                     </span>
                   </td>
 
                   <td className='flex'>
                     <button
-                      onClick={() => handleEdit(room)}
+                      onClick={() => handleEdit(accommodation)}
                       className="action-button edit"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(room._id)}
+                      onClick={() => handleDelete(accommodation._id)}
                       className="action-button delete"
                     >
                       Delete
@@ -620,7 +620,7 @@ const AdminRooms = () => {
 
       {/* ----------------------------------- Bookings Management ----------------------------------- */}
       {activeTab === 'bookings' && (
-        <div className="rooms-list">
+        <div className="accommodations-list">
           {/* Bookings List Header */}
           <div className="list-header">
             <h2 className='section-title '>All Bookings ({bookings.length})</h2>
@@ -639,12 +639,12 @@ const AdminRooms = () => {
           </div>
 
           {/* Bookings Table */}
-          <table className="rooms-table">
+          <table className="accommodations-table">
             {/* Table Header */}
             <thead>
               <tr>
                 <th>Booking ID</th>
-                <th>Room</th>
+                <th>Accommodation</th>
                 <th>Renter</th>
                 <th>Dates</th>
                 <th>Price</th>
@@ -660,8 +660,8 @@ const AdminRooms = () => {
                 <tr key={booking._id}>
                   <td>{booking._id}</td>
                   <td>
-                    <div className='primary-text'>{booking.room?.roomName || 'N/A'}</div>
-                    <div className="secondary-text">{booking.room?.roomType || ''}</div>
+                    <div className='primary-text'>{booking.accommodation?.accommodationName || 'N/A'}</div>
+                    <div className="secondary-text">{booking.accommodation?.accommodationType || ''}</div>
                   </td>
                   <td>
                     <div className='primary-text'>{booking.renter?.fullName || 'N/A'}</div>
@@ -720,15 +720,15 @@ const AdminRooms = () => {
                     cy="60"
                     r="50"
                     style={{
-                      strokeDashoffset: 314 - (314 * (roomStats.occupiedRooms / roomStats.totalRooms))
+                      strokeDashoffset: 314 - (314 * (accommodationStats.occupiedAccommodations / accommodationStats.totalAccommodations))
                     }}
                   ></circle>
                 </svg>
                 <div className="percentage">
-                  {Math.round((roomStats.occupiedRooms / roomStats.totalRooms) * 100)}%
+                  {Math.round((accommodationStats.occupiedAccommodations / accommodationStats.totalAccommodations) * 100)}%
                 </div>
               </div>
-              <p>{roomStats.occupiedRooms} of {roomStats.totalRooms} rooms occupied</p>
+              <p>{accommodationStats.occupiedAccommodations} of {accommodationStats.totalAccommodations} accommodations occupied</p>
             </div>
 
             <div className="stat-card">
@@ -748,13 +748,13 @@ const AdminRooms = () => {
             </div>
           </div>
 
-          {/* Room Type Distribution */}
+          {/* Accommodation Type Distribution */}
           <div className="chart-container">
-            <h3>Room Type Distribution</h3>
+            <h3>Accommodation Type Distribution</h3>
             <div className="bar-chart">
               {['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'].map(type => {
-                const count = rooms.filter(r => r.roomType === type).length;
-                const percentage = (count / roomStats.totalRooms) * 100;
+                const count = accommodations.filter(r => r.accommodationType === type).length;
+                const percentage = (count / accommodationStats.totalAccommodations) * 100;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>
                     <div className="bar-label">{type}</div>
@@ -770,4 +770,4 @@ const AdminRooms = () => {
   );
 };
 
-export default AdminRooms;
+export default AdminAccommodations;

@@ -5,14 +5,14 @@ const BookingContext = createContext();
 
 export const BookingProvider = ({ children }) => {
   const [bookings, setBookings] = useState({
-    roomBookings: [],
+    accommodationBookings: [],
     vehicleBookings: []
   });
 
   // Load initial bookings from data files
   useEffect(() => {
     const initialBookings = {
-      roomBookings: [...upcomingBookings.roomBookings, ...pastBookings.roomBookings],
+      accommodationBookings: [...upcomingBookings.accommodationBookings, ...pastBookings.accommodationBookings],
       vehicleBookings: [...upcomingBookings.vehicleBookings, ...pastBookings.vehicleBookings]
     };
     
@@ -31,10 +31,10 @@ export const BookingProvider = ({ children }) => {
     localStorage.setItem('bookings', JSON.stringify(updatedBookings));
   };
 
-  const addRoomBooking = (newBooking) => {
+  const addAccommodationBooking = (newBooking) => {
     const updatedBookings = {
       ...bookings,
-      roomBookings: [...bookings.roomBookings, newBooking]
+      accommodationBookings: [...bookings.accommodationBookings, newBooking]
     };
     setBookings(updatedBookings);
     saveBookings(updatedBookings);
@@ -50,7 +50,7 @@ export const BookingProvider = ({ children }) => {
   };
 
   const updateBookingStatus = (bookingId, type, status, feedbackData = null) => {
-    const bookingArray = type === 'room' ? 'roomBookings' : 'vehicleBookings';
+    const bookingArray = type === 'accommodation' ? 'accommodationBookings' : 'vehicleBookings';
     const bookingIndex = bookings[bookingArray].findIndex(b => b._id === bookingId);
     if (bookingIndex === -1) return;
 
@@ -78,14 +78,14 @@ export const BookingProvider = ({ children }) => {
   };
 
   const getBookingById = (bookingId, type) => {
-    const bookingArray = type === 'room' ? 'roomBookings' : 'vehicleBookings';
+    const bookingArray = type === 'accommodation' ? 'accommodationBookings' : 'vehicleBookings';
     return bookings[bookingArray].find(booking => booking._id === bookingId);
   };
 
   return (
     <BookingContext.Provider value={{
       bookings,
-      addRoomBooking,
+      addAccommodationBooking,
       addVehicleBooking,
       updateBookingStatus,
       loadBookings,

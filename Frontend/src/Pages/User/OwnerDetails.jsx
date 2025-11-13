@@ -1,6 +1,6 @@
-import { assets } from '../Assets/assets';
+import { assets } from '../../Assets/assets';
 import './OwnerDetails.css';
-import StarRating from '../Components/Rating/StarRating'
+import StarRating from '../../Components/Rating/StarRating'
 
 
 const OwnerDetails = ({ owner, onClose }) => {

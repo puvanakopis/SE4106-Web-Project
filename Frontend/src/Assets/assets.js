@@ -1,54 +1,54 @@
 import closeIcon from './closeIcon.svg'
 import locationIcon from './Accommodation/locationIcon.svg'
 
-import roomImg1 from './Room/room1_1.avif'
-import roomImg2 from './Room/room1_2.avif'
-import roomImg3 from './Room/room1_3.jpeg'
-import roomImg4 from './Room/room1_4.avif'
+import accommodationImg1 from './Room/accommodation1_1.avif'
+import accommodationImg2 from './Room/accommodation1_2.avif'
+import accommodationImg3 from './Room/accommodation1_3.jpeg'
+import accommodationImg4 from './Room/accommodation1_4.avif'
 
-import roomImg1_1 from './Room/room1_1.avif'
-import roomImg1_2 from './Room/room1_2.avif'
-import roomImg1_3 from './Room/room1_3.jpeg'
-import roomImg1_4 from './Room/room1_4.avif'
-import roomImg2_1 from './Room/room2_1.avif'
-import roomImg2_2 from './Room/room2_2.jpeg'
-import roomImg2_3 from './Room/room2_3.avif'
-import roomImg2_4 from './Room/room2_4.jpeg'
-import roomImg3_1 from './Room/room3_1.avif'
-import roomImg3_2 from './Room/room3_2.jpeg'
-import roomImg3_3 from './Room/room3_3.avif'
-import roomImg4_1 from './Room/room4_1.jpeg'
-import roomImg4_2 from './Room/room4_2.jpeg'
-import roomImg4_3 from './Room/room4_3.jpeg'
-import roomImg4_4 from './Room/room4_4.jpeg'
-import roomImg5_1 from './Room/room5_1.jpeg'
-import roomImg5_2 from './Room/room5_2.avif'
-import roomImg5_3 from './Room/room5_3.jpeg'
-import roomImg5_4 from './Room/room5_4.jpeg'
-import roomImg6_1 from './Room/room6_1.jpg'
-import roomImg6_2 from './Room/room6_2.jpg'
-import roomImg6_3 from './Room/room6_3.jpg'
-import roomImg6_4 from './Room/room6_4.jpg'
-import roomImg7_1 from './Room/room7_1.avif'
-import roomImg7_2 from './Room/room7_2.jpg'
-import roomImg7_3 from './Room/room7_3.jpg'
-import roomImg7_4 from './Room/room7_4.jpg'
-import roomImg8_1 from './Room/room8_1.avif'
-import roomImg8_2 from './Room/room8_2.avif'
-import roomImg8_3 from './Room/room8_3.jpeg'
-import roomImg8_4 from './Room/room8_4.jpeg'
-import roomImg9_1 from './Room/room9_1.avif'
-import roomImg9_2 from './Room/room9_2.jpeg'
-import roomImg9_3 from './Room/room9_3.jpeg'
-import roomImg9_4 from './Room/room9_4.jpeg'
-import roomImg10_1 from './Room/room10_1.jpg'
-import roomImg10_2 from './Room/room10_2.jpg'
-import roomImg10_3 from './Room/room10_3.jpg'
-import roomImg10_4 from './Room/room10_4.jpg'
-import roomImg11_1 from './Room/room11_1.jpg'
-import roomImg11_2 from './Room/room11_2.jpg'
-import roomImg11_3 from './Room/room11_3.jpg'
-import roomImg11_4 from './Room/room11_4.jpg'
+import accommodationImg1_1 from './Room/accommodation1_1.avif'
+import accommodationImg1_2 from './Room/accommodation1_2.avif'
+import accommodationImg1_3 from './Room/accommodation1_3.jpeg'
+import accommodationImg1_4 from './Room/accommodation1_4.avif'
+import accommodationImg2_1 from './Room/accommodation2_1.avif'
+import accommodationImg2_2 from './Room/accommodation2_2.jpeg'
+import accommodationImg2_3 from './Room/accommodation2_3.avif'
+import accommodationImg2_4 from './Room/accommodation2_4.jpeg'
+import accommodationImg3_1 from './Room/accommodation3_1.avif'
+import accommodationImg3_2 from './Room/accommodation3_2.jpeg'
+import accommodationImg3_3 from './Room/accommodation3_3.avif'
+import accommodationImg4_1 from './Room/accommodation4_1.jpeg'
+import accommodationImg4_2 from './Room/accommodation4_2.jpeg'
+import accommodationImg4_3 from './Room/accommodation4_3.jpeg'
+import accommodationImg4_4 from './Room/accommodation4_4.jpeg'
+import accommodationImg5_1 from './Room/accommodation5_1.jpeg'
+import accommodationImg5_2 from './Room/accommodation5_2.avif'
+import accommodationImg5_3 from './Room/accommodation5_3.jpeg'
+import accommodationImg5_4 from './Room/accommodation5_4.jpeg'
+import accommodationImg6_1 from './Room/accommodation6_1.jpg'
+import accommodationImg6_2 from './Room/accommodation6_2.jpg'
+import accommodationImg6_3 from './Room/accommodation6_3.jpg'
+import accommodationImg6_4 from './Room/accommodation6_4.jpg'
+import accommodationImg7_1 from './Room/accommodation7_1.avif'
+import accommodationImg7_2 from './Room/accommodation7_2.jpg'
+import accommodationImg7_3 from './Room/accommodation7_3.jpg'
+import accommodationImg7_4 from './Room/accommodation7_4.jpg'
+import accommodationImg8_1 from './Room/accommodation8_1.avif'
+import accommodationImg8_2 from './Room/accommodation8_2.avif'
+import accommodationImg8_3 from './Room/accommodation8_3.jpeg'
+import accommodationImg8_4 from './Room/accommodation8_4.jpeg'
+import accommodationImg9_1 from './Room/accommodation9_1.avif'
+import accommodationImg9_2 from './Room/accommodation9_2.jpeg'
+import accommodationImg9_3 from './Room/accommodation9_3.jpeg'
+import accommodationImg9_4 from './Room/accommodation9_4.jpeg'
+import accommodationImg10_1 from './Room/accommodation10_1.jpg'
+import accommodationImg10_2 from './Room/accommodation10_2.jpg'
+import accommodationImg10_3 from './Room/accommodation10_3.jpg'
+import accommodationImg10_4 from './Room/accommodation10_4.jpg'
+import accommodationImg11_1 from './Room/accommodation11_1.jpg'
+import accommodationImg11_2 from './Room/accommodation11_2.jpg'
+import accommodationImg11_3 from './Room/accommodation11_3.jpg'
+import accommodationImg11_4 from './Room/accommodation11_4.jpg'
 
 
 export const assets = {
@@ -145,20 +145,20 @@ export const ownerData = [
 
 
 
-export const roomsData = [
+export const accommodationsData = [
   {
-    _id: "room_01",
-    roomName: "Cozy Single Bed Room",
+    _id: "accommodation_01",
+    accommodationName: "Cozy Single Bed Accommodation",
     owner: ownerData[0],
-    roomType: "Single Bed",
+    accommodationType: "Single Bed",
     pricePerMonth: 6000,
     SecurityDeposit: 10000,
     amenities: ["Wi-Fi", "Study Table", "Shared Kitchen"],
-    images: [roomImg1_1, roomImg1_2, roomImg1_3, roomImg1_4],
+    images: [accommodationImg1_1, accommodationImg1_2, accommodationImg1_3, accommodationImg1_4],
     isAvailable: true,
     location: "Near Sabaragamuwa University, Belihuloya, Sri Lanka",
     noOfBed: 1,
-    description: "A comfortable single-bed room ideal for Sabaragamuwa University students, featuring Wi-Fi, study table, and shared kitchen. Conveniently located within walking distance of the campus.",
+    description: "A comfortable single-bed accommodation ideal for Sabaragamuwa University students, featuring Wi-Fi, study table, and shared kitchen. Conveniently located within walking distance of the campus.",
     totalReviews: 150,
     averageRating: 3,
     ratingCount: {
@@ -172,18 +172,18 @@ export const roomsData = [
     Status: "Blocked",
   },
   {
-    _id: "room_02",
-    roomName: "Spacious Double Bed Room",
+    _id: "accommodation_02",
+    accommodationName: "Spacious Double Bed Accommodation",
     owner: ownerData[1],
-    roomType: "Double Bed",
+    accommodationType: "Double Bed",
     pricePerMonth: 9000,
     SecurityDeposit: 15000,
-    amenities: ["Wi-Fi", "Private Bathroom", "Balcony", "Shared Kitchen"],
-    images: [roomImg2_1, roomImg2_2, roomImg2_3, roomImg2_4],
+    amenities: ["Wi-Fi", "Private Bathaccommodation", "Balcony", "Shared Kitchen"],
+    images: [accommodationImg2_1, accommodationImg2_2, accommodationImg2_3, accommodationImg2_4],
     isAvailable: true,
     location: "1 km from Sabaragamuwa University, Belihuloya, Sri Lanka",
     noOfBed: 2,
-    description: "A large, well-lit double-bed room perfect for roommates, offering a private bathroom, balcony, and high-speed Wi-Fi. Easy access to public transport and local shops.",
+    description: "A large, well-lit double-bed accommodation perfect for accommodationmates, offering a private bathaccommodation, balcony, and high-speed Wi-Fi. Easy access to public transport and local shops.",
     totalReviews: 85,
     averageRating: 4,
     ratingCount: {
@@ -196,18 +196,18 @@ export const roomsData = [
     creatDate: "2025-06-15",
   },
   {
-    _id: "room_03",
-    roomName: "Budget-Friendly Single Room",
+    _id: "accommodation_03",
+    accommodationName: "Budget-Friendly Single Accommodation",
     owner: ownerData[2],
-    roomType: "Single Bed",
+    accommodationType: "Single Bed",
     pricePerMonth: 4500,
     SecurityDeposit: 8000,
-    amenities: ["Wi-Fi", "Study Table", "Fan", "Shared Bathroom"],
-    images: [roomImg3_1, roomImg3_2, roomImg3_3],
+    amenities: ["Wi-Fi", "Study Table", "Fan", "Shared Bathaccommodation"],
+    images: [accommodationImg3_1, accommodationImg3_2, accommodationImg3_3],
     isAvailable: false,
     location: "500 meters from Sabaragamuwa University, Belihuloya, Sri Lanka",
     noOfBed: 1,
-    description: "Affordable single-bed room with basic amenities and a quiet study space. Suitable for budget-conscious students seeking proximity to campus.",
+    description: "Affordable single-bed accommodation with basic amenities and a quiet study space. Suitable for budget-conscious students seeking proximity to campus.",
     totalReviews: 60,
     averageRating: 3.8,
     ratingCount: {
@@ -220,14 +220,14 @@ export const roomsData = [
     creatDate: "2025-06-17",
   },
   {
-    _id: "room_04",
-    roomName: "Premium Shared Room",
+    _id: "accommodation_04",
+    accommodationName: "Premium Shared Accommodation",
     owner: ownerData[3],
-    roomType: "Annexe",
+    accommodationType: "Annexe",
     pricePerMonth: 15000,
     SecurityDeposit: 20000,
-    amenities: ["Wi-Fi", "Air Conditioning", "Private Bathroom", "Mini Kitchen", "Balcony"],
-    images: [roomImg4_1, roomImg4_2, roomImg4_3, roomImg4_4],
+    amenities: ["Wi-Fi", "Air Conditioning", "Private Bathaccommodation", "Mini Kitchen", "Balcony"],
+    images: [accommodationImg4_1, accommodationImg4_2, accommodationImg4_3, accommodationImg4_4],
     isAvailable: true,
     location: "Near Pambahinna, Belihuloya, Sri Lanka",
     noOfBed: 1,
@@ -243,18 +243,18 @@ export const roomsData = [
     },
     creatDate: "2025-07-09",
   }, {
-    _id: "room_05",
-    roomName: "Budget Single Room",
+    _id: "accommodation_05",
+    accommodationName: "Budget Single Accommodation",
     owner: ownerData[1],
-    roomType: "Single Bed",
+    accommodationType: "Single Bed",
     pricePerMonth: 4500,
     SecurityDeposit: 8000,
-    amenities: ["Wi-Fi", "Shared Bathroom", "Shared Kitchen"],
-    images: [roomImg5_1, roomImg5_2, roomImg5_3, roomImg5_4],
+    amenities: ["Wi-Fi", "Shared Bathaccommodation", "Shared Kitchen"],
+    images: [accommodationImg5_1, accommodationImg5_2, accommodationImg5_3, accommodationImg5_4],
     isAvailable: true,
     location: "Near University Gate, Pambahinna, Sri Lanka",
     noOfBed: 1,
-    description: "Affordable single bed room with shared facilities, ideal for budget-conscious students. Close to public transport.",
+    description: "Affordable single bed accommodation with shared facilities, ideal for budget-conscious students. Close to public transport.",
     totalReviews: 20,
     averageRating: 4.2,
     ratingCount: {
@@ -267,18 +267,18 @@ export const roomsData = [
     creatDate: "2025-07-10",
   },
   {
-    _id: "room_06",
-    roomName: "Twin Sharing Room",
+    _id: "accommodation_06",
+    accommodationName: "Twin Sharing Accommodation",
     owner: ownerData[2],
-    roomType: "Double Bed",
+    accommodationType: "Double Bed",
     pricePerMonth: 7000,
     SecurityDeposit: 10000,
-    amenities: ["Wi-Fi", "Study Table", "Shared Bathroom", "Balcony"],
-    images: [roomImg6_1, roomImg6_2, roomImg6_3, roomImg6_4],
+    amenities: ["Wi-Fi", "Study Table", "Shared Bathaccommodation", "Balcony"],
+    images: [accommodationImg6_1, accommodationImg6_2, accommodationImg6_3, accommodationImg6_4],
     isAvailable: false,
     location: "Pambahinna Town, Sri Lanka",
     noOfBed: 2,
-    description: "Spacious twin sharing room with balcony access. Suitable for friends or classmates looking to share costs.",
+    description: "Spacious twin sharing accommodation with balcony access. Suitable for friends or classmates looking to share costs.",
     totalReviews: 32,
     averageRating: 4.5,
     ratingCount: {
@@ -291,14 +291,14 @@ export const roomsData = [
     creatDate: "2025-07-14",
   },
   {
-    _id: "room_07",
-    roomName: "Luxury Apartment",
+    _id: "accommodation_07",
+    accommodationName: "Luxury Apartment",
     owner: ownerData[4],
-    roomType: "Triple Sharing",
+    accommodationType: "Triple Sharing",
     pricePerMonth: 25000,
     SecurityDeposit: 30000,
-    amenities: ["Wi-Fi", "Air Conditioning", "Private Bathroom", "Kitchen", "Balcony", "Laundry"],
-    images: [roomImg7_1, roomImg7_2, roomImg7_3, roomImg7_4],
+    amenities: ["Wi-Fi", "Air Conditioning", "Private Bathaccommodation", "Kitchen", "Balcony", "Laundry"],
+    images: [accommodationImg7_1, accommodationImg7_2, accommodationImg7_3, accommodationImg7_4],
     isAvailable: true,
     location: "Belihuloya Lake View, Sri Lanka",
     noOfBed: 2,
@@ -315,14 +315,14 @@ export const roomsData = [
     creatDate: "2025-07-15",
   },
   {
-    _id: "room_08",
-    roomName: "Cozy Shared Room",
+    _id: "accommodation_08",
+    accommodationName: "Cozy Shared Accommodation",
     owner: ownerData[0],
-    roomType: "Triple Sharing",
+    accommodationType: "Triple Sharing",
     pricePerMonth: 5000,
     SecurityDeposit: 7000,
-    amenities: ["Wi-Fi", "Shared Bathroom", "Shared Kitchen"],
-    images: [roomImg8_1, roomImg8_2, roomImg8_3, roomImg8_4],
+    amenities: ["Wi-Fi", "Shared Bathaccommodation", "Shared Kitchen"],
+    images: [accommodationImg8_1, accommodationImg8_2, accommodationImg8_3, accommodationImg8_4],
     isAvailable: true,
     location: "Near Bus Stand, Pambahinna, Sri Lanka",
     noOfBed: 2,
@@ -339,14 +339,14 @@ export const roomsData = [
     creatDate: "2025-07-16",
   },
   {
-    _id: "room_09",
-    roomName: "Family-style Apartment",
+    _id: "accommodation_09",
+    accommodationName: "Family-style Apartment",
     owner: ownerData[5],
-    roomType: "Double Bed",
+    accommodationType: "Double Bed",
     pricePerMonth: 18000,
     SecurityDeposit: 20000,
-    amenities: ["Wi-Fi", "Private Bathroom", "Kitchen", "Balcony", "Washing Machine"],
-    images: [roomImg9_1, roomImg9_2, roomImg9_3, roomImg9_4],
+    amenities: ["Wi-Fi", "Private Bathaccommodation", "Kitchen", "Balcony", "Washing Machine"],
+    images: [accommodationImg9_1, accommodationImg9_2, accommodationImg9_3, accommodationImg9_4],
     isAvailable: false,
     location: "Belihuloya Main Road, Sri Lanka",
     noOfBed: 3,
@@ -363,14 +363,14 @@ export const roomsData = [
     creatDate: "2025-07-17",
   },
   {
-    _id: "room_10",
-    roomName: "Compact Double Bed",
+    _id: "accommodation_10",
+    accommodationName: "Compact Double Bed",
     owner: ownerData[6],
-    roomType: "Double Bed",
+    accommodationType: "Double Bed",
     pricePerMonth: 12000,
     SecurityDeposit: 15000,
-    amenities: ["Wi-Fi", "Air Conditioning", "Private Bathroom", "Mini Kitchen"],
-    images: [roomImg10_1, roomImg10_2, roomImg10_3, roomImg10_4],
+    amenities: ["Wi-Fi", "Air Conditioning", "Private Bathaccommodation", "Mini Kitchen"],
+    images: [accommodationImg10_1, accommodationImg10_2, accommodationImg10_3, accommodationImg10_4],
     isAvailable: true,
     location: "Near University Playground, Pambahinna, Sri Lanka",
     noOfBed: 1,
@@ -387,18 +387,18 @@ export const roomsData = [
     creatDate: "2025-07-18",
   },
   {
-    _id: "room_11",
-    roomName: "Eco-friendly Room",
+    _id: "accommodation_11",
+    accommodationName: "Eco-friendly Accommodation",
     owner: ownerData[2],
-    roomType: "Single Bed",
+    accommodationType: "Single Bed",
     pricePerMonth: 5500,
     SecurityDeposit: 9000,
-    amenities: ["Wi-Fi", "Shared Bathroom", "Solar Power", "Garden View"],
-    images: [roomImg11_1, roomImg11_2, roomImg11_3, roomImg11_4],
+    amenities: ["Wi-Fi", "Shared Bathaccommodation", "Solar Power", "Garden View"],
+    images: [accommodationImg11_1, accommodationImg11_2, accommodationImg11_3, accommodationImg11_4],
     isAvailable: true,
     location: "Green Area, Belihuloya, Sri Lanka",
     noOfBed: 1,
-    description: "Environmentally friendly room with solar-powered electricity and a beautiful garden view. Peaceful and quiet.",
+    description: "Environmentally friendly accommodation with solar-powered electricity and a beautiful garden view. Peaceful and quiet.",
     totalReviews: 15,
     averageRating: 4.3,
     ratingCount: {
@@ -432,7 +432,7 @@ export const vehicleData = [
     rental_price_per_day: 1500,
     deposit_amount: 10000,
     features: ["Air Conditioning", "Automatic Transmission", "Hybrid Engine", "Bluetooth Audio"],
-    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
+    vehicle_images: [accommodationImg1, accommodationImg2, accommodationImg3, accommodationImg4],
     address: "Ratnapura, Sabaragamuwa",
     description: "A fuel-efficient and comfortable Toyota Prius Hybrid perfect for students and faculty for short trips or daily use. Comes with air conditioning, Bluetooth audio, and ample luggage space.",
     totalReviews: 80,
@@ -460,7 +460,7 @@ export const vehicleData = [
     rental_price_per_day: 1500,
     deposit_amount: 10000,
     features: ["Air Conditioning", "Automatic Transmission", "Hybrid Engine", "Bluetooth Audio"],
-    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
+    vehicle_images: [accommodationImg1, accommodationImg2, accommodationImg3, accommodationImg4],
     address: "Ratnapura, Sabaragamuwa",
     description: "A fuel-efficient and comfortable Toyota Prius Hybrid perfect for students and faculty for short trips or daily use. Comes with air conditioning, Bluetooth audio, and ample luggage space.",
     totalReviews: 80,
@@ -489,7 +489,7 @@ export const vehicleData = [
     rental_price_per_day: 1500,
     deposit_amount: 10000,
     features: ["Air Conditioning", "Automatic Transmission", "Hybrid Engine", "Bluetooth Audio"],
-    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
+    vehicle_images: [accommodationImg1, accommodationImg2, accommodationImg3, accommodationImg4],
     address: "Ratnapura, Sabaragamuwa",
     description: "A fuel-efficient and comfortable Toyota Prius Hybrid perfect for students and faculty for short trips or daily use. Comes with air conditioning, Bluetooth audio, and ample luggage space.",
     totalReviews: 80,
@@ -518,7 +518,7 @@ export const vehicleData = [
     rental_price_per_day: 1500,
     deposit_amount: 10000,
     features: ["Air Conditioning", "Automatic Transmission", "Hybrid Engine", "Bluetooth Audio"],
-    vehicle_images: [roomImg1, roomImg2, roomImg3, roomImg4],
+    vehicle_images: [accommodationImg1, accommodationImg2, accommodationImg3, accommodationImg4],
     address: "Ratnapura, Sabaragamuwa",
     description: "A fuel-efficient and comfortable Toyota Prius Hybrid perfect for students and faculty for short trips or daily use. Comes with air conditioning, Bluetooth audio, and ample luggage space.",
     totalReviews: 80,
@@ -539,10 +539,10 @@ export const vehicleData = [
 
 
 export const upcomingBookings = {
-  roomBookings: [
+  accommodationBookings: [
     {
-      _id: "roombooking_01",
-      room: roomsData[0],
+      _id: "accommodationbooking_01",
+      accommodation: accommodationsData[0],
       renter: studentData[0],
       owner: ownerData[0],
       booking_start: "2025-08-15",
@@ -570,10 +570,10 @@ export const upcomingBookings = {
 
 
 export const pastBookings = {
-  roomBookings: [
+  accommodationBookings: [
     {
-      _id: "roombooking_02",
-      room: roomsData[1],
+      _id: "accommodationbooking_02",
+      accommodation: accommodationsData[1],
       renter: studentData[0],
       owner: ownerData[1],
       booking_start: "2025-06-10",
@@ -585,8 +585,8 @@ export const pastBookings = {
       feedback: "Great stay, would book again!"
     },
     {
-      _id: "roombooking_03",
-      room: roomsData[1],
+      _id: "accommodationbooking_03",
+      accommodation: accommodationsData[1],
       renter: studentData[0],
       owner: ownerData[1],
       booking_start: "2025-06-10",
@@ -647,7 +647,7 @@ export default {
   lecturerData,
   studentData,
   ownerData,
-  roomsData,
+  accommodationsData,
   vehicleData,
   upcomingBookings,
   pastBookings
