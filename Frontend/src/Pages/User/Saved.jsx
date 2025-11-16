@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { roomsData, vehicleData } from '../../Assets/assets';
+import { accommodationsData, vehicleData } from '../../Assets/assets';
 import StarRating from '../../Components/Rating/StarRating';
 import './Saved.css';
 
@@ -11,9 +11,9 @@ const Saved = () => {
   const itemsPerPage = 6;
 
   const [savedAccommodations, setSavedAccommodations] = useState(() => {
-    const saved = localStorage.getItem('savedRooms');
+    const saved = localStorage.getItem('savedAccommodations');
     const savedIds = saved ? JSON.parse(saved) : [];
-    return roomsData.filter(room => savedIds.includes(room._id));
+    return accommodationsData.filter(accommodation => savedIds.includes(accommodation._id));
   });
 
   const [savedTransports, setSavedTransports] = useState(() => {
@@ -22,12 +22,12 @@ const Saved = () => {
     return vehicleData.filter(vehicle => savedIds.includes(vehicle.vehicle_id));
   });
 
-  const removeSavedAccommodation = (roomId, e) => {
+  const removeSavedAccommodation = (accommodationId, e) => {
     e.stopPropagation();
-    setSavedAccommodations(prev => prev.filter(r => r._id !== roomId));
-    const saved = JSON.parse(localStorage.getItem('savedRooms') || '[]');
-    const newSaved = saved.filter(id => id !== roomId);
-    localStorage.setItem('savedRooms', JSON.stringify(newSaved));
+    setSavedAccommodations(prev => prev.filter(r => r._id !== accommodationId));
+    const saved = JSON.parse(localStorage.getItem('savedAccommodations') || '[]');
+    const newSaved = saved.filter(id => id !== accommodationId);
+    localStorage.setItem('savedAccommodations', JSON.stringify(newSaved));
   };
 
   const removeSavedVehicle = (vehicleId, e) => {
@@ -95,7 +95,7 @@ const Saved = () => {
               {savedAccommodations.length === 0 ? (
                 <div className="no-saved">
                   <h3>No saved accommodations yet</h3>
-                  <p>Save your favorite rooms by clicking the heart icon</p>
+                  <p>Save your favorite accommodations by clicking the heart icon</p>
                   <button
                     className="browse-button"
                     onClick={() => navigate('/accommodation')}
@@ -110,16 +110,16 @@ const Saved = () => {
                       <div
                         key={accommodation._id}
                         className="card accommodation-card"
-                        onClick={() => navigate(`/room/${accommodation._id}`)}
+                        onClick={() => navigate(`/accommodation/${accommodation._id}`)}
                       >
                         <img
                           src={accommodation.images[0]}
-                          alt={`${accommodation.roomType}`}
+                          alt={`${accommodation.accommodationType}`}
                           className="card-image"
                         />
-                        <div className="property-badge">{accommodation.roomType}</div>
+                        <div className="property-badge">{accommodation.accommodationType}</div>
                         <div className="card-info">
-                          <h3>{accommodation.roomType}</h3>
+                          <h3>{accommodation.accommodationType}</h3>
                           <p>Location – {accommodation.location}</p>
                           <div className="rating">
                             <StarRating rating={accommodation.rating} />

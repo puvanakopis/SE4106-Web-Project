@@ -18,6 +18,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/authRoute'));
 app.use('/api/owners', require('./routes/ownerRoutes'));
 app.use('/api/transports', require('./routes/transportRoutes'));
+app.use('/api/accommodations', require('./routes/accommodationRoutes'));
 app.use('/api/transport-bookings', require('./routes/transportBookingRoutes'));
 
 // MongoDB connection

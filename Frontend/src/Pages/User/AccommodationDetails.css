@@ -1,5 +1,5 @@
 /* ==================== BASE STYLES ==================== */
-.room-details {
+.accommodation-details {
   padding: 2rem 5%;
   max-width: 1400px;
   margin: 0 auto;
@@ -7,8 +7,8 @@
 }
 
 /* ==================== LOADING & ERROR STATES ==================== */
-.room-loading,
-.room-not-found {
+.accommodation-loading,
+.accommodation-not-found {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,7 +17,7 @@
   text-align: center;
 }
 
-.room-loading .loading-spinner {
+.accommodation-loading .loading-spinner {
   width: 50px;
   height: 50px;
   border: 5px solid var(--background-light);
@@ -37,14 +37,14 @@
   }
 }
 
-.room-not-found__title {
+.accommodation-not-found__title {
   font-size: 2rem;
   font-weight: 700;
   color: var(--text-dark);
   margin-bottom: 1rem;
 }
 
-.room-not-found__message {
+.accommodation-not-found__message {
   font-size: 1.1rem;
   color: var(--text-medium);
   margin-bottom: 1.5rem;
@@ -66,27 +66,27 @@
 }
 
 /* ==================== ROOM HEADER ==================== */
-.room-header {
+.accommodation-header {
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 1.5rem;
 }
 
-.room-title {
+.accommodation-title {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.5rem;
 }
 
-.room-name {
+.accommodation-name {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-dark);
   margin: 0;
 }
 
-.room-type {
+.accommodation-type {
   background-color: var(--primary-color);
   color: white;
   padding: 0.25rem 0.75rem;
@@ -95,19 +95,19 @@
   font-weight: 500;
 }
 
-.room-meta {
+.accommodation-meta {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
 }
 
-.room-review-count {
+.accommodation-review-count {
   font-size: 0.875rem;
   color: var(--text-medium);
 }
 
-.room-location {
+.accommodation-location {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -115,13 +115,13 @@
   color: var(--text-medium);
 }
 
-.room-location__icon {
+.accommodation-location__icon {
   width: 16px;
   height: 16px;
 }
 
 /* ==================== ROOM GALLERY ==================== */
-.room-gallery {
+.accommodation-gallery {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1rem;
@@ -131,7 +131,7 @@
   padding-top: 3px;
 }
 
-.room-gallery__main {
+.accommodation-gallery__main {
   height: 400px;
   background-color: var(--background-light);
   border-radius: var(--radius-md);
@@ -139,24 +139,24 @@
   box-shadow: var(--shadow-sm);
 }
 
-.room-gallery__main-image {
+.accommodation-gallery__main-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
 
-.room-gallery__main-image:hover {
+.accommodation-gallery__main-image:hover {
   transform: scale(1.02);
 }
 
-.room-gallery__thumbnails {
+.accommodation-gallery__thumbnails {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
-.room-gallery__thumbnail {
+.accommodation-gallery__thumbnail {
   height: calc(200px - 0.5rem);
   background-color: var(--background-light);
   border-radius: var(--radius-md);
@@ -168,29 +168,29 @@
   box-shadow: var(--shadow-sm);
 }
 
-.room-gallery__thumbnail:hover {
+.accommodation-gallery__thumbnail:hover {
   border-color: var(--primary-color);
   transform: translateY(-2px);
 }
 
-.room-gallery__thumbnail--active {
+.accommodation-gallery__thumbnail--active {
   border-color: var(--primary-color);
 }
 
-.room-gallery__thumbnail-image {
+.accommodation-gallery__thumbnail-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* ==================== MAIN CONTENT LAYOUT ==================== */
-.room-content {
+.accommodation-content {
   display: flex;
   gap: 2rem;
   margin-bottom: 3rem;
 }
 
-.room-section-title {
+.accommodation-section-title {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -200,7 +200,7 @@
 }
 
 /* ==================== LEFT COLUMN - ROOM SPECS ==================== */
-.room-specs {
+.accommodation-specs {
   flex: 1;
   background-color: var(--background-light);
   border: 1px solid var(--border-color);
@@ -209,7 +209,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-.room-Content {
+.accommodation-Content {
   margin-bottom: 2rem;
 }
 
@@ -285,7 +285,7 @@
 }
 
 /* Reviews Section */
-.room-reviews {
+.accommodation-reviews {
   margin-top: 3rem;
 }
 
@@ -340,7 +340,7 @@
 }
 
 /* Owner Section */
-.room-host {
+.accommodation-host {
   margin-top: 3rem;
 }
 
@@ -398,7 +398,7 @@
 }
 
 /* ==================== RIGHT COLUMN - BOOKING CARD ==================== */
-.room-booking {
+.accommodation-booking {
   width: 350px;
   flex-shrink: 0;
 }
@@ -540,11 +540,11 @@
 
 /* ==================== RESPONSIVE ADJUSTMENTS ==================== */
 @media (max-width: 1024px) {
-  .room-content {
+  .accommodation-content {
     flex-direction: column;
   }
 
-  .room-booking {
+  .accommodation-booking {
     width: 100%;
   }
 
@@ -554,19 +554,19 @@
 }
 
 @media (max-width: 768px) {
-  .room-gallery {
+  .accommodation-gallery {
     grid-template-columns: 1fr;
   }
 
-  .room-gallery__thumbnails {
+  .accommodation-gallery__thumbnails {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .room-header {
+  .accommodation-header {
     padding-bottom: 1rem;
   }
 
-  .room-title {
+  .accommodation-title {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
@@ -582,11 +582,11 @@
 }
 
 @media (max-width: 480px) {
-  .room-details {
+  .accommodation-details {
     padding: 1.5rem;
   }
 
-  .room-gallery__thumbnails {
+  .accommodation-gallery__thumbnails {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -594,15 +594,15 @@
     grid-template-columns: 1fr;
   }
 
-  .room-section-title {
+  .accommodation-section-title {
     font-size: 1.125rem;
   }
 
-  .room-name {
+  .accommodation-name {
     font-size: 1.5rem;
   }
 
-  .room-specs {
+  .accommodation-specs {
     padding: 1.5rem;
   }
 }

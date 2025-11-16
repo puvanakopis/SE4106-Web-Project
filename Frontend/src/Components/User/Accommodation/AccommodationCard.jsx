@@ -1,79 +1,118 @@
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaMapMarkerAlt } from 'react-icons/fa';
 import StarRating from '../../Rating/StarRating';
 import './AccommodationCard.css';
 
-const AccommodationCard = ({ room, saved, onSave, onClick }) => (
-  <article className="acc-room-card" onClick={onClick}>
-    
-    
-    {/* ------------- Image Section ------------- */}
-    <div className="room-image-container">
-      <img
-        src={room.images[0]}
-        alt={`${room.name}`}
-        className="room-image"
-        loading="lazy"
-      />
-      <span className="room-badge">{room.roomType}</span>
+const AccommodationCard = ({ accommodation, saved, onSave, onClick }) => {
+  // Handle missing images
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '/images/default-accommodation.jpg';
 
-      {/* Save Button */}
-      <button
-        className={`save-button ${saved ? 'saved' : ''}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSave(room._id, e);
-        }}
-        aria-label={saved ? 'Remove from saved' : 'Save this room'}
-      >
-        {saved ? (
-          <FaHeart className="icon-heart-filled" />
-        ) : (
-          <FaRegHeart className="icon-heart-outline" />
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) return imagePath;
+
+    // If it's a relative path, make sure it points to the correct backend URL
+    if (imagePath.startsWith('/uploads/')) {
+      return `http://localhost:5000${imagePath}`;
+    }
+
+    return imagePath;
+  };
+
+  // Format price with safety check
+  const formatPrice = (price) => {
+    if (!price && price !== 0) return 'Price not available';
+    return `Rs ${price.toLocaleString()}`;
+  };
+
+  // Handle image error
+  const handleImageError = (e) => {
+    e.target.src = '/images/default-accommodation.jpg';
+  };
+
+  return (
+    <article className="acc-accommodation-card" onClick={onClick}>
+
+      {/* ------------- Image Section ------------- */}
+      <div className="accommodation-image-container">
+        <img
+          src={getImageUrl(accommodation.images?.[0])}
+          alt={accommodation.accommodationName || 'Accommodation'}
+          className="accommodation-image"
+          loading="lazy"
+          onError={handleImageError}
+        />
+
+        {/* Accommodation Type Badge */}
+        {accommodation.accommodationType && (
+          <span className="accommodation-badge">{accommodation.accommodationType}</span>
         )}
-      </button>
-    </div>
 
-    {/* ------------- Content Section ------------- */}
-    <div className="room-simple-content">
-      {/* Title, Name, Address */}
-      <div className="room-main-info">
-        <h2 className="room-title">
-          {room.roomName}
-        </h2>
-        <div className="room-hotel-name">{room.location}</div>
-      </div>
-
-      {/* Rating & Reviews */}
-      <div className="room-rating-reviews">
-        <StarRating rating={room.averageRating} />
-        <span className="reviews">{room.totalReviews} + reviews</span>
-      </div>
-
-      {/* Amenities Preview */}
-      <div className="room-amenities-preview">
-        {room.amenities.slice(0, 3).map((item, index) => (
-          <span key={index} className="amenity-tag">{item}</span>
-        ))}
-      </div>
-
-      {/* Price & Button */}
-      <div className="room-bottom-row">
-        <div className="room-price-simple">
-          Rs {room.pricePerMonth.toLocaleString()}{' '}
-          <span className="price-period">/ month</span>
-        </div>
+        {/* Save Button */}
         <button
-          className="view-details-btn"
+          className={`save-button ${saved ? 'saved' : ''}`}
           onClick={(e) => {
             e.stopPropagation();
-            onClick();
+            onSave(accommodation._id, e);
           }}
+          aria-label={saved ? 'Remove from saved' : 'Save this accommodation'}
         >
-          View Details
+          {saved ? (
+            <FaHeart className="icon-heart-filled" />
+          ) : (
+            <FaRegHeart className="icon-heart-outline" />
+          )}
         </button>
       </div>
-    </div>
-  </article>
-);
+
+      {/* ------------- Content Section ------------- */}
+      <div className="accommodation-simple-content">
+        {/* Title, Name, Address */}
+        <div className="accommodation-main-info">
+          <h2 className="accommodation-title">
+            {accommodation.accommodationName || 'Unnamed Accommodation'}
+          </h2>
+          <div className="accommodation-location">{accommodation.address} cekjn</div>
+        </div>
+
+        {/* Rating & Reviews */}
+        <div className="accommodation-rating-reviews">
+          <StarRating rating={accommodation.averageRating || 0} />
+          <span className="reviews">
+            {accommodation.totalReviews || 0} review{accommodation.totalReviews !== 1 ? 's' : ''}
+          </span>
+        </div>
+
+        {/* Amenities Preview */}
+        {accommodation.amenities && accommodation.amenities.length > 0 && (
+          <div className="accommodation-amenities-preview">
+            {accommodation.amenities.slice(0, 3).map((item, index) => (
+              <span key={index} className="amenity-tag">{item}</span>
+            ))}
+            {accommodation.amenities.length > 3 && (
+              <span className="amenity-tag-more">+{accommodation.amenities.length - 3} more</span>
+            )}
+          </div>
+        )}
+
+        {/* Price & Button */}
+        <div className="accommodation-bottom-row">
+          <div className="accommodation-price-simple">
+            {formatPrice(accommodation.pricePerMonth)}
+            <span className="price-period"> / month</span>
+          </div>
+          <button
+            className="view-details-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
+          >
+            View Details
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+};
 
 export default AccommodationCard;

@@ -2,33 +2,33 @@ import './FiltersSidebar.css'
 
 const FiltersSidebar = ({
   open,
-  roomTypes,
+  accommodationTypes,
   priceRanges,
   sortOptions,
-  selectedRoomTypes,
+  selectedAccommodationTypes,
   selectedPriceRanges,
   selectedSortOption,
-  onRoomTypeChange,
+  onAccommodationTypeChange,
   onPriceRangeChange,
   onSortChange,
   onResetFilters,
 }) => (
   <aside className={`filters-sidebar ${open ? 'open' : ''}`}>
     
-    {/* ---------------- Room Types Section ----------------*/}
+    {/* ---------------- Accommodation Types Section ----------------*/}
     <div className="filter-section">
-      <h2 className="filter-section-title">Room Types</h2>
+      <h2 className="filter-section-title">Accommodation Types</h2>
       <div className="filter-options">
-        {roomTypes.map((room, i) => (
-          <label key={`room-type-${i}`} className="filter-checkbox">
+        {accommodationTypes.map((accommodation, i) => (
+          <label key={`accommodation-type-${i}`} className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedRoomTypes.includes(room)}
-              onChange={(e) => onRoomTypeChange(e.target.checked, room)}
-              aria-label={room}
+              checked={selectedAccommodationTypes.includes(accommodation)}
+              onChange={(e) => onAccommodationTypeChange(e.target.checked, accommodation)}
+              aria-label={accommodation}
             />
             <span className="checkmark"></span>
-            <span className="filter-label">{room}</span>
+            <span className="filter-label">{accommodation}</span>
           </label>
         ))}
       </div>

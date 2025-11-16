@@ -38,9 +38,11 @@ const FiltersSidebar = ({
   selectedVehicleTypes,
   selectedPriceRanges,
   selectedSortOption,
+  showAvailableOnly,
   handleVehicleTypeChange,
   handlePriceRangeChange,
   handleSortChange,
+  handleAvailableChange,
   resetAllFilters,
   canResetFilters,
 }) => (
@@ -49,6 +51,24 @@ const FiltersSidebar = ({
       className={`filters-sidebar ${openFilters ? 'open' : ''}`}
       aria-label="Filters"
     >
+      <div className="filter-section">
+        <h2 className="filter-section-title">Availability</h2>
+        <div className="filter-options">
+          <label className="filter-checkbox available-filter">
+            <input
+              type="checkbox"
+              checked={showAvailableOnly}
+              onChange={(e) => handleAvailableChange(e.target.checked)}
+              aria-label="Show available vehicles only"
+            />
+            <span className="checkmark"></span>
+            <span className="filter-label available-label">
+              Available Now
+            </span>
+          </label>
+        </div>
+      </div>
+
       <div className="filter-section">
         <h2 className="filter-section-title">Vehicle Types</h2>
         <div className="filter-options">

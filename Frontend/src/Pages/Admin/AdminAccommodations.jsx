@@ -1,39 +1,34 @@
 import { useState, useEffect } from 'react';
 import { assets } from '../../Assets/assets';
-import './AdminTransport.css';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import './AdminAccommodations.css';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
-const AdminTransport = () => {
+const AdminAccommodations = () => {
+  // State for form inputs - updated with all model fields
   const [formData, setFormData] = useState({
-    vehicle_name: '',
-    vehicle_type: '',
-    brand: '',
-    model: '',
-    fuel_type: 'Petrol',
-    year: new Date().getFullYear(),
-    registration_number: '',
-    rental_price_per_day: '',
-    deposit_amount: '',
-    seating_capacity: 2,
+    owner_id: '',
+    accommodationName: '',
+    accommodationType: '',
+    pricePerMonth: '',
+    SecurityDeposit: '',
     description: '',
-    features: [],
-    customFeature: '',
+    amenities: [],
+    customAmenity: '',
+    images: [],
+    isAvailable: true,
+    noOfBed: 1,
+    status: 'Active',
     address: '',
     location: {
       type: 'Point',
       coordinates: ['', ''],
       mapSrc: '',
       title: ''
-    },
-    isAvailable: true,
-    status: 'Active',
-    owner_id: ''
+    }
   });
 
-  const [vehicles, setVehicles] = useState([]);
+  const [accommodations, setAccommodations] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [owners, setOwners] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -42,192 +37,200 @@ const AdminTransport = () => {
   const [imageFiles, setImageFiles] = useState([]);
   const [bookingStatusFilter, setBookingStatusFilter] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Standard features options
-  const standardFeatures = [
-    "Air Conditioning",
-    "Automatic Transmission",
-    "Manual Transmission",
-    "Bluetooth Audio",
-    "Navigation System",
-    "Backup Camera",
-    "Leather Seats",
-    "Sunroof",
-    "Alloy Wheels",
-    "Hybrid Engine",
-    "GPS Tracking",
-    "Child Seat",
-    "Roof Rack",
-    "Towing Package",
-    "Keyless Entry"
+  // Standard amenities options
+  const standardAmenities = [
+    "Wi-Fi",
+    "Study Table",
+    "Laundry Service",
+    "Shared Kitchen",
+    "24/7 Water",
+    "Hot Water",
+    "Fan",
+    "Balcony",
+    "Attached Bathroom",
+    "Meal Plan"
   ];
 
-  // Vehicle types
-  const vehicleTypes = ["Motorbike", "Car", "Scooter", "Bicycle", "Van", "Truck", "Other"];
-
-  // Fuel types
-  const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "CNG", "Other"];
-
-  // Status types
-  const statusTypes = ["Active", "Blocked"];
-
+  // Fetch accommodations and owners on component mount
   useEffect(() => {
-    fetchVehicles();
-    fetchBookings();
+    fetchAccommodations();
     fetchOwners();
+    fetchBookings();
   }, []);
 
-  // Get all transport
-  const fetchVehicles = async () => {
+  // API Functions
+  const fetchAccommodations = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/transports?limit=100`);
+      const response = await fetch(`${API_BASE_URL}/accommodations?limit=100`);
       const data = await response.json();
-
+      
       if (data.success) {
-        setVehicles(data.transports);
+        setAccommodations(data.accommodations);
+      } else {
+        setError('Failed to fetch accommodations');
       }
     } catch (error) {
-      console.error('Error fetching vehicles:', error);
-      toast.error('Error loading vehicles');
+      console.error('Error fetching accommodations:', error);
+      setError('Failed to fetch accommodations');
     } finally {
       setLoading(false);
     }
   };
 
-  // Get all booking
-  const fetchBookings = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/transport-bookings`);
-      const data = await response.json();
-
-      if (data.success) {
-        setBookings(data.bookings || []);
-      }
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      toast.error('Error loading bookings');
-    }
-  };
-
-  // Get all owners
   const fetchOwners = async () => {
     try {
-      const response = await fetch(`${API_BASE}/owners`);
+      const response = await fetch(`${API_BASE_URL}/owners`);
       const data = await response.json();
-
+      
       if (data.success) {
         setOwners(data.owners || []);
+        // Set default owner if available
         if (data.owners.length > 0 && !formData.owner_id) {
           setFormData(prev => ({ ...prev, owner_id: data.owners[0]._id }));
         }
       }
     } catch (error) {
       console.error('Error fetching owners:', error);
-      toast.error('Error loading owners');
     }
   };
 
-  // Create Vehicle 
-  const createVehicle = async (vehicleData) => {
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/accommodation-bookings`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setBookings(data.bookings || []);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
+  };
+
+  const createAccommodation = async (accommodationData) => {
     try {
       const formData = new FormData();
-      Object.keys(vehicleData).forEach(key => {
-        if (key === 'features') {
-          formData.append(key, JSON.stringify(vehicleData[key]));
+      
+      // Append all fields
+      Object.keys(accommodationData).forEach(key => {
+        if (key === 'amenities') {
+          formData.append(key, JSON.stringify(accommodationData[key]));
         } else if (key === 'location') {
-          formData.append(key, JSON.stringify(vehicleData[key]));
-        } else if (key !== 'vehicle_images' && key !== 'customFeature') {
-          formData.append(key, vehicleData[key]);
+          formData.append(key, JSON.stringify(accommodationData[key]));
+        } else if (key !== 'images' && key !== 'customAmenity') {
+          formData.append(key, accommodationData[key]);
         }
       });
 
+      // Append images
       imageFiles.forEach(file => {
-        formData.append('vehicle_images', file);
+        formData.append('images', file);
       });
 
-      const response = await fetch(`${API_BASE}/transports`, {
+      const response = await fetch(`${API_BASE_URL}/accommodations`, {
         method: 'POST',
         body: formData,
       });
 
       const data = await response.json();
-
+      
       if (data.success) {
-        await fetchVehicles();
-        return { success: true, data: data.transport };
+        await fetchAccommodations();
+        return { success: true, data: data.accommodation };
       } else {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error('Error creating vehicle:', error);
-      return { success: false, message: 'Failed to create vehicle' };
+      console.error('Error creating accommodation:', error);
+      return { success: false, message: 'Failed to create accommodation' };
     }
   };
 
-  // Update Vehicle
-  const updateVehicle = async (id, updateData) => {
+  const updateAccommodation = async (id, updateData) => {
     try {
       const formData = new FormData();
-
+      
+      // Append all fields
       Object.keys(updateData).forEach(key => {
-        if (key === 'features') {
+        if (key === 'amenities') {
           formData.append(key, JSON.stringify(updateData[key]));
         } else if (key === 'location') {
           formData.append(key, JSON.stringify(updateData[key]));
-        } else if (key !== 'vehicle_images' && key !== 'customFeature') {
+        } else if (key !== 'images' && key !== 'customAmenity') {
           formData.append(key, updateData[key]);
         }
       });
 
+      // Append new images if any
       imageFiles.forEach(file => {
-        formData.append('vehicle_images', file);
+        formData.append('images', file);
       });
 
-      const response = await fetch(`${API_BASE}/transports/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/accommodations/${id}`, {
         method: 'PUT',
         body: formData,
       });
 
       const data = await response.json();
-
+      
       if (data.success) {
-        await fetchVehicles();
-        return { success: true, data: data.transport };
+        await fetchAccommodations();
+        return { success: true, data: data.accommodation };
       } else {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error('Error updating vehicle:', error);
-      return { success: false, message: 'Failed to update vehicle' };
+      console.error('Error updating accommodation:', error);
+      return { success: false, message: 'Failed to update accommodation' };
     }
   };
 
-  // Delete Vehicle
-  const deleteVehicle = async (id) => {
+  const deleteAccommodation = async (id) => {
     try {
-      const response = await fetch(`${API_BASE}/transports/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/accommodations/${id}`, {
         method: 'DELETE',
       });
 
       const data = await response.json();
-
+      
       if (data.success) {
-        await fetchVehicles();
+        await fetchAccommodations();
         return { success: true };
       } else {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error('Error deleting vehicle:', error);
-      return { success: false, message: 'Failed to delete vehicle' };
+      console.error('Error deleting accommodation:', error);
+      return { success: false, message: 'Failed to delete accommodation' };
     }
   };
 
-  // update Vehicle Status 
-  const updateVehicleStatus = async (id, status) => {
+  const toggleAccommodationAvailability = async (id) => {
     try {
-      const response = await fetch(`${API_BASE}/transports/${id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/accommodations/${id}/availability/toggle`, {
+        method: 'PATCH',
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        await fetchAccommodations();
+        return { success: true };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Error toggling availability:', error);
+      return { success: false, message: 'Failed to toggle availability' };
+    }
+  };
+
+  const updateAccommodationStatus = async (id, status) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/accommodations/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -236,9 +239,9 @@ const AdminTransport = () => {
       });
 
       const data = await response.json();
-
+      
       if (data.success) {
-        await fetchVehicles();
+        await fetchAccommodations();
         return { success: true };
       } else {
         return { success: false, message: data.message };
@@ -249,24 +252,24 @@ const AdminTransport = () => {
     }
   };
 
-  // Vehicle statistics
-  const calculateVehicleStats = () => {
-    const totalVehicles = vehicles.length;
-    const occupiedVehicles = vehicles.filter(vehicle => !vehicle.isAvailable).length;
-    const availableVehicles = totalVehicles - occupiedVehicles;
-    const averageRating = vehicles.length > 0
-      ? vehicles.reduce((sum, vehicle) => sum + (vehicle.averageRating || 0), 0) / totalVehicles
+  // Accommodation statistics
+  const calculateAccommodationStats = () => {
+    const totalAccommodations = accommodations.length;
+    const occupiedAccommodations = accommodations.filter(accommodation => !accommodation.isAvailable).length;
+    const availableAccommodations = totalAccommodations - occupiedAccommodations;
+    const averageRating = accommodations.length > 0 
+      ? accommodations.reduce((sum, accommodation) => sum + (accommodation.averageRating || 0), 0) / totalAccommodations
       : 0;
 
     return {
-      totalVehicles,
-      occupiedVehicles,
-      availableVehicles,
+      totalAccommodations,
+      occupiedAccommodations,
+      availableAccommodations,
       averageRating: averageRating.toFixed(1),
     };
   };
 
-  const vehicleStats = calculateVehicleStats();
+  const accommodationStats = calculateAccommodationStats();
 
   // Booking statistics
   const calculateBookingStats = () => {
@@ -319,7 +322,7 @@ const AdminTransport = () => {
       ...prev,
       location: {
         ...prev.location,
-        coordinates: prev.location.coordinates.map((coord, i) =>
+        coordinates: prev.location.coordinates.map((coord, i) => 
           i === index ? parseFloat(value) || '' : coord
         )
       }
@@ -334,46 +337,45 @@ const AdminTransport = () => {
     // Create preview URLs
     const previews = files.map(file => URL.createObjectURL(file));
     setImagePreviews(previews);
-    toast.success(`${files.length} images uploaded successfully!`);
   };
 
-  // Handle feature toggle
-  const toggleFeature = (feature) => {
+  // Handle amenity toggle
+  const toggleAmenity = (amenity) => {
     setFormData(prev => {
-      const newFeatures = prev.features.includes(feature)
-        ? prev.features.filter(f => f !== feature)
-        : [...prev.features, feature];
+      const newAmenities = prev.amenities.includes(amenity)
+        ? prev.amenities.filter(a => a !== amenity)
+        : [...prev.amenities, amenity];
 
       return {
         ...prev,
-        features: newFeatures
+        amenities: newAmenities
       };
     });
   };
 
-  // Add custom feature
-  const addCustomFeature = () => {
-    if (formData.customFeature.trim() && !formData.features.includes(formData.customFeature)) {
+  // Add custom amenity
+  const addCustomAmenity = () => {
+    if (formData.customAmenity.trim() && !formData.amenities.includes(formData.customAmenity)) {
       setFormData(prev => ({
         ...prev,
-        features: [...prev.features, prev.customFeature],
-        customFeature: ''
+        amenities: [...prev.amenities, prev.customAmenity],
+        customAmenity: ''
       }));
-    } 
+    }
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
     try {
-      const vehicleData = {
+      const accommodationData = {
         ...formData,
-        rental_price_per_day: parseFloat(formData.rental_price_per_day),
-        deposit_amount: parseFloat(formData.deposit_amount),
-        seating_capacity: parseInt(formData.seating_capacity),
-        year: parseInt(formData.year),
+        pricePerMonth: parseFloat(formData.pricePerMonth),
+        SecurityDeposit: parseFloat(formData.SecurityDeposit) || 0,
+        noOfBed: parseInt(formData.noOfBed),
         isAvailable: formData.isAvailable === 'true' || formData.isAvailable === true,
         location: {
           ...formData.location,
@@ -383,55 +385,52 @@ const AdminTransport = () => {
 
       let result;
       if (editingId) {
-        result = await updateVehicle(editingId, vehicleData);
+        result = await updateAccommodation(editingId, accommodationData);
       } else {
-        result = await createVehicle(vehicleData);
+        result = await createAccommodation(accommodationData);
       }
 
       if (result.success) {
-        toast.success(editingId ? 'Vehicle updated successfully!' : 'Vehicle added successfully!');
+        alert(editingId ? 'Accommodation updated successfully!' : 'Accommodation added successfully!');
         resetForm();
         setActiveTab('view');
       } else {
-        toast.error(result.message || 'Operation failed');
+        setError(result.message);
       }
     } catch (error) {
       console.error('Error submitting form:', error);
+      setError('Failed to submit form');
     } finally {
       setLoading(false);
     }
   };
 
-  // Edit vehicle
-  const handleEdit = (vehicle) => {
+  // Edit accommodation
+  const handleEdit = (accommodation) => {
     setFormData({
-      vehicle_name: vehicle.vehicle_name,
-      vehicle_type: vehicle.vehicle_type,
-      brand: vehicle.brand,
-      model: vehicle.model,
-      fuel_type: vehicle.fuel_type,
-      year: vehicle.year,
-      registration_number: vehicle.registration_number,
-      rental_price_per_day: vehicle.rental_price_per_day,
-      deposit_amount: vehicle.deposit_amount,
-      seating_capacity: vehicle.seating_capacity,
-      description: vehicle.description || '',
-      features: vehicle.features || [],
-      address: vehicle.address || '',
+      owner_id: accommodation.owner_id?._id || accommodation.owner_id,
+      accommodationName: accommodation.accommodationName,
+      accommodationType: accommodation.accommodationType,
+      pricePerMonth: accommodation.pricePerMonth,
+      SecurityDeposit: accommodation.SecurityDeposit,
+      amenities: accommodation.amenities || [],
+      isAvailable: accommodation.isAvailable,
+      noOfBed: accommodation.noOfBed,
+      description: accommodation.description || '',
+      status: accommodation.status,
+      address: accommodation.address || '',
       location: {
-        type: vehicle.location?.type || 'Point',
-        coordinates: vehicle.location?.coordinates || ['', ''],
-        mapSrc: vehicle.location?.mapSrc || '',
-        title: vehicle.location?.title || ''
+        type: accommodation.location?.type || 'Point',
+        coordinates: accommodation.location?.coordinates || ['', ''],
+        mapSrc: accommodation.location?.mapSrc || '',
+        title: accommodation.location?.title || ''
       },
-      isAvailable: vehicle.isAvailable,
-      status: vehicle.status,
-      owner_id: vehicle.owner_id?._id || vehicle.owner_id,
-      customFeature: '',
+      customAmenity: '',
     });
 
-    if (vehicle.vehicle_images && vehicle.vehicle_images.length > 0) {
-      setImagePreviews(vehicle.vehicle_images.map(img =>
+    // Set image previews from existing images
+    if (accommodation.images && accommodation.images.length > 0) {
+      setImagePreviews(accommodation.images.map(img =>
         img.startsWith('http') ? img : `http://localhost:5000${img}`
       ));
     } else {
@@ -439,42 +438,41 @@ const AdminTransport = () => {
     }
 
     setImageFiles([]);
-    setEditingId(vehicle._id);
+    setEditingId(accommodation._id);
     setActiveTab('add');
-    toast.info('Editing vehicle: ' + (vehicle.vehicle_name || `${vehicle.brand} ${vehicle.model}`));
   };
 
-  // Delete vehicle
+  // Delete accommodation
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this vehicle?')) {
+    if (window.confirm('Are you sure you want to delete this accommodation?')) {
       setLoading(true);
-      const result = await deleteVehicle(id);
+      const result = await deleteAccommodation(id);
       if (!result.success) {
-        toast.error(result.message || 'Failed to delete vehicle');
+        setError(result.message);
       } else {
-        toast.success('Vehicle deleted successfully!');
+        alert('Accommodation deleted successfully!');
       }
       setLoading(false);
     }
   };
 
-  // Toggle vehicle status
-  const toggleVehicleStatus = async (id, currentStatus) => {
+  // Toggle accommodation availability
+  const toggleAvailability = async (id) => {
     setLoading(true);
-    let newStatus;
-
-    // Cycle through statuses
-    if (currentStatus === 'Active') {
-      newStatus = 'Blocked';
-    } else {
-      newStatus = 'Active';
-    }
-
-    const result = await updateVehicleStatus(id, newStatus);
+    const result = await toggleAccommodationAvailability(id);
     if (!result.success) {
-      toast.error(result.message || 'Failed to update vehicle status');
-    } else {
-      toast.success(`Vehicle status updated to ${newStatus}`);
+      setError(result.message);
+    }
+    setLoading(false);
+  };
+
+  // Toggle accommodation status between Active and Blocked
+  const toggleAccommodationStatus = async (id, currentStatus) => {
+    setLoading(true);
+    const newStatus = currentStatus === 'Active' ? 'Blocked' : 'Active';
+    const result = await updateAccommodationStatus(id, newStatus);
+    if (!result.success) {
+      setError(result.message);
     }
     setLoading(false);
   };
@@ -482,7 +480,7 @@ const AdminTransport = () => {
   // Update booking status
   const updateBookingStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`${API_BASE}/transport-bookings/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/accommodation-bookings/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -491,49 +489,45 @@ const AdminTransport = () => {
       });
 
       const data = await response.json();
-
+      
       if (data.success) {
         await fetchBookings();
-        toast.success(`Booking status updated to ${newStatus}`);
       } else {
-        toast.error('Failed to update booking status');
+        setError('Failed to update booking status');
       }
     } catch (error) {
       console.error('Error updating booking status:', error);
-      toast.error('Failed to update booking status');
+      setError('Failed to update booking status');
     }
   };
 
   // Reset form
   const resetForm = () => {
     setFormData({
-      vehicle_name: '',
-      vehicle_type: '',
-      brand: '',
-      model: '',
-      fuel_type: 'Petrol',
-      year: new Date().getFullYear(),
-      registration_number: '',
-      rental_price_per_day: '',
-      deposit_amount: '',
-      seating_capacity: 2,
+      owner_id: owners[0]?._id || '',
+      accommodationName: '',
+      accommodationType: '',
+      pricePerMonth: '',
+      SecurityDeposit: '',
       description: '',
-      features: [],
-      customFeature: '',
+      amenities: [],
+      customAmenity: '',
+      images: [],
+      isAvailable: true,
+      noOfBed: 1,
+      status: 'Active',
       address: '',
       location: {
         type: 'Point',
         coordinates: ['', ''],
         mapSrc: '',
         title: ''
-      },
-      isAvailable: true,
-      status: 'Active',
-      owner_id: owners[0]?._id || ''
+      }
     });
     setImagePreviews([]);
     setImageFiles([]);
     setEditingId(null);
+    setError('');
   };
 
   // Format date for display
@@ -542,10 +536,26 @@ const AdminTransport = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Get vehicle display name
-  const getVehicleDisplayName = (vehicle) => {
-    return vehicle.vehicle_name || `${vehicle.brand} ${vehicle.model}`;
+  // Calculate security deposit based on accommodation type
+  const calculateSecurityDeposit = (type) => {
+    switch (type) {
+      case 'Single Bed': return 10000;
+      case 'Double Bed': return 15000;
+      case 'Triple Sharing': return 20000;
+      case 'Annexe': return 25000;
+      default: return 0;
+    }
   };
+
+  // Update security deposit when accommodation type changes
+  useEffect(() => {
+    if (formData.accommodationType) {
+      setFormData(prev => ({
+        ...prev,
+        SecurityDeposit: calculateSecurityDeposit(prev.accommodationType)
+      }));
+    }
+  }, [formData.accommodationType]);
 
   // Get owner display name
   const getOwnerDisplayName = (owner) => {
@@ -555,45 +565,32 @@ const AdminTransport = () => {
     return 'N/A';
   };
 
-  // Remove image preview
-  const removeImagePreview = (index) => {
-    const newPreviews = [...imagePreviews];
-    newPreviews.splice(index, 1);
-    setImagePreviews(newPreviews);
-
-    const newFiles = [...imageFiles];
-    newFiles.splice(index, 1);
-    setImageFiles(newFiles);
-  };
-
-  // ----------------------- Render Method -----------------------
-  if (loading) {
-    return (
-      <div className="dashboard-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading dashboard data...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="transport-container">
-      {/* Page Title */}
-      <h1 className="title">Transport & Bookings Management</h1>
+    <div className="accommodations-container">
+      {/* Error Message */}
+      {error && (
+        <div className="error-message">
+          {error}
+          <button onClick={() => setError('')} className="close-error">×</button>
+        </div>
+      )}
 
-      {/* ----------------- Navigation Tabs ----------------- */}
+      {/* Page Title */}
+      <h1 className="title">Accommodations & Bookings Management</h1>
+
+      {/* Navigation Tabs */}
       <div className="tabs">
         <button
           className={`tab-button ${activeTab === 'add' ? 'active' : ''}`}
           onClick={() => setActiveTab('add')}
         >
-          {editingId ? 'Edit Vehicle' : 'Add Vehicle'}
+          {editingId ? 'Edit Accommodation' : 'Add Accommodation'}
         </button>
         <button
           className={`tab-button ${activeTab === 'view' ? 'active' : ''}`}
           onClick={() => setActiveTab('view')}
         >
-          View All Vehicles
+          View All Accommodations
         </button>
         <button
           className={`tab-button ${activeTab === 'bookings' ? 'active' : ''}`}
@@ -609,27 +606,27 @@ const AdminTransport = () => {
         </button>
       </div>
 
-      {/* ----------------- Add/Edit Vehicle Form ----------------- */}
+      {/* Add/Edit Accommodation Form */}
       {activeTab === 'add' && (
-        <form onSubmit={handleSubmit} className="vehicle-form">
-          {/* Vehicle Statistics Summary */}
+        <form onSubmit={handleSubmit} className="accommodation-form">
+          {/* Accommodation Statistics Summary */}
           <div className="stats-summary">
             <div className="stat-card">
               <div>
-                <h3>Total Vehicles</h3>
-                <p>{vehicleStats.totalVehicles}</p>
+                <h3>Total Accommodations</h3>
+                <p>{accommodationStats.totalAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Occupied</h3>
-                <p>{vehicleStats.occupiedVehicles}</p>
+                <p>{accommodationStats.occupiedAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
               <div>
                 <h3>Available</h3>
-                <p>{vehicleStats.availableVehicles}</p>
+                <p>{accommodationStats.availableAccommodations}</p>
               </div>
             </div>
             <div className="stat-card">
@@ -645,12 +642,11 @@ const AdminTransport = () => {
             <h2 className='section-title'>Basic Information</h2>
             <div className="form-grid">
               <div className="form-group">
-                <label>Vehicle Name</label>
+                <label>Accommodation Name</label>
                 <input
-                  name="vehicle_name"
-                  value={formData.vehicle_name}
+                  name="accommodationName"
+                  value={formData.accommodationName}
                   onChange={handleInputChange}
-                  placeholder="e.g., City Commuter, Family Van"
                   required
                 />
               </div>
@@ -673,114 +669,55 @@ const AdminTransport = () => {
               </div>
 
               <div className="form-group">
-                <label>Vehicle Type</label>
+                <label>Accommodation Type</label>
                 <select
-                  name="vehicle_type"
-                  value={formData.vehicle_type}
+                  name="accommodationType"
+                  value={formData.accommodationType}
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="">Select Vehicle Type</option>
-                  {vehicleTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
+                  <option value="">Select Accommodation Type</option>
+                  <option value="Single Bed">Single Bed</option>
+                  <option value="Double Bed">Double Bed</option>
+                  <option value="Triple Sharing">Triple Sharing</option>
+                  <option value="Annexe">Annexe</option>
                 </select>
               </div>
 
               <div className="form-group">
-                <label>Brand</label>
-                <input
-                  name="brand"
-                  value={formData.brand}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Toyota, Honda, Yamaha"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Model</label>
-                <input
-                  name="model"
-                  value={formData.model}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Corolla, Civic, MT-15"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Fuel Type</label>
-                <select
-                  name="fuel_type"
-                  value={formData.fuel_type}
-                  onChange={handleInputChange}
-                  required
-                >
-                  {fuelTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Year</label>
+                <label>Price Per Month (Rs)</label>
                 <input
                   type="number"
-                  name="year"
-                  value={formData.year}
+                  name="pricePerMonth"
+                  value={formData.pricePerMonth}
                   onChange={handleInputChange}
-                  min="1900"
-                  max={new Date().getFullYear() + 1}
                   required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Registration Number</label>
-                <input
-                  name="registration_number"
-                  value={formData.registration_number}
-                  onChange={handleInputChange}
-                  placeholder="e.g., BA 1 PA 1234"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Price Per Day (Rs)</label>
-                <input
-                  type="number"
-                  name="rental_price_per_day"
-                  value={formData.rental_price_per_day}
-                  onChange={handleInputChange}
                   min="0"
-                  required
                 />
               </div>
 
               <div className="form-group">
-                <label>Deposit Amount (Rs)</label>
+                <label>Security Deposit (Rs)</label>
                 <input
                   type="number"
-                  name="deposit_amount"
-                  value={formData.deposit_amount}
+                  name="SecurityDeposit"
+                  value={formData.SecurityDeposit}
                   onChange={handleInputChange}
+                  required
                   min="0"
-                  required
                 />
               </div>
 
               <div className="form-group">
-                <label>Seating Capacity</label>
+                <label>No of Beds</label>
                 <input
                   type="number"
-                  name="seating_capacity"
-                  value={formData.seating_capacity}
+                  name="noOfBed"
+                  value={formData.noOfBed}
                   onChange={handleInputChange}
+                  required
                   min="1"
-                  max="50"
-                  required
+                  max="10"
                 />
               </div>
 
@@ -797,28 +734,13 @@ const AdminTransport = () => {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>Status</label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  required
-                >
-                  {statusTypes.map(status => (
-                    <option key={status} value={status}>{status}</option>
-                  ))}
-                </select>
-              </div>
-
               <div className="form-group full-width">
                 <label>Address</label>
-                <textarea
+                <input
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  placeholder="Enter vehicle location address..."
-                  rows="2"
+                  placeholder="Enter full address"
                   required
                 />
               </div>
@@ -829,7 +751,7 @@ const AdminTransport = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Enter detailed description of the vehicle..."
+                  placeholder="Enter detailed description of the accommodation..."
                   rows="3"
                   required
                 />
@@ -847,7 +769,7 @@ const AdminTransport = () => {
                   name="title"
                   value={formData.location.title}
                   onChange={handleLocationChange}
-                  placeholder="e.g., City Center, Near Airport"
+                  placeholder="e.g., City Center, Near University"
                 />
               </div>
 
@@ -885,41 +807,41 @@ const AdminTransport = () => {
             </div>
           </div>
 
-          {/* Features */}
+          {/* Amenities */}
           <div className="form-section">
-            <h2 className='section-title'>Features</h2>
-            <div className="features-grid">
-              {standardFeatures.map((feature, index) => (
-                <div key={index} className="feature-item">
+            <h2 className='section-title'>Amenities</h2>
+            <div className="amenities-grid">
+              {standardAmenities.map((amenity, index) => (
+                <div key={index} className="amenity-item">
                   <input
                     type="checkbox"
-                    id={`feature-${index}`}
-                    checked={formData.features.includes(feature)}
-                    onChange={() => toggleFeature(feature)}
+                    id={`amenity-${index}`}
+                    checked={formData.amenities.includes(amenity)}
+                    onChange={() => toggleAmenity(amenity)}
                   />
-                  <label className='feature-label' htmlFor={`feature-${index}`}>{feature}</label>
+                  <label className='amenity-label' htmlFor={`amenity-${index}`}>{amenity}</label>
                 </div>
               ))}
             </div>
 
-            <div className="custom-feature">
+            <div className="custom-amenity">
               <input
                 type="text"
-                value={formData.customFeature}
-                onChange={(e) => setFormData({ ...formData, customFeature: e.target.value })}
-                placeholder="Add custom feature"
+                value={formData.customAmenity}
+                onChange={(e) => setFormData({ ...formData, customAmenity: e.target.value })}
+                placeholder="Add custom amenity"
               />
-              <button type="button" onClick={addCustomFeature}>Add</button>
+              <button type="button" onClick={addCustomAmenity}>Add</button>
             </div>
 
-            <div className="selected-features">
-              {formData.features.map((feature, index) => (
-                <span key={index} className="feature-tag">
-                  {feature}
+            <div className="selected-amenities">
+              {formData.amenities.map((amenity, index) => (
+                <span key={index} className="amenity-tag">
+                  {amenity}
                   <button
                     type="button"
-                    onClick={() => toggleFeature(feature)}
-                    className="remove-feature"
+                    onClick={() => toggleAmenity(amenity)}
+                    className="remove-amenity"
                   >
                     ×
                   </button>
@@ -928,29 +850,37 @@ const AdminTransport = () => {
             </div>
           </div>
 
-          {/* Vehicle Images */}
+          {/* Accommodation Images */}
           <div className="form-section">
-            <h2 className='section-title'>Vehicle Images</h2>
+            <h2 className='section-title'>Accommodation Images</h2>
             <div className="image-upload-container">
               <input
                 type="file"
                 multiple
                 accept="image/*"
                 onChange={handleImageUpload}
-                id="vehicle-images"
+                id="accommodation-images"
                 style={{ display: 'none' }}
               />
-              <label htmlFor="vehicle-images" className="upload-button">
+              <label htmlFor="accommodation-images" className="upload-button">
                 Choose Images (4 recommended)
               </label>
 
               <div className="image-preview-grid">
                 {imagePreviews.map((image, index) => (
                   <div key={index} className="image-preview">
-                    <img src={image} alt={`Vehicle preview ${index}`} />
+                    <img src={image} alt={`Accommodation preview ${index}`} />
                     <button
                       type="button"
-                      onClick={() => removeImagePreview(index)}
+                      onClick={() => {
+                        const newPreviews = [...imagePreviews];
+                        newPreviews.splice(index, 1);
+                        setImagePreviews(newPreviews);
+
+                        const newFiles = [...imageFiles];
+                        newFiles.splice(index, 1);
+                        setImageFiles(newFiles);
+                      }}
                       className="remove-image"
                     >
                       ×
@@ -963,7 +893,7 @@ const AdminTransport = () => {
 
           <div className="form-actions">
             <button type="submit" className="submit-button" disabled={loading}>
-              {loading ? 'Saving...' : (editingId ? 'Update Vehicle' : 'Add Vehicle')}
+              {loading ? 'Saving...' : (editingId ? 'Update Accommodation' : 'Add Accommodation')}
             </button>
             {editingId && (
               <button
@@ -979,36 +909,37 @@ const AdminTransport = () => {
         </form>
       )}
 
-      {/* ----------------- View All Vehicles ----------------- */}
+      {/* View All Accommodations */}
       {activeTab === 'view' && (
-        <div className="vehicles-list">
-          {/* Vehicles List Header */}
+        <div className="accommodations-list">
+          {/* Accommodations List Header */}
           <div className="list-header">
-            <h2 className='section-title'>All Vehicles ({vehicles.length})</h2>
+            <h2 className='section-title'>All Accommodations ({accommodations.length})</h2>
             <div className="search-filter">
-              <input className='search-input' type="text" placeholder="Search vehicles..." />
+              <input className='search-input' type="text" placeholder="Search accommodations..." />
               <select>
                 <option>Filter by Type</option>
-                {vehicleTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
+                <option value='Single Bed'>Single Bed</option>
+                <option value='Double Bed'>Double Bed</option>
+                <option value='Triple Sharing'>Triple Sharing</option>
+                <option value='Annexe'>Annexe</option>
               </select>
             </div>
           </div>
 
           {loading ? (
-            <div className="loading">Loading vehicles...</div>
+            <div className="loading">Loading accommodations...</div>
           ) : (
-            <table className="vehicles-table">
+            <table className="accommodations-table">
               <thead>
                 <tr>
                   <th>Image</th>
                   <th>ID</th>
-                  <th>Vehicle Name</th>
+                  <th>Accommodation Name</th>
                   <th>Type</th>
-                  <th>Brand/Model</th>
-                  <th>Price/Day</th>
+                  <th>Price</th>
                   <th>Owner</th>
+                  <th>Address</th>
                   <th>Availability</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -1016,52 +947,62 @@ const AdminTransport = () => {
               </thead>
 
               <tbody>
-                {vehicles.map((vehicle) => (
-                  <tr key={vehicle._id} className={`table-row ${vehicle.status}`}>
+                {accommodations.map((accommodation) => (
+                  <tr key={accommodation._id} className={`table-row ${accommodation.status}`}>
                     <td>
                       <img
-                        src={vehicle.vehicle_images?.[0] ?
-                          (vehicle.vehicle_images[0].startsWith('http') ?
-                            vehicle.vehicle_images[0] :
-                            `http://localhost:5000${vehicle.vehicle_images[0]}`)
-                          : assets.defaultVehicle
+                        src={accommodation.images?.[0] ?
+                          (accommodation.images[0].startsWith('http') ?
+                            accommodation.images[0] :
+                            `http://localhost:5000${accommodation.images[0]}`)
+                          : assets.defaultAccommodation
                         }
-                        alt={getVehicleDisplayName(vehicle)}
-                        className="vehicle-thumbnail"
+                        alt={accommodation.accommodationName}
+                        className="accommodation-thumbnail"
                       />
                     </td>
-                    <td>{vehicle._id}</td>
-                    <td>{getVehicleDisplayName(vehicle)}</td>
-                    <td>{vehicle.vehicle_type}</td>
-                    <td>{vehicle.brand} {vehicle.model}</td>
-                    <td>Rs {vehicle.rental_price_per_day}</td>
-                    <td>{getOwnerDisplayName(vehicle.owner_id)}</td>
+                    <td>{accommodation._id}</td>
+                    <td>{accommodation.accommodationName}</td>
+                    <td>{accommodation.accommodationType}</td>
+                    <td>Rs {accommodation.pricePerMonth}</td>
+                    <td>{getOwnerDisplayName(accommodation.owner_id)}</td>
+                    <td className="address-cell">
+                      {accommodation.address ? (
+                        <span title={accommodation.address}>
+                          {accommodation.address.length > 30 
+                            ? `${accommodation.address.substring(0, 30)}...` 
+                            : accommodation.address
+                          }
+                        </span>
+                      ) : 'N/A'}
+                    </td>
                     <td>
                       <button
-                        className={`status-badge ${vehicle.available === "Available" ? 'available' : 'occupied'}`}
+                        onClick={() => toggleAvailability(accommodation._id)}
+                        className={`status-badge ${accommodation.isAvailable ? 'available' : 'occupied'}`}
                       >
-                        {vehicle.available}
+                        {accommodation.isAvailable ? 'Available' : 'Occupied'}
                       </button>
                     </td>
                     <td>
                       <span
-                        className={`status-badge ${vehicle.status === 'Active' ? 'active' : 'blocked'}`}
-                        onClick={() => toggleVehicleStatus(vehicle._id, vehicle.status)}
+                        className={`status-badge ${accommodation.status === 'Blocked' ? 'blocked' : 'active'}`}
+                        onClick={() => toggleAccommodationStatus(accommodation._id, accommodation.status)}
                         style={{ cursor: 'pointer' }}
                       >
-                        {vehicle.status}
+                        {accommodation.status || 'Active'}
                       </span>
                     </td>
 
                     <td className='flex'>
                       <button
-                        onClick={() => handleEdit(vehicle)}
+                        onClick={() => handleEdit(accommodation)}
                         className="action-button edit"
                       >
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(vehicle._id)}
+                        onClick={() => handleDelete(accommodation._id)}
                         className="action-button delete"
                       >
                         Delete
@@ -1073,17 +1014,17 @@ const AdminTransport = () => {
             </table>
           )}
 
-          {vehicles.length === 0 && !loading && (
+          {accommodations.length === 0 && !loading && (
             <div className="no-data">
-              No vehicles found
+              No accommodations found
             </div>
           )}
         </div>
       )}
 
-      {/* ----------------- Bookings Management ----------------- */}
+      {/* Bookings Management */}
       {activeTab === 'bookings' && (
-        <div className="vehicles-list">
+        <div className="accommodations-list">
           {/* Bookings List Header */}
           <div className="list-header">
             <h2 className='section-title'>All Bookings ({bookings.length})</h2>
@@ -1097,16 +1038,17 @@ const AdminTransport = () => {
                 <option value="confirmed">Confirmed</option>
                 <option value="cancelled">Cancelled</option>
                 <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
               </select>
             </div>
           </div>
 
           {/* Bookings Table */}
-          <table className="vehicles-table">
+          <table className="accommodations-table">
             <thead>
               <tr>
                 <th>Booking ID</th>
-                <th>Vehicle</th>
+                <th>Accommodation</th>
                 <th>Renter</th>
                 <th>Dates</th>
                 <th>Price</th>
@@ -1122,13 +1064,13 @@ const AdminTransport = () => {
                   <td>{booking._id}</td>
                   <td>
                     <div className='primary-text'>
-                      {booking.transport ?
-                        getVehicleDisplayName(booking.transport) :
-                        'Vehicle not found'
+                      {booking.accommodation ?
+                        booking.accommodation.accommodationName :
+                        'Accommodation not found'
                       }
                     </div>
                     <div className="secondary-text">
-                      {booking.transport?.vehicle_type || ''}
+                      {booking.accommodation?.accommodationType || ''}
                     </div>
                   </td>
                   <td>
@@ -1161,6 +1103,7 @@ const AdminTransport = () => {
                       onChange={(e) => updateBookingStatus(booking._id, e.target.value)}
                       className="status-select"
                     >
+                      <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
                       <option value="cancelled">Cancelled</option>
                       <option value="completed">Completed</option>
@@ -1195,15 +1138,15 @@ const AdminTransport = () => {
                     className="progress"
                     cx="60" cy="60" r="50"
                     style={{
-                      strokeDashoffset: 314 - (314 * (vehicleStats.occupiedVehicles / Math.max(vehicleStats.totalVehicles, 1)))
+                      strokeDashoffset: 314 - (314 * (accommodationStats.occupiedAccommodations / Math.max(accommodationStats.totalAccommodations, 1)))
                     }}
                   ></circle>
                 </svg>
                 <div className="percentage">
-                  {Math.round((vehicleStats.occupiedVehicles / Math.max(vehicleStats.totalVehicles, 1)) * 100)}%
+                  {Math.round((accommodationStats.occupiedAccommodations / Math.max(accommodationStats.totalAccommodations, 1)) * 100)}%
                 </div>
               </div>
-              <p>{vehicleStats.occupiedVehicles} of {vehicleStats.totalVehicles} vehicles occupied</p>
+              <p>{accommodationStats.occupiedAccommodations} of {accommodationStats.totalAccommodations} accommodations occupied</p>
             </div>
 
             <div className="stat-card">
@@ -1223,30 +1166,13 @@ const AdminTransport = () => {
             </div>
           </div>
 
-          {/* Vehicle Type Distribution */}
+          {/* Accommodation Type Distribution */}
           <div className="chart-container">
-            <h3>Vehicle Type Distribution</h3>
+            <h3>Accommodation Type Distribution</h3>
             <div className="bar-chart">
-              {vehicleTypes.map(type => {
-                const count = vehicles.filter(v => v.vehicle_type === type).length;
-                const percentage = vehicles.length > 0 ? (count / vehicles.length) * 100 : 0;
-                return (
-                  <div key={type} className="bar" style={{ height: `${percentage}%` }}>
-                    <div className="bar-label">{type}</div>
-                    <div className="bar-value">{count}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Fuel Type Distribution */}
-          <div className="chart-container">
-            <h3>Fuel Type Distribution</h3>
-            <div className="bar-chart">
-              {fuelTypes.map(type => {
-                const count = vehicles.filter(v => v.fuel_type === type).length;
-                const percentage = vehicles.length > 0 ? (count / vehicles.length) * 100 : 0;
+              {['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'].map(type => {
+                const count = accommodations.filter(r => r.accommodationType === type).length;
+                const percentage = accommodations.length > 0 ? (count / accommodations.length) * 100 : 0;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>
                     <div className="bar-label">{type}</div>
@@ -1262,4 +1188,4 @@ const AdminTransport = () => {
   );
 };
 
-export default AdminTransport;
+export default AdminAccommodations;

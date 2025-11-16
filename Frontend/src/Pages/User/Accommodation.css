@@ -64,7 +64,7 @@
   position: relative;
 }
 
-.accommodation .rooms-list {
+.accommodation .accommodations-list {
   flex: 1;
   display: flex;
   flex-direction: column;

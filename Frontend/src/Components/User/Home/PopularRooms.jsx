@@ -1,31 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { roomsData } from '../../../Assets/assets';
+import { accommodationsData } from '../../../Assets/assets';
 import { FaArrowRight, FaHeart, FaRegHeart } from 'react-icons/fa';
 import StarRating from '../../Rating/StarRating';
 import './PopularRooms.css';
 
-const PopularRooms = () => {
+const PopularAccommodations = () => {
     const navigate = useNavigate();
-    const [savedRooms, setSavedRooms] = useState(() => {
-        const saved = localStorage.getItem('savedRooms');
+    const [savedAccommodations, setSavedAccommodations] = useState(() => {
+        const saved = localStorage.getItem('savedAccommodations');
         return saved ? JSON.parse(saved) : [];
     });
 
-    const toggleSaveRoom = (roomId, e) => {
+    const toggleSaveAccommodation = (accommodationId, e) => {
         e.stopPropagation();
-        setSavedRooms((prev) => {
-            const isSaved = prev.includes(roomId);
+        setSavedAccommodations((prev) => {
+            const isSaved = prev.includes(accommodationId);
             const newSaved = isSaved
-                ? prev.filter((id) => id !== roomId)
-                : [...prev, roomId];
-            localStorage.setItem('savedRooms', JSON.stringify(newSaved));
+                ? prev.filter((id) => id !== accommodationId)
+                : [...prev, accommodationId];
+            localStorage.setItem('savedAccommodations', JSON.stringify(newSaved));
             return newSaved;
         });
     };
 
     return (
-        <div className="PopularRooms">
+        <div className="PopularAccommodations">
             <section className="featured-properties">
                 <div className="section-header">
                     <h2>Featured Accommodations</h2>
@@ -33,49 +33,49 @@ const PopularRooms = () => {
                 </div>
 
                 <div className="properties-grid">
-                    {roomsData.slice(0, 3).map(room => (
+                    {accommodationsData.slice(0, 3).map(accommodation => (
                         <div
                             className="card"
-                            key={room._id}
+                            key={accommodation._id}
                             onClick={() => {
-                                navigate(`/room/${room._id}`)
+                                navigate(`/accommodation/${accommodation._id}`)
                             }}
                         >
                             <img
-                                src={room.images[0]}
-                                alt={`${room.roomName}`}
+                                src={accommodation.images[0]}
+                                alt={`${accommodation.accommodationName}`}
                                 className="image"
                                 loading="lazy"
                             />
-                            <div className="property-badge">{room.roomType}</div>
+                            <div className="property-badge">{accommodation.accommodationType}</div>
                             <button
-                                className={`save-button ${savedRooms.includes(room._id) ? 'saved' : ''}`}
-                                onClick={(e) => toggleSaveRoom(room._id, e)}
-                                aria-label={savedRooms.includes(room._id) ? 'Remove from saved' : 'Save this room'}
+                                className={`save-button ${savedAccommodations.includes(accommodation._id) ? 'saved' : ''}`}
+                                onClick={(e) => toggleSaveAccommodation(accommodation._id, e)}
+                                aria-label={savedAccommodations.includes(accommodation._id) ? 'Remove from saved' : 'Save this accommodation'}
                             >
-                                {savedRooms.includes(room._id) ? (
+                                {savedAccommodations.includes(accommodation._id) ? (
                                     <FaHeart className="icon-heart-filled" />
                                 ) : (
                                     <FaRegHeart className="icon-heart-outline" />
                                 )}
                             </button>
-                            <div className="room-info">
-                                <h3>{room.roomType}</h3>
-                                <p>Location – {room.location}</p>
+                            <div className="accommodation-info">
+                                <h3>{accommodation.accommodationType}</h3>
+                                <p>Location – {accommodation.location}</p>
 
                                 <div className="rating-container">
-                                    <StarRating rating={room.averageRating} />
+                                    <StarRating rating={accommodation.averageRating} />
                                     <span className="rating-text">
-                                        {room.averageRating.toFixed(1)} ({room.totalReviews} reviews)
+                                        {accommodation.averageRating.toFixed(1)} ({accommodation.totalReviews} reviews)
                                     </span>
                                 </div>
 
                                 <div className="price-action">
-                                    <p>Rs {room.pricePerMonth.toLocaleString()}/= per month</p>
+                                    <p>Rs {accommodation.pricePerMonth.toLocaleString()}/= per month</p>
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate(`/room/${room._id}`);
+                                            navigate(`/accommodation/${accommodation._id}`);
                                             window.scrollTo(0, 0);
                                         }}
                                     >
@@ -100,4 +100,4 @@ const PopularRooms = () => {
     );
 };
 
-export default PopularRooms;
+export default PopularAccommodations;

@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { roomsData } from '../../Assets/assets';
 import { FaTimes, FaFilter } from 'react-icons/fa';
 import './Accommodation.css';
 
@@ -13,118 +12,117 @@ import Pagination from '../../Components/User/Accommodation/Pagination';
 const Accommodation = () => {
   const navigate = useNavigate();
   const [openFilters, setOpenFilters] = useState(false);
-  const [savedRooms, setSavedRooms] = useState(() => {
-    const saved = localStorage.getItem('savedRooms');
+  const [savedAccommodations, setSavedAccommodations] = useState(() => {
+    const saved = localStorage.getItem('savedAccommodations');
     return saved ? JSON.parse(saved) : [];
   });
 
   // Search and filter states
   const [searchName, setSearchName] = useState('');
-  const [searchCity, setSearchCity] = useState('');
   const [searchType, setSearchType] = useState('');
   const [searchMinPrice, setSearchMinPrice] = useState('');
   const [searchMaxPrice, setSearchMaxPrice] = useState('');
 
   // Filter options
-  const roomTypes = ['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'];
+  const accommodationTypes = ['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'];
   const priceRanges = ['0 to 2500', '2500 to 5000', '5000 to 10000', '10000 to 15000'];
   const sortOptions = ['Price Low to High', 'Price High to Low'];
 
-  const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
+  const [selectedAccommodationTypes, setSelectedAccommodationTypes] = useState([]);
   const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
   const [selectedSortOption, setSelectedSortOption] = useState('');
 
+  // Accommodations data from backend
+  const [accommodations, setAccommodations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const roomsPerPage = 5;
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const accommodationsPerPage = 10;
 
-  // Filter and sort rooms
-  const filteredRooms = useMemo(() => {
-    let result = [...roomsData];
-    
-    if (searchName.trim()) {
-      result = result.filter(room => 
-        room.hotel.name.toLowerCase().includes(searchName.toLowerCase())
-      );
-    }
-    
-    if (searchCity.trim()) {
-      result = result.filter(room => 
-        room.hotel.city.toLowerCase().includes(searchCity.toLowerCase())
-      );
-    }
-    
-    if (searchType.trim()) {
-      result = result.filter(room => 
-        room.roomType.toLowerCase().includes(searchType.toLowerCase())
-      );
-    }
-    
-    if (searchMinPrice) {
-      result = result.filter(room => 
-        room.pricePerMonth >= Number(searchMinPrice)
-      );
-    }
-    
-    if (searchMaxPrice) {
-      result = result.filter(room => 
-        room.pricePerMonth <= Number(searchMaxPrice)
-      );
-    }
-    
-    if (selectedRoomTypes.length > 0) {
-      result = result.filter(room => 
-        selectedRoomTypes.includes(room.roomType)
-      );
-    }
-    
-    if (selectedPriceRanges.length > 0) {
-      result = result.filter(room => 
-        selectedPriceRanges.some(range => {
-          const [min, max] = range.replace('Rs ', '').split(' to ').map(Number);
-          return room.pricePerMonth >= min && room.pricePerMonth <= max;
-        })
-      );
-    }
-    
-    if (selectedSortOption === 'Price Low to High') {
-      result.sort((a, b) => a.pricePerMonth - b.pricePerMonth);
-    } else if (selectedSortOption === 'Price High to Low') {
-      result.sort((a, b) => b.pricePerMonth - a.pricePerMonth);
-    }
-    
-    return result;
-  }, [
-    roomsData,
-    searchName,
-    searchCity,
-    searchType,
-    searchMinPrice,
-    searchMaxPrice,
-    selectedRoomTypes,
-    selectedPriceRanges,
-    selectedSortOption
-  ]);
+  // Fetch accommodations from backend
+  const fetchAccommodations = async (page = 1) => {
+    try {
+      setLoading(true);
+      
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: accommodationsPerPage.toString()
+      });
 
-  // Pagination
-  const totalPages = Math.ceil(filteredRooms.length / roomsPerPage);
-  const paginatedRooms = useMemo(() => {
-    const startIdx = (currentPage - 1) * roomsPerPage;
-    return filteredRooms.slice(startIdx, startIdx + roomsPerPage);
-  }, [filteredRooms, currentPage, roomsPerPage]);
+      // Add filters
+      if (searchName) params.append('search', searchName);
+      if (selectedAccommodationTypes.length > 0) {
+        params.append('accommodationType', selectedAccommodationTypes.join(','));
+      }
+      if (searchMinPrice) params.append('min_price', searchMinPrice);
+      if (searchMaxPrice) params.append('max_price', searchMaxPrice);
+      if (selectedSortOption === 'Price Low to High') {
+        params.append('sort_by', 'pricePerMonth');
+        params.append('sort_order', 'asc');
+      } else if (selectedSortOption === 'Price High to Low') {
+        params.append('sort_by', 'pricePerMonth');
+        params.append('sort_order', 'desc');
+      }
+
+      const response = await fetch(`http://localhost:5000/api/accommodations?${params}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch accommodations');
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setAccommodations(data.accommodations);
+        setTotalPages(data.totalPages);
+        setTotalCount(data.total);
+        setCurrentPage(data.currentPage);
+      } else {
+        throw new Error(data.message || 'Failed to fetch accommodations');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching accommodations:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch accommodations on component mount and when filters change
+  useEffect(() => {
+    fetchAccommodations(1);
+  }, [searchName, selectedAccommodationTypes, searchMinPrice, searchMaxPrice, selectedSortOption]);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      fetchAccommodations(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   // Handlers
-  const handleRoomTypeChange = (checked, label) => {
-    setSelectedRoomTypes(prev =>
+  const handleAccommodationTypeChange = (checked, label) => {
+    setSelectedAccommodationTypes(prev =>
       checked ? [...prev, label] : prev.filter(type => type !== label)
     );
     setCurrentPage(1);
   };
 
   const handlePriceRangeChange = (checked, label) => {
-    setSelectedPriceRanges(prev =>
-      checked ? [...prev, `Rs ${label}`] : prev.filter(range => range !== `Rs ${label}`)
-    );
+    const [min, max] = label.split(' to ').map(Number);
+    if (checked) {
+      setSearchMinPrice(min.toString());
+      setSearchMaxPrice(max.toString());
+    } else {
+      setSearchMinPrice('');
+      setSearchMaxPrice('');
+    }
     setCurrentPage(1);
   };
 
@@ -134,46 +132,38 @@ const Accommodation = () => {
   };
 
   const resetAllFilters = () => {
-    setSelectedRoomTypes([]);
+    setSelectedAccommodationTypes([]);
     setSelectedPriceRanges([]);
     setSelectedSortOption('');
     setSearchName('');
-    setSearchCity('');
     setSearchType('');
     setSearchMinPrice('');
     setSearchMaxPrice('');
     setCurrentPage(1);
+    fetchAccommodations(1);
   };
 
-  const toggleSaveRoom = (roomId, e) => {
+  const toggleSaveAccommodation = (accommodationId, e) => {
     e.stopPropagation();
-    setSavedRooms(prev => {
-      const isSaved = prev.includes(roomId);
+    setSavedAccommodations(prev => {
+      const isSaved = prev.includes(accommodationId);
       const newSaved = isSaved
-        ? prev.filter(id => id !== roomId)
-        : [...prev, roomId];
-      localStorage.setItem('savedRooms', JSON.stringify(newSaved));
+        ? prev.filter(id => id !== accommodationId)
+        : [...prev, accommodationId];
+      localStorage.setItem('savedAccommodations', JSON.stringify(newSaved));
       return newSaved;
     });
   };
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const handleRoomClick = (roomId) => {
-    navigate(`/room/${roomId}`);
+  const handleAccommodationClick = (accommodationId) => {
+    navigate(`/accommodation/${accommodationId}`);
   };
 
   const canResetFilters = !(
-    selectedRoomTypes.length === 0 &&
+    selectedAccommodationTypes.length === 0 &&
     selectedPriceRanges.length === 0 &&
     selectedSortOption === '' &&
     !searchName &&
-    !searchCity &&
     !searchType &&
     !searchMinPrice &&
     !searchMaxPrice
@@ -188,6 +178,7 @@ const Accommodation = () => {
         setSearchType={setSearchType}
         setSearchMinPrice={setSearchMinPrice}
         setSearchMaxPrice={setSearchMaxPrice}
+        onSearch={() => fetchAccommodations(1)}
       />
 
       <div className="accommodation-header">
@@ -211,13 +202,13 @@ const Accommodation = () => {
       <div className="accommodation-content">
         <FiltersSidebar
           open={openFilters}
-          roomTypes={roomTypes}
+          accommodationTypes={accommodationTypes}
           priceRanges={priceRanges}
           sortOptions={sortOptions}
-          selectedRoomTypes={selectedRoomTypes}
+          selectedAccommodationTypes={selectedAccommodationTypes}
           selectedPriceRanges={selectedPriceRanges}
           selectedSortOption={selectedSortOption}
-          onRoomTypeChange={handleRoomTypeChange}
+          onAccommodationTypeChange={handleAccommodationTypeChange}
           onPriceRangeChange={handlePriceRangeChange}
           onSortChange={handleSortChange}
           onResetFilters={resetAllFilters}
@@ -231,12 +222,25 @@ const Accommodation = () => {
           />
         )}
 
-        <main className="rooms-list">
-          <ResultsHeader count={filteredRooms.length} />
+        <main className="accommodations-list">
+          <ResultsHeader count={totalCount} loading={loading} />
 
-          {paginatedRooms.length === 0 ? (
+          {loading ? (
+            <div className="loading-state">
+              <div className="loading-spinner"></div>
+              <p>Loading accommodations...</p>
+            </div>
+          ) : error ? (
+            <div className="error-state">
+              <h3>Error loading accommodations</h3>
+              <p>{error}</p>
+              <button className="retry-button" onClick={() => fetchAccommodations(1)}>
+                Try Again
+              </button>
+            </div>
+          ) : accommodations.length === 0 ? (
             <div className="no-results">
-              <h3>No rooms found matching your criteria</h3>
+              <h3>No accommodations found matching your criteria</h3>
               <p>Try adjusting your filters to see more results</p>
               <button className="reset-filters" onClick={resetAllFilters}>
                 Reset All Filters
@@ -244,13 +248,13 @@ const Accommodation = () => {
             </div>
           ) : (
             <>
-              {paginatedRooms.map(room => (
+              {accommodations.map(accommodation => (
                 <AccommodationCard
-                  key={room._id}
-                  room={room}
-                  saved={savedRooms.includes(room._id)}
-                  onSave={toggleSaveRoom}
-                  onClick={() => handleRoomClick(room._id)}
+                  key={accommodation._id}
+                  accommodation={accommodation}
+                  saved={savedAccommodations.includes(accommodation._id)}
+                  onSave={toggleSaveAccommodation}
+                  onClick={() => handleAccommodationClick(accommodation._id)}
                 />
               ))}
 

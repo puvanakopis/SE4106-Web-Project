@@ -3,18 +3,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { assets } from '../../Assets/assets';
-import { useBookings } from '../../Context/BookingContext';
 import { AuthContext } from '../../Context/AuthContext';
 import StarRating from '../../Components/Rating/StarRating';
 import GoogleMapEmbed from '../../Components/GoogleMap/GoogleMap';
 import PaymentPopup from '../../Components/PaymentPopup/PaymentPopup';
-import OwnerDetails from '../OwnerDetails';
+import OwnerDetails from './OwnerDetails';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './TransportDetails.css';
 
 const TransportDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addBooking } = useBookings();
   const { isLoggedIn, user, token } = useContext(AuthContext);
 
   const [transport, setTransport] = useState(null);
@@ -23,36 +23,31 @@ const TransportDetails = () => {
   const [endDate, setEndDate] = useState(null);
   const [totalDays, setTotalDays] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
-  const [bookingError, setBookingError] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
   const [isBooking, setIsBooking] = useState(false);
 
   const API_BASE_URL = 'http://localhost:5000';
 
-  // Fixed image URL function - matches the logic from Transport.js
+  // Fixed image URL function
   const processVehicleImages = (images) => {
     if (!images || !Array.isArray(images)) {
       return [assets.defaultTransportImage];
     }
-    
+
     return images.map(image => {
       if (!image) return assets.defaultTransportImage;
-      
-      // If image already has full URL, return as is
+
       if (image.startsWith('http')) {
         return image;
       }
-      
-      // If image starts with /uploads, make it absolute path
+
       if (image.startsWith('/uploads')) {
         return `${API_BASE_URL}${image}`;
       }
-      
-      // If it's just a filename, construct the path
+
       return `${API_BASE_URL}/uploads/transports/${image}`;
     });
   };
@@ -60,8 +55,6 @@ const TransportDetails = () => {
   const fetchTransportData = async () => {
     try {
       setIsLoading(true);
-      setError('');
-      
       const response = await fetch(`${API_BASE_URL}/api/transports/${id}`, {
         method: 'GET',
         headers: {
@@ -81,37 +74,40 @@ const TransportDetails = () => {
           ...result.transport,
           vehicle_images: processVehicleImages(result.transport.vehicle_images)
         };
-        
+
         setTransport(processedTransport);
-        
-        // Set main image
+
         if (processedTransport.vehicle_images && processedTransport.vehicle_images.length > 0) {
           setMainImage(processedTransport.vehicle_images[0]);
         } else {
           setMainImage(assets.defaultTransportImage);
         }
+
       } else {
         throw new Error(result.message || 'Failed to fetch transport details');
       }
     } catch (error) {
       console.error('Error fetching transport data:', error);
-      setError(error.message || 'Failed to load transport details');
+      const errorMessage = error.message || 'Failed to load transport details';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTransportData();
-  }, [id]);
+    if (id) {
+      fetchTransportData();
+    }
+  }, [id, token]);
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
-    setBookingError('');
     if (date && endDate && date > endDate) {
       setEndDate(null);
       setTotalDays(0);
       setTotalCost(0);
+      toast.info('Select end date.');
     } else if (date && endDate) {
       calculateTotal(date, endDate);
     } else {
@@ -122,7 +118,6 @@ const TransportDetails = () => {
 
   const handleEndDateChange = (date) => {
     setEndDate(date);
-    setBookingError('');
     if (date && startDate) {
       calculateTotal(startDate, date);
     } else {
@@ -136,42 +131,63 @@ const TransportDetails = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     setTotalDays(diffDays);
     if (transport) {
-      const cost = diffDays * transport.rental_price_per_day;
+      const cost = diffDays * (transport.rental_price_per_day || 0);
       setTotalCost(cost);
     }
   };
 
+  const validateBookingDates = () => {
+    if (!startDate || !endDate) {
+      toast.error('Please select both start and end dates');
+      return false;
+    }
+
+    if (startDate > endDate) {
+      toast.error('End date must be after start date');
+      return false;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (startDate < today) {
+      toast.error('Start date cannot be in the past');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleBookNow = () => {
     if (!isLoggedIn) {
+      toast.info('Please login to book this vehicle');
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
 
-    if (!startDate || !endDate) {
-      setBookingError('Please select both start and end dates');
+    if (!validateBookingDates()) {
       return;
     }
-    if (startDate > endDate) {
-      setBookingError('End date must be after start date');
-      return;
-    }
-
     setShowPaymentPopup(true);
   };
 
   const createTransportBooking = async (paymentDetails = {}) => {
     try {
       setIsBooking(true);
-      
+
       const bookingData = {
-        renter: user.id,
+        renter: user?.id,
         transport: id,
         booking_start: startDate.toISOString(),
         booking_end: endDate.toISOString(),
+        securityDeposit: transport?.deposit_amount || 0,
         totalPrice: totalCost,
-        isPaid: true,
         paymentMethod: paymentMethod,
-        ...paymentDetails
+        paymentDetails: {
+          ...paymentDetails,
+          paymentDate: new Date().toISOString(),
+          paymentAmount: totalCost,
+          paymentStatus: paymentMethod === 'cash' ? 'pending' : 'completed'
+        }
       };
 
       const response = await fetch(`${API_BASE_URL}/api/transport-bookings`, {
@@ -186,42 +202,19 @@ const TransportDetails = () => {
       const result = await response.json();
 
       if (!response.ok) {
+        if (result.message && result.message.includes('already booked')) {
+          throw new Error('This vehicle is already booked for the selected dates. Please choose different dates.');
+        }
         throw new Error(result.message || 'Failed to create booking');
       }
 
-      if (result.success) {
-        const newBooking = {
-          id: result.booking._id || `t-${Date.now()}`,
-          type: 'transport',
-          item: transport,
-          startDate: startDate.toISOString().split('T')[0],
-          endDate: endDate.toISOString().split('T')[0],
-          status: result.booking.booking_status || 'confirmed',
-          totalPrice: totalCost,
-          bookingDate: new Date().toISOString().split('T')[0],
-          paymentMethod: paymentMethod,
-          userId: user.id,
-          bookingId: result.booking._id
-        };
-
-        addBooking(newBooking);
-
-        setStartDate(null);
-        setEndDate(null);
-        setTotalDays(0);
-        setTotalCost(0);
-        setPaymentMethod('credit_card');
-        setShowPaymentPopup(false);
-
-        alert('Booking confirmed successfully!');
-        
-      } else {
-        throw new Error(result.message || 'Booking failed');
-      }
+      return result;
 
     } catch (error) {
       console.error('Booking creation error:', error);
-      setBookingError(error.message || 'Failed to complete booking. Please try again.');
+      const errorMessage = error.message || 'Failed to complete booking. Please try again.';
+      toast.error(errorMessage);
+      throw error;
     } finally {
       setIsBooking(false);
     }
@@ -229,22 +222,28 @@ const TransportDetails = () => {
 
   const handlePaymentSuccess = async (paymentData = {}) => {
     try {
-      await createTransportBooking(paymentData);
+      const bookingResult = await createTransportBooking(paymentData);
+
+      if (bookingResult) {
+        toast.success('Booking confirmed successfully!');
+        setShowPaymentPopup(false);
+        // Optionally redirect to bookings page
+        // navigate('/my-bookings');
+      }
     } catch (error) {
       console.error('Payment success handling error:', error);
-      setBookingError('Failed to process booking after payment. Please contact support.');
     }
   };
 
   const handleContactOwner = () => {
     if (!isLoggedIn) {
+      toast.info('Please login to contact the owner');
       navigate('/login', { state: { from: `/transport/${id}` } });
       return;
     }
 
     if (!transport?.owner_id) {
-      console.warn('No owner data available for this transport');
-      alert('Owner information is not currently available. Please try again later.');
+      toast.warning('No owner data available for this transport');
       return;
     }
 
@@ -254,16 +253,30 @@ const TransportDetails = () => {
   const getBookingDetails = () => {
     if (!transport) return null;
 
+    const securityDeposit = transport.deposit_amount || 0;
+    const totalAmount = totalCost + securityDeposit;
+
     return {
       type: 'transport',
       itemName: `${transport.brand} ${transport.model}`,
       duration: `${totalDays} day${totalDays !== 1 ? 's' : ''}`,
-      totalAmount: totalDays > 0 ? totalCost + (transport.deposit_amount || 0) : 0,
+      totalAmount: totalAmount,
       bookingId: `T-${Date.now()}`,
       dailyRate: transport.rental_price_per_day,
-      deposit: transport.deposit_amount || 0,
-      rentalCost: totalCost
+      deposit: securityDeposit,
+      rentalCost: totalCost,
+      securityDeposit: securityDeposit
     };
+  };
+
+  const handleImageError = (e, imageType = 'image') => {
+    console.error(`Failed to load ${imageType}:`, e.target.src);
+    e.target.src = assets.defaultTransportImage;
+  };
+
+  const handleOwnerImageError = (e) => {
+    console.error('Failed to load owner image:', e.target.src);
+    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(transport?.owner_id?.fullName || 'Owner')}&background=random&color=fff`;
   };
 
   if (isLoading) {
@@ -271,21 +284,6 @@ const TransportDetails = () => {
       <div className="transport-loading">
         <div className="loading-spinner"></div>
         <p>Loading transport details...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="transport-error">
-        <h2 className="transport-error__title">Error Loading Transport</h2>
-        <p className="transport-error__message">{error}</p>
-        <button
-          className="back-button"
-          onClick={() => navigate('/transport')}
-        >
-          Browse Available Vehicles
-        </button>
       </div>
     );
   }
@@ -299,7 +297,10 @@ const TransportDetails = () => {
         </p>
         <button
           className="back-button"
-          onClick={() => navigate('/transport')}
+          onClick={() => {
+            toast.info('Redirecting to available vehicles');
+            navigate('/transport');
+          }}
         >
           Browse Available Vehicles
         </button>
@@ -307,23 +308,27 @@ const TransportDetails = () => {
     );
   }
 
-  // Use processed images from transport state
   const images = transport.vehicle_images || [];
-  const owner = transport.owner_id;
+  const owner = transport.owner_id || {};
+  const isAvailable = transport.isAvailable && transport.status === 'Active';
 
   return (
     <main className="transport-details">
       {showOwnerDetails && (
         <OwnerDetails
           owner={owner}
-          onClose={() => setShowOwnerDetails(false)}
+          onClose={() => {
+            setShowOwnerDetails(false);
+          }}
         />
       )}
 
       {showPaymentPopup && (
         <PaymentPopup
           isOpen={showPaymentPopup}
-          onClose={() => setShowPaymentPopup(false)}
+          onClose={() => {
+            setShowPaymentPopup(false);
+          }}
           bookingDetails={getBookingDetails()}
           onPaymentSuccess={handlePaymentSuccess}
           paymentMethod={paymentMethod}
@@ -338,15 +343,14 @@ const TransportDetails = () => {
         </h1>
 
         <div className="transport-meta">
-          <StarRating rating={transport.averageRating} />
+          <StarRating rating={transport.averageRating || 0} />
           <span className="transport-review-count">
             {transport.totalReviews || 0} review{transport.totalReviews !== 1 ? 's' : ''}
           </span>
-          {!transport.isAvailable && (
-            <span className="transport-status-badge">Not Available</span>
-          )}
-          {transport.status !== 'Active' && (
-            <span className="transport-status-badge">{transport.status}</span>
+          {!isAvailable && (
+            <span className="transport-status-badge">
+              {transport.status === 'Active' ? 'Not Available' : transport.status}
+            </span>
           )}
         </div>
 
@@ -363,10 +367,7 @@ const TransportDetails = () => {
             alt={`${transport.brand} ${transport.model}`}
             className="transport-gallery__main-image"
             loading="lazy"
-            onError={(e) => {
-              console.error('Failed to load main image:', mainImage);
-              e.target.src = assets.defaultTransportImage;
-            }}
+            onError={(e) => handleImageError(e, 'main image')}
           />
         </div>
         {images.length > 0 && (
@@ -383,10 +384,7 @@ const TransportDetails = () => {
                   alt={`Thumbnail ${index + 1}`}
                   className="transport-gallery__thumbnail-image"
                   loading="lazy"
-                  onError={(e) => {
-                    console.error('Failed to load thumbnail:', img);
-                    e.target.src = assets.defaultTransportImage;
-                  }}
+                  onError={(e) => handleImageError(e, 'thumbnail')}
                 />
               </button>
             ))}
@@ -448,13 +446,11 @@ const TransportDetails = () => {
             {transport.features && transport.features.length > 0 && (
               <div className="specs-item">
                 <h3 className="specs-title">Features</h3>
-                <div className="features-list">
                   {transport.features.map((item, index) => (
-                    <div key={index} className="feature-item">
+                    <div key={index} className="specs-value">
                       <span>{item}</span>
                     </div>
                   ))}
-                </div>
               </div>
             )}
 
@@ -487,8 +483,8 @@ const TransportDetails = () => {
 
             <div className="reviews-summary">
               <div className="reviews-overview">
-                <span className="reviews-average">{transport.averageRating?.toFixed(1) || '0.0'}</span>
-                <StarRating rating={transport.averageRating} />
+                <span className="reviews-average">{(transport.averageRating || 0).toFixed(1)}</span>
+                <StarRating rating={transport.averageRating || 0} />
                 <span>{transport.totalReviews || 0} review{transport.totalReviews !== 1 ? 's' : ''}</span>
               </div>
 
@@ -520,12 +516,13 @@ const TransportDetails = () => {
             <h2 className="transport-section-title">Vehicle Owner</h2>
             <div className="host-profile">
               <img
-                src={owner?.profile_pic ? processVehicleImages([owner.profile_pic])[0] : assets.defaultAvatar}
-                alt={`${owner?.displayName || owner?.fullName}'s profile`}
+                src={owner.profile_pic
+                  ? `${API_BASE_URL}${owner.profile_pic}?t=${Date.now()}`
+                  : `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.fullName || 'Owner')}&background=random&color=fff`
+                }
+                alt={`${owner?.displayName || owner?.fullName || 'Vehicle Owner'}'s profile`}
                 className="host-avatar"
-                onError={(e) => {
-                  e.target.src = assets.defaultAvatar;
-                }}
+                onError={handleOwnerImageError}
               />
               <div className="host-info">
                 <h4 className="host-name">
@@ -539,7 +536,6 @@ const TransportDetails = () => {
                 )}
                 {owner?.phoneNumber && (
                   <div className="host-phone">
-                    <img src={assets.phoneIcon} alt="Phone" className="host-phone-icon" />
                     <span>{owner.phoneNumber}</span>
                   </div>
                 )}
@@ -591,7 +587,6 @@ const TransportDetails = () => {
                   disabled={!startDate}
                 />
               </div>
-              {bookingError && <div className="booking-error">{bookingError}</div>}
             </div>
 
             <div className="payment-method-section">
@@ -603,8 +598,6 @@ const TransportDetails = () => {
               >
                 <option value="credit_card">Credit Card</option>
                 <option value="debit_card">Debit Card</option>
-                <option value="upi">UPI</option>
-                <option value="net_banking">Net Banking</option>
                 <option value="cash">Cash</option>
               </select>
             </div>
@@ -619,7 +612,7 @@ const TransportDetails = () => {
                 <span>Rs {transport.rental_price_per_day?.toLocaleString()}</span>
               </div>
               <div className="booking-summary__item booking-summary__item--subtotal">
-                <span>Subtotal:</span>
+                <span>Rental Cost:</span>
                 <span>Rs {(totalCost || 0).toLocaleString()}</span>
               </div>
               <div className="booking-summary__item">
@@ -639,19 +632,18 @@ const TransportDetails = () => {
             </div>
 
             <button
-              className={`booking-button ${!transport.isAvailable ? 'booking-button--disabled' : ''}`}
+              className={`booking-button ${!isAvailable ? 'booking-button--disabled' : ''}`}
               onClick={handleBookNow}
-              disabled={!transport.isAvailable || totalDays === 0 || transport.status !== 'Active' || isBooking}
+              disabled={!isAvailable || totalDays === 0 || isBooking}
             >
-              {isBooking ? 'Processing...' : 
-               !transport.isAvailable ? 'Not Available' :
-               transport.status !== 'Active' ? transport.status :
-               'Book Now'}
+              {isBooking ? 'Processing...' :
+                !isAvailable ? 'Not Available' :
+                  'Book Now'}
             </button>
 
-            {transport.status !== 'Active' && (
+            {!isAvailable && (
               <div className="booking-notice">
-                This vehicle is currently {transport.status.toLowerCase()}.
+                This vehicle is currently {transport.status?.toLowerCase()}.
               </div>
             )}
           </div>

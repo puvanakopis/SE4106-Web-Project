@@ -34,7 +34,7 @@ import TransportDetails from "./Pages/User/TransportDetails";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import AdminOwner from "./Pages/Admin/AdminOwner";
 import AdminOwnerProperties from "./Pages/Admin/AdminOwnerProperties";
-import AdminRoom from "./Pages/Admin/AdminRooms";
+import AdminAccommodation from "./Pages/Admin/AdminAccommodations";
 import AdminTransport from "./Pages/Admin/AdminTransport";
 import AdminNotFound from './Pages/Admin/AdminNotFound';
 
@@ -44,8 +44,6 @@ function AppContent() {
   return (
     <>
       <Navbar />
-
-      {/* Routes */}
       <Routes>
         {isUser && (
           <>
@@ -56,16 +54,14 @@ function AppContent() {
           </>
         )}
 
-
         {isAdmin && (
           <>
             {/* Admin Routes */}
             <Route path="/" element={<AdminDashboard />} />
             <Route path="/owner" element={<AdminOwner />} />
             <Route path="/ownerProperties" element={<AdminOwnerProperties />} />
-            <Route path="/room" element={<AdminRoom />} />
+            <Route path="/Accommodation" element={<AdminAccommodation />} />
             <Route path="/transport" element={<AdminTransport />} />
-            <Route path="/profile" element={<Profile />} />
             <Route path="/*" element={<AdminNotFound />} />
           </>
         )}
@@ -76,16 +72,13 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/accommodation" element={<Accommodation />} />
-        <Route path="/room/:id" element={<AccommodationDetails />} />
+        <Route path="/Accommodation/:id" element={<AccommodationDetails />} />
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-
-      {/* Footer */}
       <Footer />
-
       <ToastContainer
         position="top-right"
         autoClose={3000}
