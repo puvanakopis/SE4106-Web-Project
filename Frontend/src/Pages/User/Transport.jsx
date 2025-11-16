@@ -37,6 +37,7 @@ const Transport = () => {
   const [selectedVehicleTypes, setSelectedVehicleTypes] = useState([]);
   const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
   const [selectedSortOption, setSelectedSortOption] = useState('');
+  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -110,6 +111,13 @@ const Transport = () => {
   const filteredTransports = useMemo(() => {
     let result = [...transports];
 
+    // Filter by availability (isAvailable === true AND status === 'Active')
+    if (showAvailableOnly) {
+      result = result.filter(vehicle => 
+        vehicle.isAvailable === true && vehicle.status === 'Active'
+      );
+    }
+
     if (searchName.trim()) {
       result = result.filter(vehicle =>
         `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchName.toLowerCase()) ||
@@ -161,6 +169,7 @@ const Transport = () => {
     return result;
   }, [
     transports,
+    showAvailableOnly,
     searchName, 
     searchType, 
     searchMinPrice, 
@@ -197,10 +206,16 @@ const Transport = () => {
     setCurrentPage(1);
   };
 
+  const handleAvailableChange = (checked) => {
+    setShowAvailableOnly(checked);
+    setCurrentPage(1);
+  };
+
   const resetAllFilters = () => {
     setSelectedVehicleTypes([]);
     setSelectedPriceRanges([]);
     setSelectedSortOption('');
+    setShowAvailableOnly(false);
     setSearchName('');
     setSearchType('');
     setSearchMinPrice('');
@@ -246,6 +261,7 @@ const Transport = () => {
     selectedVehicleTypes.length === 0 &&
     selectedPriceRanges.length === 0 &&
     selectedSortOption === '' &&
+    !showAvailableOnly &&
     !searchName &&
     !searchType &&
     !searchMinPrice &&
@@ -310,9 +326,11 @@ const Transport = () => {
           selectedVehicleTypes={selectedVehicleTypes}
           selectedPriceRanges={selectedPriceRanges}
           selectedSortOption={selectedSortOption}
+          showAvailableOnly={showAvailableOnly}
           handleVehicleTypeChange={handleVehicleTypeChange}
           handlePriceRangeChange={handlePriceRangeChange}
           handleSortChange={handleSortChange}
+          handleAvailableChange={handleAvailableChange}
           resetAllFilters={resetAllFilters}
           canResetFilters={canResetFilters}
         />
@@ -341,6 +359,7 @@ const Transport = () => {
                       averageRating: vehicle.averageRating || 0,
                       totalReviews: vehicle.totalReviews || 0,
                       isAvailable: vehicle.isAvailable !== false,
+                      status: vehicle.status || 'Active',
                       // Process images for this specific vehicle
                       vehicle_images: processVehicleImages(vehicle.vehicle_images)
                     }}

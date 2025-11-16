@@ -28,6 +28,11 @@ const transportBookingSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    securityDeposit: {
+        type: Number,
+        required: true,
+        min: 0
+    },
     totalPrice: {
         type: Number,
         required: true,
@@ -35,12 +40,37 @@ const transportBookingSchema = new mongoose.Schema({
     },
     booking_status: {
         type: String,
-        enum: ["pending", "confirmed", "cancelled", "completed"],
-        default: "pending"
+        enum: ["confirmed", "cancelled", "completed"],
+        default: "confirmed"
     },
     isPaid: {
         type: Boolean,
         default: false
+    },
+    paymentMethod: {
+        type: String,
+        enum: ['credit_card', 'debit_card', 'cash'],
+        required: true
+    },
+    paymentDetails: {
+        cardNumber: String,
+        cardHolderName: String,
+        paymentDate: Date,
+        paymentAmount: Number,
+        paymentStatus: {
+            type: String,
+            enum: ['pending', 'completed', 'failed', 'refunded'],
+            default: 'pending'
+        }
+    },
+    review: {
+        rating: {
+            type: Number,
+            min: 1,
+            max: 5
+        },
+        comment: String,
+        reviewDate: Date
     },
     createdDate: {
         type: Date,

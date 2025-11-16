@@ -243,7 +243,7 @@ const AdminOwner = () => {
     <div className="owner-management-container">
       <h1 className="title">Owner Management</h1>
 
-      {/* Navigation Tabs */}
+      {/* ------------ Navigation Tabs ------------ */}
       <div className="tabs">
         <button
           className={`tab-button ${activeTab === 'add' ? 'active' : ''}`}
@@ -271,10 +271,10 @@ const AdminOwner = () => {
         </button>
       </div>
 
-      {/* Loading State */}
+      {/* ------------ Loading State ------------ */}
       {loading && <div className="loading">Loading...</div>}
 
-      {/* Add/Edit Owner Form */}
+      {/* ------------ Add/Edit Owner Form ------------ */}
       {activeTab === 'add' && (
         <form onSubmit={handleSubmit} className="owner-form" encType="multipart/form-data">
           {/* Owner Statistics Summary */}
@@ -493,7 +493,7 @@ const AdminOwner = () => {
         </form>
       )}
 
-      {/* View All Owners */}
+      {/* ------------ View All Owners ------------ */}
       {activeTab === 'view' && (
         <div className="owners-list">
           <div className="list-header">
@@ -599,7 +599,7 @@ const AdminOwner = () => {
         </div>
       )}
 
-      {/* Statistics View */}
+      {/* ------------ Statistics View ------------ */}
       {activeTab === 'stats' && (
         <div className="stats-view">
           <h2 className="section-title">Owner Statistics</h2>
@@ -664,7 +664,7 @@ const AdminOwner = () => {
         </div>
       )}
 
-      {/* Owner Properties Modal */}
+      {/* ------------ Owner Properties Modal ------------ */}
       {showProperties && (
         <OwnerProperties
           owner={selectedOwner}

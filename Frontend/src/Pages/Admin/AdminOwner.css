@@ -1,4 +1,4 @@
-/* ==================== BASE STYLES ==================== */
+/* ------------------ BASE STYLES ------------------ */
 .owner-management-container {
   padding: 2rem 5%;
   max-width: 1400px;
@@ -6,7 +6,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ==================== HEADER SECTION ==================== */
+/* ------------------ HEADER SECTION ------------------ */
 .owner-management-container .title {
   display: flex;
   justify-content: start;
@@ -17,7 +17,7 @@
   color: #1a202c;
 }
 
-/* ==================== TABS NAVIGATION ==================== */
+/* ------------------ TABS NAVIGATION ------------------ */
 .owner-management-container .tabs {
   display: flex;
   gap: 0.5rem;
@@ -53,7 +53,7 @@
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* ==================== ADD/EDIT OWNER FORM ==================== */
+/* ------------------ ADD/EDIT OWNER FORM ------------------ */
 .owner-management-container .owner-form {
   margin-bottom: 2rem;
   margin-top: 2rem;
@@ -221,7 +221,7 @@
   background: #64748b;
 }
 
-/* ==================== VIEW ALL OWNERS SECTION ==================== */
+/* ------------------ VIEW ALL OWNERS SECTION ------------------ */
 .owner-management-container .owners-list {
   margin-bottom: 2rem;
   margin-top: 2rem;
@@ -403,7 +403,7 @@
   background: #fecaca;
 }
 
-/* ==================== STATISTICS VIEW ==================== */
+/* ------------------ STATISTICS VIEW ------------------ */
 .owner-management-container .stats-view {
   margin-bottom: 2rem;
   margin-top: 2rem;
@@ -538,7 +538,7 @@
   color: #1e293b;
 }
 
-/* ==================== RESPONSIVE ADJUSTMENTS ==================== */
+/* ------------------ RESPONSIVE ADJUSTMENTS ------------------ */
 @media (max-width: 768px) {
   .owner-management-container {
     padding: 1rem;

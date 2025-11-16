@@ -4,7 +4,7 @@ import './TransportCard.css';
 
 const TransportCard = ({ vehicle, saved, onSave, onClick }) => (
   <article className="transport-card" onClick={onClick}>
-    
+
     {/* ------------- Image Section ------------- */}
     <div className="vehicle-image-container">
       <img
@@ -39,8 +39,6 @@ const TransportCard = ({ vehicle, saved, onSave, onClick }) => (
         <h2 className="vehicle-title">
           {vehicle.brand} {vehicle.model}
         </h2>
-        <div className="vehicle-specs">
-        </div>
         <div className="vehicle-location">{vehicle.address}</div>
       </div>
 
@@ -54,8 +52,8 @@ const TransportCard = ({ vehicle, saved, onSave, onClick }) => (
       <div className="vehicle-features">
         <div className="feature-item">
           {vehicle.features.slice(0, 3).map((item, index) => (
-          <span key={index}>{item}</span>
-        ))}
+            <span key={index}>{item}</span>
+          ))}
         </div>
       </div>
 
@@ -64,7 +62,7 @@ const TransportCard = ({ vehicle, saved, onSave, onClick }) => (
         <div className="vehicle-price">
           Rs {vehicle.rental_price_per_day.toLocaleString()}{' '}
           <span className="price-period">/ day</span>
-  
+
         </div>
         <button
           className="view-details-btn"

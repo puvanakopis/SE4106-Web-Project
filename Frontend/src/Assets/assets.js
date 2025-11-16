@@ -1,5 +1,6 @@
 import closeIcon from './closeIcon.svg'
 import locationIcon from './Accommodation/locationIcon.svg'
+import phoneIcon from './Accommodation/phoneIcon.svg'
 
 import accommodationImg1 from './Room/accommodation1_1.avif'
 import accommodationImg2 from './Room/accommodation1_2.avif'
@@ -53,7 +54,8 @@ import accommodationImg11_4 from './Room/accommodation11_4.jpg'
 
 export const assets = {
   closeIcon,
-  locationIcon
+  locationIcon,
+  phoneIcon
 }
 
 

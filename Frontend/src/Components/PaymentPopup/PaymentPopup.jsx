@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaTimes, FaCreditCard, FaLock, FaCheckCircle } from 'react-icons/fa';
+import { FaTimes, FaCreditCard, FaLock, FaCheckCircle, FaUser, FaCalendarAlt } from 'react-icons/fa';
 import './PaymentPopup.css';
 
 const PaymentPopup = ({
@@ -7,7 +7,8 @@ const PaymentPopup = ({
     onClose,
     bookingDetails,
     onPaymentSuccess,
-    paymentMethod
+    paymentMethod,
+    isLoading = false
 }) => {
     const [cardNumber, setCardNumber] = useState('');
     const [cardHolder, setCardHolder] = useState('');
@@ -15,23 +16,89 @@ const PaymentPopup = ({
     const [cvv, setCvv] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [paymentError, setPaymentError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setPaymentError('');
+        
+        if (paymentMethod !== 'cash') {
+            if (!validateCardDetails()) {
+                return;
+            }
+        }
+
         setIsProcessing(true);
 
-        // Simulate payment processing
-        setTimeout(() => {
+        try {
+            // Simulate payment processing
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Prepare payment data according to backend schema
+            const paymentData = {
+                cardNumber: paymentMethod !== 'cash' ? cardNumber.replace(/\s/g, '') : undefined,
+                cardHolderName: paymentMethod !== 'cash' ? cardHolder : undefined,
+                paymentDate: new Date().toISOString(),
+                paymentAmount: bookingDetails.totalAmount,
+                paymentStatus: paymentMethod === 'cash' ? 'pending' : 'completed'
+            };
+
             setIsProcessing(false);
             setIsSuccess(true);
 
             // Auto close after showing success
             setTimeout(() => {
-                onPaymentSuccess();
-                onClose();
+                onPaymentSuccess(paymentData);
                 resetForm();
             }, 2000);
-        }, 2000);
+        } catch (error) {
+            setIsProcessing(false);
+            setPaymentError(`Payment processing failed. Please try again. ${error.message}`);
+        }
+    };
+
+    const validateCardDetails = () => {
+        const cleanCardNumber = cardNumber.replace(/\s/g, '');
+        
+        if (!cleanCardNumber || cleanCardNumber.length !== 16) {
+            setPaymentError('Please enter a valid 16-digit card number');
+            return false;
+        }
+        
+        if (!/^\d+$/.test(cleanCardNumber)) {
+            setPaymentError('Card number must contain only digits');
+            return false;
+        }
+
+        if (!cardHolder || cardHolder.trim().length < 3) {
+            setPaymentError('Please enter card holder name (min 3 characters)');
+            return false;
+        }
+
+        if (!expiryDate || !/^\d{2}\/\d{2}$/.test(expiryDate)) {
+            setPaymentError('Please enter a valid expiry date (MM/YY)');
+            return false;
+        }
+
+        // Validate expiry date is not in the past
+        const [month, year] = expiryDate.split('/');
+        const currentYear = new Date().getFullYear() % 100;
+        const currentMonth = new Date().getMonth() + 1;
+        
+        const expMonth = parseInt(month);
+        const expYear = parseInt(year);
+        
+        if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+            setPaymentError('Card has expired');
+            return false;
+        }
+
+        if (!cvv || !/^\d+$/.test(cvv) || (cvv.length !== 3 && cvv.length !== 4)) {
+            setPaymentError('Please enter a valid CVV (3 or 4 digits)');
+            return false;
+        }
+
+        return true;
     };
 
     const resetForm = () => {
@@ -41,6 +108,14 @@ const PaymentPopup = ({
         setCvv('');
         setIsProcessing(false);
         setIsSuccess(false);
+        setPaymentError('');
+    };
+
+    const handleClose = () => {
+        if (!isProcessing) {
+            resetForm();
+            onClose();
+        }
     };
 
     const formatCardNumber = (value) => {
@@ -73,7 +148,11 @@ const PaymentPopup = ({
             <div className="payment-popup">
                 <div className="payment-popup-header">
                     <h2 className="payment-popup-title">Complete Payment</h2>
-                    <button className="payment-popup-close" onClick={onClose}>
+                    <button 
+                        className="payment-popup-close" 
+                        onClick={handleClose}
+                        disabled={isProcessing}
+                    >
                         <FaTimes />
                     </button>
                 </div>
@@ -81,18 +160,37 @@ const PaymentPopup = ({
                 {!isSuccess ? (
                     <>
                         <div className="payment-summary">
+                            <h3 className="payment-summary-title">Booking Summary</h3>
                             <div className="payment-summary-item">
-                                <span>Booking Type:</span>
-                                <span>{bookingDetails.type === 'room' ? 'Room' : 'Vehicle'}</span>
+                                <span><FaUser className="summary-icon" /> Booking Type:</span>
+                                <span>Vehicle Rental</span>
                             </div>
                             <div className="payment-summary-item">
-                                <span>Item:</span>
+                                <span><FaCalendarAlt className="summary-icon" /> Vehicle:</span>
                                 <span>{bookingDetails.itemName}</span>
                             </div>
                             <div className="payment-summary-item">
-                                <span>Duration:</span>
+                                <span><FaCalendarAlt className="summary-icon" /> Duration:</span>
                                 <span>{bookingDetails.duration}</span>
                             </div>
+                            {bookingDetails.dailyRate && (
+                                <div className="payment-summary-item">
+                                    <span>Daily Rate:</span>
+                                    <span>Rs {bookingDetails.dailyRate.toLocaleString()}</span>
+                                </div>
+                            )}
+                            {bookingDetails.rentalCost > 0 && (
+                                <div className="payment-summary-item">
+                                    <span>Rental Cost:</span>
+                                    <span>Rs {bookingDetails.rentalCost.toLocaleString()}</span>
+                                </div>
+                            )}
+                            {bookingDetails.securityDeposit > 0 && (
+                                <div className="payment-summary-item">
+                                    <span>Security Deposit:</span>
+                                    <span>Rs {bookingDetails.securityDeposit.toLocaleString()}</span>
+                                </div>
+                            )}
                             <div className="payment-summary-item payment-summary-item--total">
                                 <span>Total Amount:</span>
                                 <span>Rs {bookingDetails.totalAmount.toLocaleString()}</span>
@@ -102,12 +200,19 @@ const PaymentPopup = ({
                         <div className="payment-method-display">
                             <div className="payment-method-badge">
                                 <FaCreditCard />
-                                <span>{paymentMethod === 'credit_card' ? 'Credit Card' :
-                                    paymentMethod === 'debit_card' ? 'Debit Card' :
-                                        paymentMethod === 'upi' ? 'UPI' :
-                                            paymentMethod === 'net_banking' ? 'Net Banking' : 'Cash'}</span>
+                                <span>
+                                    {paymentMethod === 'credit_card' ? 'Credit Card' :
+                                     paymentMethod === 'debit_card' ? 'Debit Card' :
+                                     paymentMethod === 'cash' ? 'Cash on Delivery' : 'Payment'}
+                                </span>
                             </div>
                         </div>
+
+                        {paymentError && (
+                            <div className="payment-error-message">
+                                {paymentError}
+                            </div>
+                        )}
 
                         {paymentMethod !== 'cash' && (
                             <form onSubmit={handleSubmit} className="payment-form">
@@ -121,6 +226,8 @@ const PaymentPopup = ({
                                         placeholder="1234 5678 9012 3456"
                                         maxLength="19"
                                         required
+                                        disabled={isProcessing || isLoading}
+                                        className={paymentError && !cardNumber ? 'input-error' : ''}
                                     />
                                 </div>
 
@@ -130,9 +237,11 @@ const PaymentPopup = ({
                                         type="text"
                                         id="cardHolder"
                                         value={cardHolder}
-                                        onChange={(e) => setCardHolder(e.target.value)}
-                                        placeholder="Puvanakopis"
+                                        onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
+                                        placeholder="JOHN DOE"
                                         required
+                                        disabled={isProcessing || isLoading}
+                                        className={paymentError && !cardHolder ? 'input-error' : ''}
                                     />
                                 </div>
 
@@ -147,6 +256,8 @@ const PaymentPopup = ({
                                             placeholder="MM/YY"
                                             maxLength="5"
                                             required
+                                            disabled={isProcessing || isLoading}
+                                            className={paymentError && !expiryDate ? 'input-error' : ''}
                                         />
                                     </div>
 
@@ -160,6 +271,8 @@ const PaymentPopup = ({
                                             placeholder="123"
                                             maxLength="4"
                                             required
+                                            disabled={isProcessing || isLoading}
+                                            className={paymentError && !cvv ? 'input-error' : ''}
                                         />
                                     </div>
                                 </div>
@@ -172,7 +285,7 @@ const PaymentPopup = ({
                                 <button
                                     type="submit"
                                     className="payment-submit-button"
-                                    disabled={isProcessing}
+                                    disabled={isProcessing || isLoading}
                                 >
                                     {isProcessing ? 'Processing Payment...' : `Pay Rs ${bookingDetails.totalAmount.toLocaleString()}`}
                                 </button>
@@ -182,13 +295,18 @@ const PaymentPopup = ({
                         {paymentMethod === 'cash' && (
                             <div className="cash-payment-info">
                                 <div className="cash-payment-message">
-                                    <p>You have selected cash payment. Please pay the amount of <strong>Rs {bookingDetails.totalAmount.toLocaleString()}</strong> when you arrive.</p>
+                                    <h4>Cash Payment Instructions</h4>
+                                    <p>You have selected cash payment. Please pay the amount of <strong>Rs {bookingDetails.totalAmount.toLocaleString()}</strong> when you pick up the vehicle.</p>
+                                    <div className="cash-details">
+                                        <p><strong>Rental Cost:</strong> Rs {bookingDetails.rentalCost.toLocaleString()}</p>
+                                        <p><strong>Security Deposit:</strong> Rs {bookingDetails.securityDeposit.toLocaleString()} (refundable)</p>
+                                    </div>
                                     <p>Your booking will be confirmed once the payment is received.</p>
                                 </div>
                                 <button
                                     className="payment-submit-button"
                                     onClick={handleSubmit}
-                                    disabled={isProcessing}
+                                    disabled={isProcessing || isLoading}
                                 >
                                     {isProcessing ? 'Confirming Booking...' : 'Confirm Booking'}
                                 </button>
@@ -199,10 +317,17 @@ const PaymentPopup = ({
                     <div className="payment-success">
                         <FaCheckCircle className="success-icon" />
                         <h3>Payment Successful!</h3>
-                        <p>Your booking has been confirmed. You will receive a confirmation email shortly.</p>
+                        <p>Your booking has been confirmed. You will receive a confirmation shortly.</p>
                         <div className="success-details">
-                            <p><strong>Booking ID:</strong> {bookingDetails.bookingId}</p>
+                            <p><strong>Booking Type:</strong> Vehicle Rental</p>
+                            <p><strong>Vehicle:</strong> {bookingDetails.itemName}</p>
+                            <p><strong>Duration:</strong> {bookingDetails.duration}</p>
                             <p><strong>Amount Paid:</strong> Rs {bookingDetails.totalAmount.toLocaleString()}</p>
+                            <p><strong>Payment Method:</strong> 
+                                {paymentMethod === 'credit_card' ? 'Credit Card' :
+                                 paymentMethod === 'debit_card' ? 'Debit Card' :
+                                 paymentMethod === 'cash' ? 'Cash' : 'Payment'}
+                            </p>
                         </div>
                     </div>
                 )}

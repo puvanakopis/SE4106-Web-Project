@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { accommodationsData, assets } from '../../Assets/assets';
+import { assets } from '../../Assets/assets';
 import { useBookings } from '../../Context/BookingContext';
 import { AuthContext } from '../../Context/AuthContext';
 import StarRating from '../../Components/Rating/StarRating';
@@ -11,26 +11,11 @@ import PaymentPopup from '../../Components/PaymentPopup/PaymentPopup';
 import OwnerDetails from './OwnerDetails';
 import './AccommodationDetails.css';
 
-// Default owner data structure
-const defaultOwner = {
-  name: 'Property Owner',
-  email: 'contact@example.com',
-  phone: '+94 77 4571 055',
-  joinDate: '2020-05-15',
-  avatar: assets.hostIcon,
-  rating: 4.8,
-  reviews: 42,
-};
-
-
 const AccommodationDetails = () => {
-  // Router hooks
   const { id } = useParams();
   const navigate = useNavigate();
-
-  // Context hooks
   const { addBooking } = useBookings();
-  const { isLoggedIn, user } = useContext(AuthContext);
+  const { isLoggedIn, user, token } = useContext(AuthContext);
 
   // State management
   const [accommodation, setAccommodation] = useState(null);
@@ -43,33 +28,83 @@ const AccommodationDetails = () => {
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
-  const [ownerData, setOwnerData] = useState(defaultOwner);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [isBooking, setIsBooking] = useState(false);
 
-  // Fetch accommodation data on component mount
-  useEffect(() => {
-    const fetchAccommodationData = async () => {
-      try {
-        setIsLoading(true);
-        const foundAccommodation = accommodationsData.find(accommodation => accommodation._id === id);
+  // API base URL
+  const API_BASE_URL = 'http://localhost:5000';
 
-        if (foundAccommodation) {
-          setAccommodation(foundAccommodation);
-          setMainImage(foundAccommodation.images[0]);
-          setOwnerData({
-            ...defaultOwner,
-            ...foundAccommodation.owner
-          });
-        } else {
-          throw new Error('Accommodation not found');
-        }
-      } catch (error) {
-        console.error('Error fetching accommodation data:', error);
-      } finally {
-        setIsLoading(false);
+  // Process accommodation images
+  const processAccommodationImages = (images) => {
+    if (!images || !Array.isArray(images)) {
+      return [assets.defaultAccommodation];
+    }
+    
+    return images.map(image => {
+      if (!image) return assets.defaultAccommodation;
+      
+      // If image already has full URL, return as is
+      if (image.startsWith('http')) {
+        return image;
       }
-    };
+      
+      // If image starts with /uploads, make it absolute path
+      if (image.startsWith('/uploads')) {
+        return `${API_BASE_URL}${image}`;
+      }
+      
+      // If it's just a filename, construct the path
+      return `${API_BASE_URL}/uploads/accommodations/${image}`;
+    });
+  };
 
+  // Fetch accommodation data from backend
+  const fetchAccommodationData = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      
+      const response = await fetch(`${API_BASE_URL}/api/accommodations/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch accommodation: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        const processedAccommodation = {
+          ...result.accommodation,
+          images: processAccommodationImages(result.accommodation.images)
+        };
+        
+        setAccommodation(processedAccommodation);
+        
+        // Set main image
+        if (processedAccommodation.images && processedAccommodation.images.length > 0) {
+          setMainImage(processedAccommodation.images[0]);
+        } else {
+          setMainImage(assets.defaultAccommodation);
+        }
+      } else {
+        throw new Error(result.message || 'Failed to fetch accommodation details');
+      }
+    } catch (error) {
+      console.error('Error fetching accommodation data:', error);
+      setError(error.message || 'Failed to load accommodation details');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchAccommodationData();
   }, [id]);
 
@@ -107,7 +142,8 @@ const AccommodationDetails = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     setTotalDays(diffDays);
     if (accommodation) {
-      const cost = diffDays * (accommodation.pricePerMonth / 30);
+      const dailyRate = accommodation.pricePerMonth / 30;
+      const cost = diffDays * dailyRate;
       setTotalCost(cost);
     }
   };
@@ -131,28 +167,85 @@ const AccommodationDetails = () => {
     setShowPaymentPopup(true);
   };
 
-  // Handle successful payment
-  const handlePaymentSuccess = () => {
-    const newBooking = {
-      id: `r-${Date.now()}`,
-      type: 'accommodation',
-      item: accommodation,
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
-      status: 'confirmed',
-      totalPrice: totalCost,
-      bookingDate: new Date().toISOString().split('T')[0],
-      paymentMethod: paymentMethod,
-      userId: user.id
-    };
+  // Create accommodation booking
+  const createAccommodationBooking = async (paymentDetails = {}) => {
+    try {
+      setIsBooking(true);
+      
+      const bookingData = {
+        renter: user.id,
+        accommodation: id,
+        booking_start: startDate.toISOString(),
+        booking_end: endDate.toISOString(),
+        totalPrice: totalCost,
+        securityDeposit: accommodation.SecurityDeposit,
+        isPaid: true,
+        paymentMethod: paymentMethod,
+        ...paymentDetails
+      };
 
-    addBooking(newBooking);
-    setStartDate(null);
-    setEndDate(null);
-    setTotalDays(0);
-    setTotalCost(0);
-    setPaymentMethod('credit_card');
-    setShowPaymentPopup(false);
+      const response = await fetch(`${API_BASE_URL}/api/accommodation-bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to create booking');
+      }
+
+      if (result.success) {
+        const newBooking = {
+          id: result.booking._id || `a-${Date.now()}`,
+          type: 'accommodation',
+          item: accommodation,
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
+          status: result.booking.booking_status || 'confirmed',
+          totalPrice: totalCost,
+          securityDeposit: accommodation.SecurityDeposit,
+          bookingDate: new Date().toISOString().split('T')[0],
+          paymentMethod: paymentMethod,
+          userId: user.id,
+          bookingId: result.booking._id
+        };
+
+        addBooking(newBooking);
+
+        setStartDate(null);
+        setEndDate(null);
+        setTotalDays(0);
+        setTotalCost(0);
+        setPaymentMethod('credit_card');
+        setShowPaymentPopup(false);
+
+        alert('Booking confirmed successfully!');
+        
+      } else {
+        throw new Error(result.message || 'Booking failed');
+      }
+
+    } catch (error) {
+      console.error('Booking creation error:', error);
+      setBookingError(error.message || 'Failed to complete booking. Please try again.');
+    } finally {
+      setIsBooking(false);
+    }
+  };
+
+  // Handle payment success
+  const handlePaymentSuccess = async (paymentData = {}) => {
+    try {
+      await createAccommodationBooking(paymentData);
+    } catch (error) {
+      console.error('Payment success handling error:', error);
+      setBookingError('Failed to process booking after payment. Please contact support.');
+    }
   };
 
   // Handle contact owner button click
@@ -162,7 +255,7 @@ const AccommodationDetails = () => {
       return;
     }
 
-    if (!accommodation?.owner) {
+    if (!accommodation?.owner_id) {
       console.warn('No owner data available for this property');
       alert('Owner information is not currently available. Please try again later.');
       return;
@@ -175,12 +268,17 @@ const AccommodationDetails = () => {
   const getBookingDetails = () => {
     if (!accommodation) return null;
 
+    const dailyRate = accommodation.pricePerMonth / 30;
+
     return {
       type: 'accommodation',
-      itemName: `${accommodation.accommodationType}`,
+      itemName: `${accommodation.accommodationType} - ${accommodation.accommodationName}`,
       duration: `${totalDays} day${totalDays !== 1 ? 's' : ''}`,
-      totalAmount: totalDays > 0 ? totalCost + (accommodation.pricePerMonth * 0.1) : 0,
-      bookingId: `R-${Date.now()}`
+      totalAmount: totalDays > 0 ? totalCost + (accommodation.SecurityDeposit || 0) : 0,
+      bookingId: `ACC-${Date.now()}`,
+      dailyRate: dailyRate,
+      deposit: accommodation.SecurityDeposit || 0,
+      rentalCost: totalCost
     };
   };
 
@@ -194,13 +292,29 @@ const AccommodationDetails = () => {
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="accommodation-error">
+        <h2 className="accommodation-error__title">Error Loading Accommodation</h2>
+        <p className="accommodation-error__message">{error}</p>
+        <button
+          className="back-button"
+          onClick={() => navigate('/accommodations')}
+        >
+          Browse Available Accommodations
+        </button>
+      </div>
+    );
+  }
+
   // Accommodation not found state
   if (!accommodation) {
     return (
       <div className="accommodation-not-found">
         <h2 className="accommodation-not-found__title">Accommodation not found</h2>
         <p className="accommodation-not-found__message">
-          Please check the ID or go back to the accommodation list.
+          The accommodation you're looking for doesn't exist or has been removed.
         </p>
         <button
           className="back-button"
@@ -212,19 +326,22 @@ const AccommodationDetails = () => {
     );
   }
 
+  // Use processed images from accommodation state
   const images = accommodation.images || [];
+  const owner = accommodation.owner_id;
+  const dailyRate = accommodation.pricePerMonth / 30;
 
   return (
     <main className="accommodation-details">
-      {/* ---------------------------- Owner Details Modal ---------------------------- */}
+      {/* Owner Details Modal */}
       {showOwnerDetails && (
         <OwnerDetails
-          owner={ownerData}
+          owner={owner}
           onClose={() => setShowOwnerDetails(false)}
         />
       )}
 
-      {/* ---------------------------- Payment Popup Modal ---------------------------- */}
+      {/* Payment Popup Modal */}
       {showPaymentPopup && (
         <PaymentPopup
           isOpen={showPaymentPopup}
@@ -232,10 +349,11 @@ const AccommodationDetails = () => {
           bookingDetails={getBookingDetails()}
           onPaymentSuccess={handlePaymentSuccess}
           paymentMethod={paymentMethod}
+          isLoading={isBooking}
         />
       )}
 
-      {/* ---------------------------- Accommodation Header Section ---------------------------- */}
+      {/* Accommodation Header Section */}
       <header className="accommodation-header">
         <h1 className="accommodation-title">
           <div className='accommodation-name'>{accommodation.accommodationName}</div>
@@ -243,50 +361,69 @@ const AccommodationDetails = () => {
         </h1>
 
         <div className="accommodation-meta">
-          <StarRating rating={accommodation.rating} />
-          <span className="accommodation-review-count">{accommodation.totalReviews || 200} + reviews</span>
+          <StarRating rating={accommodation.averageRating || 0} />
+          <span className="accommodation-review-count">
+            {accommodation.totalReviews || 0} review{accommodation.totalReviews !== 1 ? 's' : ''}
+          </span>
+          {!accommodation.isAvailable && (
+            <span className="accommodation-status-badge">Not Available</span>
+          )}
+          {accommodation.status && accommodation.status !== 'Active' && (
+            <span className="accommodation-status-badge">{accommodation.status}</span>
+          )}
         </div>
 
         <div className="accommodation-location">
           <img src={assets.locationIcon} alt="Location icon" className="accommodation-location__icon" />
-          <span className="accommodation-location__text">{accommodation.location}</span>
+          <span className="accommodation-location__text">
+            {accommodation.location?.address || accommodation.address || 'Location not specified'}
+          </span>
         </div>
       </header>
 
-      {/* ---------------------------- Accommodation Gallery Section ---------------------------- */}
+      {/* Accommodation Gallery Section */}
       <section className="accommodation-gallery">
         <div className="accommodation-gallery__main">
           <img
-            src={mainImage}
-            alt={`${accommodation.name}`}
+            src={mainImage || assets.defaultAccommodation}
+            alt={accommodation.accommodationName}
             className="accommodation-gallery__main-image"
             loading="lazy"
+            onError={(e) => {
+              console.error('Failed to load main image:', mainImage);
+              e.target.src = assets.defaultAccommodation;
+            }}
           />
         </div>
-        <div className="accommodation-gallery__thumbnails">
-          {images.slice(0, 4).map((img, index) => (
-            <button
-              key={index}
-              className={`accommodation-gallery__thumbnail ${mainImage === img ? 'accommodation-gallery__thumbnail--active' : ''}`}
-              onClick={() => setMainImage(img)}
-              aria-label={`View image ${index + 1}`}
-            >
-              <img
-                src={img}
-                alt={`Thumbnail ${index + 1}`}
-                className="accommodation-gallery__thumbnail-image"
-                loading="lazy"
-              />
-            </button>
-          ))}
-        </div>
+        {images.length > 0 && (
+          <div className="accommodation-gallery__thumbnails">
+            {images.slice(0, 4).map((img, index) => (
+              <button
+                key={index}
+                className={`accommodation-gallery__thumbnail ${mainImage === img ? 'accommodation-gallery__thumbnail--active' : ''}`}
+                onClick={() => setMainImage(img)}
+                aria-label={`View image ${index + 1}`}
+              >
+                <img
+                  src={img}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="accommodation-gallery__thumbnail-image"
+                  loading="lazy"
+                  onError={(e) => {
+                    console.error('Failed to load thumbnail:', img);
+                    e.target.src = assets.defaultAccommodation;
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* ---------------------------- Main Content Area ---------------------------- */}
+      {/* Main Content Area */}
       <div className="accommodation-content">
-
         <section className="accommodation-specs">
-          {/* ---------- Accommodation Specifications ---------- */}
+          {/* Accommodation Specifications */}
           <div className="accommodation-Content">
             <h2 className="accommodation-section-title">Accommodation Specifications</h2>
             <div className="specs-grid">
@@ -301,38 +438,56 @@ const AccommodationDetails = () => {
               </div>
 
               <div className="specs-item">
-                <span className="specs-title">Price</span>
-                <span className="specs-value">Rs {accommodation.pricePerMonth.toLocaleString()}/month</span>
+                <span className="specs-title">Monthly Rate</span>
+                <span className="specs-value">Rs {accommodation.pricePerMonth?.toLocaleString()}</span>
               </div>
 
               <div className="specs-item">
-                <span className="specs-title">No of Bed</span>
+                <span className="specs-title">Daily Rate</span>
+                <span className="specs-value">Rs {dailyRate?.toLocaleString()}</span>
+              </div>
+
+              <div className="specs-item">
+                <span className="specs-title">Number of Beds</span>
                 <span className="specs-value">{accommodation.noOfBed}</span>
               </div>
 
-            </div>
+              <div className="specs-item">
+                <span className="specs-title">Security Deposit</span>
+                <span className="specs-value">Rs {accommodation.SecurityDeposit?.toLocaleString()}</span>
+              </div>
 
-
-
-            {/* Amenities Section */}
-            <div className="amenities-section">
-              <h3 className="specs-title">Amenities</h3>
-              <div className="amenities-list">
-                {accommodation.amenities?.map((item, index) => (
-                  <div key={index} className="amenity-item">
-                    <span>{item}</span>
-                  </div>
-                ))}
+              <div className="specs-item">
+                <span className="specs-title">Availability</span>
+                <span className={`specs-value ${accommodation.isAvailable ? 'available' : 'not-available'}`}>
+                  {accommodation.isAvailable ? 'Available' : 'Not Available'}
+                </span>
               </div>
             </div>
 
-            {/* Address */}
-            <div className="description-section">
+            {/* Amenities Section */}
+            {accommodation.amenities && accommodation.amenities.length > 0 && (
+              <div className="amenities-section">
+                <h3 className="specs-title">Amenities</h3>
+                <div className="amenities-list">
+                  {accommodation.amenities.map((item, index) => (
+                    <div key={index} className="amenity-item">
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Address Section */}
+            <div className="address-section">
               <h3 className="specs-title">Address</h3>
-              <p className="specs-text">{accommodation.location}</p>
+              <p className="specs-text">
+                {accommodation.location?.address || accommodation.address || 'Address not specified'}
+              </p>
             </div>
 
-            {/*  Description Section  */}
+            {/* Description Section */}
             <div className="description-section">
               <h3 className="specs-title">Description</h3>
               <p className="specs-text">
@@ -341,45 +496,47 @@ const AccommodationDetails = () => {
             </div>
           </div>
 
-
-          {/* ---------- Map Section ---------- */}
+          {/* Map Section */}
           <div className="accommodation-Content map">
             <h3 className="accommodation-section-title">Location</h3>
             <div className="map-container">
               <GoogleMapEmbed
-                address={accommodation.location}
+                address={accommodation.location?.address || accommodation.address || 'Colombo, Sri Lanka'}
+                latitude={accommodation.location?.latitude}
+                longitude={accommodation.location?.longitude}
               />
             </div>
           </div>
 
-          {/* ---------- Reviews ----------  */}
+          {/* Reviews Section */}
           <section className="accommodation-Content accommodation-reviews">
             <h2 className="accommodation-section-title">Reviews</h2>
 
             <div className="reviews-summary">
               <div className="reviews-overview">
-                <span className="reviews-average">{accommodation.averageRating.toFixed(1)}</span>
-                <StarRating rating={accommodation.averageRating} />
-                <span>{accommodation.totalReviews} + reviews</span>
+                <span className="reviews-average">{(accommodation.averageRating || 0).toFixed(1)}</span>
+                <StarRating rating={accommodation.averageRating || 0} />
+                <span>{accommodation.totalReviews || 0} review{accommodation.totalReviews !== 1 ? 's' : ''}</span>
               </div>
 
               {/* Rating Distribution */}
               <div className="rating-distribution">
                 {[5, 4, 3, 2, 1].map(star => {
-                  const count = accommodation.ratingCount[star] || 0;
+                  const count = accommodation.ratingCount?.[star] || 0;
                   const percentage = accommodation.totalReviews
                     ? (count / accommodation.totalReviews) * 100
                     : 0;
 
                   return (
                     <div className="rating-row" key={star}>
-                      <span className="star-label">{star}</span>
+                      <span className="star-label">{star} star{star !== 1 ? 's' : ''}</span>
                       <div className="bar-container">
                         <div
                           className="bar-fill"
                           style={{ width: `${percentage}%` }}
                         ></div>
                       </div>
+                      <span className="rating-count">({count})</span>
                     </div>
                   );
                 })}
@@ -387,41 +544,55 @@ const AccommodationDetails = () => {
             </div>
           </section>
 
-
-          {/* ---------- Owner ---------- */}
+          {/* Owner Section */}
           <section className="accommodation-Content accommodation-host">
-            <h2 className="accommodation-section-title">Accommodation Owner</h2>
+            <h2 className="accommodation-section-title">Property Owner</h2>
             <div className="host-profile">
               <img
-                src={ownerData.profile_pic || assets.defaultAvatar}
-                alt={`${ownerData.DisplayName}'s profile`}
+                src={owner?.profile_pic ? processAccommodationImages([owner.profile_pic])[0] : assets.defaultAvatar}
+                alt={`${owner?.displayName || owner?.fullName || 'Property Owner'}'s profile`}
                 className="host-avatar"
+                onError={(e) => {
+                  e.target.src = assets.defaultAvatar;
+                }}
               />
               <div className="host-info">
-                <h4 className="host-name">Owned by {ownerData.DisplayName}</h4>
-                <div className="host-rating">
-                  <StarRating rating={ownerData.averageRating} size="small" />
-                  <span>{ownerData.totalReviews} + reviews</span>
-                </div>
-
+                <h4 className="host-name">
+                  Owned by {owner?.displayName || owner?.fullName || 'Property Owner'}
+                </h4>
+                {owner?.averageRating && (
+                  <div className="host-rating">
+                    <StarRating rating={owner.averageRating} size="small" />
+                    <span>{owner.totalReviews || 0} review{owner.totalReviews !== 1 ? 's' : ''}</span>
+                  </div>
+                )}
+                {owner?.phoneNumber && (
+                  <div className="host-phone">
+                    <img src={assets.phoneIcon} alt="Phone" className="host-phone-icon" />
+                    <span>{owner.phoneNumber}</span>
+                  </div>
+                )}
               </div>
-
             </div>
             <button
               className="host-contact-button"
               onClick={handleContactOwner}
               aria-label="Contact property owner"
             >
-              Contact Host
+              Contact Owner
             </button>
           </section>
         </section>
 
-        {/* ---------------------------- Right Column - Booking Card ---------------------------- */}
+        {/* Right Column - Booking Card */}
         <aside className="accommodation-booking">
           <div className="booking-card">
-            <div className="accommodation-section-title">
-              Booking
+            <div className="booking-card-header">
+              <h3 className="accommodation-section-title">Booking</h3>
+              <div className="booking-price">
+                Rs {dailyRate?.toLocaleString()}
+                <span className="price-period"> / day</span>
+              </div>
             </div>
 
             <div className="booking-dates">
@@ -435,6 +606,7 @@ const AccommodationDetails = () => {
                   className="booking-dates__input"
                   dateFormat="dd/MM/yyyy"
                   isClearable
+                  disabled={!accommodation.isAvailable}
                 />
               </div>
               <div className="booking-date-group">
@@ -447,7 +619,7 @@ const AccommodationDetails = () => {
                   className="booking-dates__input"
                   dateFormat="dd/MM/yyyy"
                   isClearable
-                  disabled={!startDate}
+                  disabled={!startDate || !accommodation.isAvailable}
                 />
               </div>
               {bookingError && <div className="booking-error">{bookingError}</div>}
@@ -459,6 +631,7 @@ const AccommodationDetails = () => {
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="payment-method__select"
+                disabled={!accommodation.isAvailable}
               >
                 <option value="credit_card">Credit Card</option>
                 <option value="debit_card">Debit Card</option>
@@ -475,7 +648,7 @@ const AccommodationDetails = () => {
               </div>
               <div className="booking-summary__item">
                 <span>Daily Rate:</span>
-                <span>Rs {(accommodation.pricePerMonth / 30).toLocaleString()}</span>
+                <span>Rs {dailyRate?.toLocaleString()}</span>
               </div>
               <div className="booking-summary__item booking-summary__item--subtotal">
                 <span>Subtotal:</span>
@@ -483,31 +656,39 @@ const AccommodationDetails = () => {
               </div>
               <div className="booking-summary__item">
                 <span>Security Deposit:</span>
-                <span>Rs {(accommodation.SecurityDeposit).toLocaleString()}</span>
+                <span>Rs {accommodation.SecurityDeposit?.toLocaleString()}</span>
               </div>
               <div className="booking-summary__item booking-summary__item--total">
                 <span>Total Amount:</span>
                 <span>Rs {totalDays > 0
-                  ? (totalCost + (accommodation.pricePerMonth * 0.1)).toLocaleString()
+                  ? (totalCost + (accommodation.SecurityDeposit || 0)).toLocaleString()
                   : 0}</span>
               </div>
             </div>
 
             <div className="booking-deposit">
-              <span>Security Deposit: Rs {(accommodation.SecurityDeposit).toLocaleString()} (refundable when accommodation is vacated)</span>
+              <span>Security Deposit: Rs {accommodation.SecurityDeposit?.toLocaleString()} (refundable when accommodation is vacated)</span>
             </div>
 
             <button
-              className="booking-button"
+              className={`booking-button ${!accommodation.isAvailable ? 'booking-button--disabled' : ''}`}
               onClick={handleBookNow}
-              disabled={totalDays === 0}
+              disabled={!accommodation.isAvailable || totalDays === 0 || accommodation.status !== 'Active' || isBooking}
             >
-              Book Now
+              {isBooking ? 'Processing...' : 
+               !accommodation.isAvailable ? 'Not Available' :
+               accommodation.status && accommodation.status !== 'Active' ? accommodation.status :
+               'Book Now'}
             </button>
+
+            {accommodation.status && accommodation.status !== 'Active' && (
+              <div className="booking-notice">
+                This accommodation is currently {accommodation.status.toLowerCase()}.
+              </div>
+            )}
           </div>
         </aside>
       </div>
-
     </main>
   );
 };

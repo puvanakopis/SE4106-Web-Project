@@ -1,27 +1,36 @@
 import { useState, useEffect } from 'react';
 import { assets } from '../../Assets/assets';
 import './AdminTransport.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const API_BASE = 'http://localhost:5000/api';
 
 const AdminTransport = () => {
   const [formData, setFormData] = useState({
     vehicle_name: '',
     vehicle_type: '',
-    rental_price_per_day: '',
-    description: '',
-    features: [],
-    customFeature: '',
-    images: [],
-    isAvailable: true,
-    address: '',
-    seating_capacity: 2,
-    owner_id: '',
-    status: 'Active',
     brand: '',
     model: '',
     fuel_type: 'Petrol',
     year: new Date().getFullYear(),
     registration_number: '',
-    deposit_amount: ''
+    rental_price_per_day: '',
+    deposit_amount: '',
+    seating_capacity: 2,
+    description: '',
+    features: [],
+    customFeature: '',
+    address: '',
+    location: {
+      type: 'Point',
+      coordinates: ['', ''],
+      mapSrc: '',
+      title: ''
+    },
+    isAvailable: true,
+    status: 'Active',
+    owner_id: ''
   });
 
   const [vehicles, setVehicles] = useState([]);
@@ -34,61 +43,6 @@ const AdminTransport = () => {
   const [bookingStatusFilter, setBookingStatusFilter] = useState('all');
   const [loading, setLoading] = useState(false);
 
-  const API_BASE = 'http://localhost:5000/api';
-
-  // Load initial data
-  useEffect(() => {
-    fetchVehicles();
-    fetchBookings();
-    fetchOwners();
-  }, []);
-
-  // API Functions
-  const fetchVehicles = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${API_BASE}/transports`);
-      const result = await response.json();
-      if (result.success) {
-        setVehicles(result.transports);
-      }
-    } catch (error) {
-      console.error('Error fetching vehicles:', error);
-      alert('Error fetching vehicles');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchBookings = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/transport-bookings`);
-      const result = await response.json();
-      if (result.success) {
-        setBookings(result.bookings);
-      }
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      alert('Error fetching bookings');
-    }
-  };
-
-  const fetchOwners = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/owners`);
-      const result = await response.json();
-      if (result.success) {
-        setOwners(result.owners);
-        // Set default owner if available
-        if (result.owners.length > 0 && !formData.owner_id) {
-          setFormData(prev => ({ ...prev, owner_id: result.owners[0]._id }));
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching owners:', error);
-    }
-  };
-
   // Standard features options
   const standardFeatures = [
     "Air Conditioning",
@@ -100,8 +54,200 @@ const AdminTransport = () => {
     "Leather Seats",
     "Sunroof",
     "Alloy Wheels",
-    "Hybrid Engine"
+    "Hybrid Engine",
+    "GPS Tracking",
+    "Child Seat",
+    "Roof Rack",
+    "Towing Package",
+    "Keyless Entry"
   ];
+
+  // Vehicle types
+  const vehicleTypes = ["Motorbike", "Car", "Scooter", "Bicycle", "Van", "Truck", "Other"];
+
+  // Fuel types
+  const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "CNG", "Other"];
+
+  // Status types
+  const statusTypes = ["Active", "Blocked"];
+
+  useEffect(() => {
+    fetchVehicles();
+    fetchBookings();
+    fetchOwners();
+  }, []);
+
+  // Get all transport
+  const fetchVehicles = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE}/transports?limit=100`);
+      const data = await response.json();
+
+      if (data.success) {
+        setVehicles(data.transports);
+      }
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+      toast.error('Error loading vehicles');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get all booking
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/transport-bookings`);
+      const data = await response.json();
+
+      if (data.success) {
+        setBookings(data.bookings || []);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      toast.error('Error loading bookings');
+    }
+  };
+
+  // Get all owners
+  const fetchOwners = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/owners`);
+      const data = await response.json();
+
+      if (data.success) {
+        setOwners(data.owners || []);
+        if (data.owners.length > 0 && !formData.owner_id) {
+          setFormData(prev => ({ ...prev, owner_id: data.owners[0]._id }));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching owners:', error);
+      toast.error('Error loading owners');
+    }
+  };
+
+  // Create Vehicle 
+  const createVehicle = async (vehicleData) => {
+    try {
+      const formData = new FormData();
+      Object.keys(vehicleData).forEach(key => {
+        if (key === 'features') {
+          formData.append(key, JSON.stringify(vehicleData[key]));
+        } else if (key === 'location') {
+          formData.append(key, JSON.stringify(vehicleData[key]));
+        } else if (key !== 'vehicle_images' && key !== 'customFeature') {
+          formData.append(key, vehicleData[key]);
+        }
+      });
+
+      imageFiles.forEach(file => {
+        formData.append('vehicle_images', file);
+      });
+
+      const response = await fetch(`${API_BASE}/transports`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        await fetchVehicles();
+        return { success: true, data: data.transport };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Error creating vehicle:', error);
+      return { success: false, message: 'Failed to create vehicle' };
+    }
+  };
+
+  // Update Vehicle
+  const updateVehicle = async (id, updateData) => {
+    try {
+      const formData = new FormData();
+
+      Object.keys(updateData).forEach(key => {
+        if (key === 'features') {
+          formData.append(key, JSON.stringify(updateData[key]));
+        } else if (key === 'location') {
+          formData.append(key, JSON.stringify(updateData[key]));
+        } else if (key !== 'vehicle_images' && key !== 'customFeature') {
+          formData.append(key, updateData[key]);
+        }
+      });
+
+      imageFiles.forEach(file => {
+        formData.append('vehicle_images', file);
+      });
+
+      const response = await fetch(`${API_BASE}/transports/${id}`, {
+        method: 'PUT',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        await fetchVehicles();
+        return { success: true, data: data.transport };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Error updating vehicle:', error);
+      return { success: false, message: 'Failed to update vehicle' };
+    }
+  };
+
+  // Delete Vehicle
+  const deleteVehicle = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE}/transports/${id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        await fetchVehicles();
+        return { success: true };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Error deleting vehicle:', error);
+      return { success: false, message: 'Failed to delete vehicle' };
+    }
+  };
+
+  // update Vehicle Status 
+  const updateVehicleStatus = async (id, status) => {
+    try {
+      const response = await fetch(`${API_BASE}/transports/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        await fetchVehicles();
+        return { success: true };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      return { success: false, message: 'Failed to update status' };
+    }
+  };
 
   // Vehicle statistics
   const calculateVehicleStats = () => {
@@ -109,7 +255,7 @@ const AdminTransport = () => {
     const occupiedVehicles = vehicles.filter(vehicle => !vehicle.isAvailable).length;
     const availableVehicles = totalVehicles - occupiedVehicles;
     const averageRating = vehicles.length > 0
-      ? vehicles.reduce((sum, vehicle) => sum + vehicle.averageRating, 0) / totalVehicles
+      ? vehicles.reduce((sum, vehicle) => sum + (vehicle.averageRating || 0), 0) / totalVehicles
       : 0;
 
     return {
@@ -155,6 +301,31 @@ const AdminTransport = () => {
     }));
   };
 
+  // Handle location input changes
+  const handleLocationChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      location: {
+        ...prev.location,
+        [name]: value
+      }
+    }));
+  };
+
+  // Handle coordinates change
+  const handleCoordinatesChange = (index, value) => {
+    setFormData(prev => ({
+      ...prev,
+      location: {
+        ...prev.location,
+        coordinates: prev.location.coordinates.map((coord, i) =>
+          i === index ? parseFloat(value) || '' : coord
+        )
+      }
+    }));
+  };
+
   // Handle image upload
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -163,6 +334,7 @@ const AdminTransport = () => {
     // Create preview URLs
     const previews = files.map(file => URL.createObjectURL(file));
     setImagePreviews(previews);
+    toast.success(`${files.length} images uploaded successfully!`);
   };
 
   // Handle feature toggle
@@ -187,7 +359,7 @@ const AdminTransport = () => {
         features: [...prev.features, prev.customFeature],
         customFeature: ''
       }));
-    }
+    } 
   };
 
   // Handle form submission
@@ -196,102 +368,68 @@ const AdminTransport = () => {
     setLoading(true);
 
     try {
-      const submitData = new FormData();
-
-      // Append all form data
-      Object.keys(formData).forEach(key => {
-        if (key === 'features') {
-          submitData.append(key, JSON.stringify(formData[key]));
-        } else if (key !== 'images' && key !== 'customFeature') {
-          submitData.append(key, formData[key]);
+      const vehicleData = {
+        ...formData,
+        rental_price_per_day: parseFloat(formData.rental_price_per_day),
+        deposit_amount: parseFloat(formData.deposit_amount),
+        seating_capacity: parseInt(formData.seating_capacity),
+        year: parseInt(formData.year),
+        isAvailable: formData.isAvailable === 'true' || formData.isAvailable === true,
+        location: {
+          ...formData.location,
+          coordinates: formData.location.coordinates.map(coord => parseFloat(coord) || 0)
         }
-      });
+      };
 
-      // Append images
-      imageFiles.forEach(file => {
-        submitData.append('vehicle_images', file);
-      });
-
-      let response;
+      let result;
       if (editingId) {
-        // Update existing vehicle
-        response = await fetch(`${API_BASE}/transports/${editingId}`, {
-          method: 'PUT',
-          body: submitData,
-        });
+        result = await updateVehicle(editingId, vehicleData);
       } else {
-        // Add new vehicle
-        response = await fetch(`${API_BASE}/transports`, {
-          method: 'POST',
-          body: submitData,
-        });
+        result = await createVehicle(vehicleData);
       }
 
-      const result = await response.json();
-
       if (result.success) {
-        alert(editingId ? 'Vehicle updated successfully!' : 'Vehicle added successfully!');
-        await fetchVehicles();
+        toast.success(editingId ? 'Vehicle updated successfully!' : 'Vehicle added successfully!');
         resetForm();
         setActiveTab('view');
       } else {
-        alert(result.message || 'Error saving vehicle');
+        toast.error(result.message || 'Operation failed');
       }
     } catch (error) {
-      console.error('Error saving vehicle:', error);
-      alert('Error saving vehicle');
+      console.error('Error submitting form:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Toggle vehicle status between Active and Inactive
-  const toggleVehicleStatus = async (id, currentStatus) => {
-    try {
-      const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
-      const response = await fetch(`${API_BASE}/transports/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        await fetchVehicles();
-      } else {
-        alert(result.message || 'Error updating vehicle status');
-      }
-    } catch (error) {
-      console.error('Error updating vehicle status:', error);
-      alert('Error updating vehicle status');
     }
   };
 
   // Edit vehicle
   const handleEdit = (vehicle) => {
     setFormData({
-      vehicle_name: vehicle.vehicle_name || `${vehicle.brand} ${vehicle.model}`,
-      owner_id: vehicle.owner_id?._id || vehicle.owner_id,
+      vehicle_name: vehicle.vehicle_name,
       vehicle_type: vehicle.vehicle_type,
-      rental_price_per_day: vehicle.rental_price_per_day,
-      deposit_amount: vehicle.deposit_amount,
-      features: vehicle.features || [],
-      isAvailable: vehicle.isAvailable,
-      address: vehicle.address,
-      seating_capacity: vehicle.seating_capacity,
-      description: vehicle.description || '',
-      customFeature: '',
       brand: vehicle.brand,
       model: vehicle.model,
       fuel_type: vehicle.fuel_type,
       year: vehicle.year,
       registration_number: vehicle.registration_number,
-      status: vehicle.status
+      rental_price_per_day: vehicle.rental_price_per_day,
+      deposit_amount: vehicle.deposit_amount,
+      seating_capacity: vehicle.seating_capacity,
+      description: vehicle.description || '',
+      features: vehicle.features || [],
+      address: vehicle.address || '',
+      location: {
+        type: vehicle.location?.type || 'Point',
+        coordinates: vehicle.location?.coordinates || ['', ''],
+        mapSrc: vehicle.location?.mapSrc || '',
+        title: vehicle.location?.title || ''
+      },
+      isAvailable: vehicle.isAvailable,
+      status: vehicle.status,
+      owner_id: vehicle.owner_id?._id || vehicle.owner_id,
+      customFeature: '',
     });
 
-    // Set image previews from existing images
     if (vehicle.vehicle_images && vehicle.vehicle_images.length > 0) {
       setImagePreviews(vehicle.vehicle_images.map(img =>
         img.startsWith('http') ? img : `http://localhost:5000${img}`
@@ -303,47 +441,42 @@ const AdminTransport = () => {
     setImageFiles([]);
     setEditingId(vehicle._id);
     setActiveTab('add');
+    toast.info('Editing vehicle: ' + (vehicle.vehicle_name || `${vehicle.brand} ${vehicle.model}`));
   };
 
   // Delete vehicle
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this vehicle?')) {
-      try {
-        const response = await fetch(`${API_BASE}/transports/${id}`, {
-          method: 'DELETE',
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          alert('Vehicle deleted successfully!');
-          await fetchVehicles();
-        } else {
-          alert(result.message || 'Error deleting vehicle');
-        }
-      } catch (error) {
-        console.error('Error deleting vehicle:', error);
-        alert('Error deleting vehicle');
+      setLoading(true);
+      const result = await deleteVehicle(id);
+      if (!result.success) {
+        toast.error(result.message || 'Failed to delete vehicle');
+      } else {
+        toast.success('Vehicle deleted successfully!');
       }
+      setLoading(false);
     }
   };
 
-  // Toggle vehicle availability
-  const toggleAvailability = async (id) => {
-    try {
-      const response = await fetch(`${API_BASE}/transports/${id}/availability/toggle`, {
-        method: 'PATCH',
-      });
+  // Toggle vehicle status
+  const toggleVehicleStatus = async (id, currentStatus) => {
+    setLoading(true);
+    let newStatus;
 
-      const result = await response.json();
-      if (result.success) {
-        await fetchVehicles();
-      } else {
-        alert(result.message || 'Error updating availability');
-      }
-    } catch (error) {
-      console.error('Error updating availability:', error);
-      alert('Error updating availability');
+    // Cycle through statuses
+    if (currentStatus === 'Active') {
+      newStatus = 'Blocked';
+    } else {
+      newStatus = 'Active';
     }
+
+    const result = await updateVehicleStatus(id, newStatus);
+    if (!result.success) {
+      toast.error(result.message || 'Failed to update vehicle status');
+    } else {
+      toast.success(`Vehicle status updated to ${newStatus}`);
+    }
+    setLoading(false);
   };
 
   // Update booking status
@@ -357,15 +490,17 @@ const AdminTransport = () => {
         body: JSON.stringify({ booking_status: newStatus }),
       });
 
-      const result = await response.json();
-      if (result.success) {
+      const data = await response.json();
+
+      if (data.success) {
         await fetchBookings();
+        toast.success(`Booking status updated to ${newStatus}`);
       } else {
-        alert(result.message || 'Error updating booking status');
+        toast.error('Failed to update booking status');
       }
     } catch (error) {
       console.error('Error updating booking status:', error);
-      alert('Error updating booking status');
+      toast.error('Failed to update booking status');
     }
   };
 
@@ -374,22 +509,27 @@ const AdminTransport = () => {
     setFormData({
       vehicle_name: '',
       vehicle_type: '',
-      rental_price_per_day: '',
-      description: '',
-      features: [],
-      customFeature: '',
-      images: [],
-      isAvailable: true,
-      address: '',
-      seating_capacity: 2,
-      owner_id: owners[0]?._id || '',
-      status: 'Active',
       brand: '',
       model: '',
       fuel_type: 'Petrol',
       year: new Date().getFullYear(),
       registration_number: '',
-      deposit_amount: ''
+      rental_price_per_day: '',
+      deposit_amount: '',
+      seating_capacity: 2,
+      description: '',
+      features: [],
+      customFeature: '',
+      address: '',
+      location: {
+        type: 'Point',
+        coordinates: ['', ''],
+        mapSrc: '',
+        title: ''
+      },
+      isAvailable: true,
+      status: 'Active',
+      owner_id: owners[0]?._id || ''
     });
     setImagePreviews([]);
     setImageFiles([]);
@@ -415,12 +555,33 @@ const AdminTransport = () => {
     return 'N/A';
   };
 
+  // Remove image preview
+  const removeImagePreview = (index) => {
+    const newPreviews = [...imagePreviews];
+    newPreviews.splice(index, 1);
+    setImagePreviews(newPreviews);
+
+    const newFiles = [...imageFiles];
+    newFiles.splice(index, 1);
+    setImageFiles(newFiles);
+  };
+
+  // ----------------------- Render Method -----------------------
+  if (loading) {
+    return (
+      <div className="dashboard-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading dashboard data...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="transport-container">
-      {/* --------------------------- Page Title --------------------------- */}
+      {/* Page Title */}
       <h1 className="title">Transport & Bookings Management</h1>
 
-      {/* ---------------------------  Navigation Tabs --------------------------- */}
+      {/* ----------------- Navigation Tabs ----------------- */}
       <div className="tabs">
         <button
           className={`tab-button ${activeTab === 'add' ? 'active' : ''}`}
@@ -448,7 +609,7 @@ const AdminTransport = () => {
         </button>
       </div>
 
-      {/*  ----------------- Add/Edit Vehicle Form --------------------------- */}
+      {/* ----------------- Add/Edit Vehicle Form ----------------- */}
       {activeTab === 'add' && (
         <form onSubmit={handleSubmit} className="vehicle-form">
           {/* Vehicle Statistics Summary */}
@@ -481,7 +642,7 @@ const AdminTransport = () => {
 
           {/* Basic Information */}
           <div className="form-section">
-            <h2 className='section-title '>Basic Information</h2>
+            <h2 className='section-title'>Basic Information</h2>
             <div className="form-grid">
               <div className="form-group">
                 <label>Vehicle Name</label>
@@ -489,6 +650,7 @@ const AdminTransport = () => {
                   name="vehicle_name"
                   value={formData.vehicle_name}
                   onChange={handleInputChange}
+                  placeholder="e.g., City Commuter, Family Van"
                   required
                 />
               </div>
@@ -519,13 +681,9 @@ const AdminTransport = () => {
                   required
                 >
                   <option value="">Select Vehicle Type</option>
-                  <option value="Motorbike">Motorbike</option>
-                  <option value="Car">Car</option>
-                  <option value="Van">Van</option>
-                  <option value="Scooter">Scooter</option>
-                  <option value="Bicycle">Bicycle</option>
-                  <option value="Truck">Truck</option>
-                  <option value="Other">Other</option>
+                  {vehicleTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
                 </select>
               </div>
 
@@ -535,6 +693,7 @@ const AdminTransport = () => {
                   name="brand"
                   value={formData.brand}
                   onChange={handleInputChange}
+                  placeholder="e.g., Toyota, Honda, Yamaha"
                   required
                 />
               </div>
@@ -545,6 +704,7 @@ const AdminTransport = () => {
                   name="model"
                   value={formData.model}
                   onChange={handleInputChange}
+                  placeholder="e.g., Corolla, Civic, MT-15"
                   required
                 />
               </div>
@@ -557,12 +717,9 @@ const AdminTransport = () => {
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="Petrol">Petrol</option>
-                  <option value="Diesel">Diesel</option>
-                  <option value="Electric">Electric</option>
-                  <option value="Hybrid">Hybrid</option>
-                  <option value="CNG">CNG</option>
-                  <option value="Other">Other</option>
+                  {fuelTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
                 </select>
               </div>
 
@@ -574,7 +731,7 @@ const AdminTransport = () => {
                   value={formData.year}
                   onChange={handleInputChange}
                   min="1900"
-                  max={new Date().getFullYear()}
+                  max={new Date().getFullYear() + 1}
                   required
                 />
               </div>
@@ -585,6 +742,7 @@ const AdminTransport = () => {
                   name="registration_number"
                   value={formData.registration_number}
                   onChange={handleInputChange}
+                  placeholder="e.g., BA 1 PA 1234"
                   required
                 />
               </div>
@@ -596,6 +754,7 @@ const AdminTransport = () => {
                   name="rental_price_per_day"
                   value={formData.rental_price_per_day}
                   onChange={handleInputChange}
+                  min="0"
                   required
                 />
               </div>
@@ -607,6 +766,7 @@ const AdminTransport = () => {
                   name="deposit_amount"
                   value={formData.deposit_amount}
                   onChange={handleInputChange}
+                  min="0"
                   required
                 />
               </div>
@@ -618,9 +778,9 @@ const AdminTransport = () => {
                   name="seating_capacity"
                   value={formData.seating_capacity}
                   onChange={handleInputChange}
-                  required
                   min="1"
-                  max="20"
+                  max="50"
+                  required
                 />
               </div>
 
@@ -638,26 +798,88 @@ const AdminTransport = () => {
               </div>
 
               <div className="form-group">
+                <label>Status</label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  required
+                >
+                  {statusTypes.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group full-width">
                 <label>Address</label>
                 <textarea
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  placeholder="Enter vehicle address..."
+                  placeholder="Enter vehicle location address..."
                   rows="2"
                   required
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group full-width">
                 <label>Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Enter detailed description of the vehicle..."
-                  rows="2"
+                  rows="3"
                   required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Location Information */}
+          <div className="form-section">
+            <h2 className='section-title'>Location Information</h2>
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Location Title</label>
+                <input
+                  name="title"
+                  value={formData.location.title}
+                  onChange={handleLocationChange}
+                  placeholder="e.g., City Center, Near Airport"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Latitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={formData.location.coordinates[0] || ''}
+                  onChange={(e) => handleCoordinatesChange(0, e.target.value)}
+                  placeholder="e.g., 27.7172"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Longitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={formData.location.coordinates[1] || ''}
+                  onChange={(e) => handleCoordinatesChange(1, e.target.value)}
+                  placeholder="e.g., 85.3240"
+                />
+              </div>
+
+              <div className="form-group full-width">
+                <label>Map Source URL</label>
+                <input
+                  name="mapSrc"
+                  value={formData.location.mapSrc}
+                  onChange={handleLocationChange}
+                  placeholder="Embedded map URL (optional)"
                 />
               </div>
             </div>
@@ -665,7 +887,7 @@ const AdminTransport = () => {
 
           {/* Features */}
           <div className="form-section">
-            <h2 className='section-title '>Features</h2>
+            <h2 className='section-title'>Features</h2>
             <div className="features-grid">
               {standardFeatures.map((feature, index) => (
                 <div key={index} className="feature-item">
@@ -708,7 +930,7 @@ const AdminTransport = () => {
 
           {/* Vehicle Images */}
           <div className="form-section">
-            <h2 className='section-title '>Vehicle Images</h2>
+            <h2 className='section-title'>Vehicle Images</h2>
             <div className="image-upload-container">
               <input
                 type="file"
@@ -728,15 +950,7 @@ const AdminTransport = () => {
                     <img src={image} alt={`Vehicle preview ${index}`} />
                     <button
                       type="button"
-                      onClick={() => {
-                        const newPreviews = [...imagePreviews];
-                        newPreviews.splice(index, 1);
-                        setImagePreviews(newPreviews);
-
-                        const newFiles = [...imageFiles];
-                        newFiles.splice(index, 1);
-                        setImageFiles(newFiles);
-                      }}
+                      onClick={() => removeImagePreview(index)}
                       className="remove-image"
                     >
                       ×
@@ -755,7 +969,7 @@ const AdminTransport = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                className="submit-button"
+                className="cancel-button"
                 disabled={loading}
               >
                 Cancel
@@ -765,20 +979,19 @@ const AdminTransport = () => {
         </form>
       )}
 
-      {/* ----------------------------------- View All Vehicles -----------------------------------*/}
+      {/* ----------------- View All Vehicles ----------------- */}
       {activeTab === 'view' && (
         <div className="vehicles-list">
           {/* Vehicles List Header */}
           <div className="list-header">
-            <h2 className='section-title '>All Vehicles ({vehicles.length})</h2>
+            <h2 className='section-title'>All Vehicles ({vehicles.length})</h2>
             <div className="search-filter">
               <input className='search-input' type="text" placeholder="Search vehicles..." />
               <select>
                 <option>Filter by Type</option>
-                <option value='Motorbike'>Motorbike</option>
-                <option value='Car'>Car</option>
-                <option value='Van'>Van</option>
-                <option value='Scooter'>Scooter</option>
+                {vehicleTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -787,13 +1000,13 @@ const AdminTransport = () => {
             <div className="loading">Loading vehicles...</div>
           ) : (
             <table className="vehicles-table">
-              {/* Table Header */}
               <thead>
                 <tr>
                   <th>Image</th>
                   <th>ID</th>
                   <th>Vehicle Name</th>
                   <th>Type</th>
+                  <th>Brand/Model</th>
                   <th>Price/Day</th>
                   <th>Owner</th>
                   <th>Availability</th>
@@ -802,7 +1015,6 @@ const AdminTransport = () => {
                 </tr>
               </thead>
 
-              {/* Table Body */}
               <tbody>
                 {vehicles.map((vehicle) => (
                   <tr key={vehicle._id} className={`table-row ${vehicle.status}`}>
@@ -814,30 +1026,30 @@ const AdminTransport = () => {
                             `http://localhost:5000${vehicle.vehicle_images[0]}`)
                           : assets.defaultVehicle
                         }
-                        alt={vehicle.vehicle_type}
+                        alt={getVehicleDisplayName(vehicle)}
                         className="vehicle-thumbnail"
                       />
                     </td>
                     <td>{vehicle._id}</td>
                     <td>{getVehicleDisplayName(vehicle)}</td>
                     <td>{vehicle.vehicle_type}</td>
+                    <td>{vehicle.brand} {vehicle.model}</td>
                     <td>Rs {vehicle.rental_price_per_day}</td>
                     <td>{getOwnerDisplayName(vehicle.owner_id)}</td>
                     <td>
                       <button
-                        onClick={() => toggleAvailability(vehicle._id)}
-                        className={`status-badge ${vehicle.isAvailable ? 'available' : 'occupied'}`}
+                        className={`status-badge ${vehicle.available === "Available" ? 'available' : 'occupied'}`}
                       >
-                        {vehicle.isAvailable ? 'Available' : 'Occupied'}
+                        {vehicle.available}
                       </button>
                     </td>
                     <td>
                       <span
-                        className={`status-badge ${vehicle.status === 'Inactive' ? 'blocked' : 'active'}`}
+                        className={`status-badge ${vehicle.status === 'Active' ? 'active' : 'blocked'}`}
                         onClick={() => toggleVehicleStatus(vehicle._id, vehicle.status)}
                         style={{ cursor: 'pointer' }}
                       >
-                        {vehicle.status || 'Active'}
+                        {vehicle.status}
                       </span>
                     </td>
 
@@ -860,15 +1072,21 @@ const AdminTransport = () => {
               </tbody>
             </table>
           )}
+
+          {vehicles.length === 0 && !loading && (
+            <div className="no-data">
+              No vehicles found
+            </div>
+          )}
         </div>
       )}
 
-      {/* ----------------------------------- Bookings Management ----------------------------------- */}
+      {/* ----------------- Bookings Management ----------------- */}
       {activeTab === 'bookings' && (
         <div className="vehicles-list">
           {/* Bookings List Header */}
           <div className="list-header">
-            <h2 className='section-title '>All Bookings ({bookings.length})</h2>
+            <h2 className='section-title'>All Bookings ({bookings.length})</h2>
             <div className="search-filter">
               <input type="text" placeholder="Search bookings..." />
               <select
@@ -879,14 +1097,12 @@ const AdminTransport = () => {
                 <option value="confirmed">Confirmed</option>
                 <option value="cancelled">Cancelled</option>
                 <option value="completed">Completed</option>
-                <option value="pending">Pending</option>
               </select>
             </div>
           </div>
 
           {/* Bookings Table */}
           <table className="vehicles-table">
-            {/* Table Header */}
             <thead>
               <tr>
                 <th>Booking ID</th>
@@ -900,7 +1116,6 @@ const AdminTransport = () => {
               </tr>
             </thead>
 
-            {/* Table Body */}
             <tbody>
               {filteredBookings.map((booking) => (
                 <tr key={booking._id}>
@@ -946,7 +1161,6 @@ const AdminTransport = () => {
                       onChange={(e) => updateBookingStatus(booking._id, e.target.value)}
                       className="status-select"
                     >
-                      <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
                       <option value="cancelled">Cancelled</option>
                       <option value="completed">Completed</option>
@@ -956,14 +1170,19 @@ const AdminTransport = () => {
               ))}
             </tbody>
           </table>
+
+          {filteredBookings.length === 0 && (
+            <div className="no-data">
+              No bookings found
+            </div>
+          )}
         </div>
       )}
 
-      {/* ----------------------------------- Statistics View ----------------------------------- */}
+      {/* Statistics View */}
       {activeTab === 'stats' && (
         <div className="stats-view">
-          {/* Statistics Overview */}
-          <h2 className='section-title '>Management Statistics</h2>
+          <h2 className='section-title'>Management Statistics</h2>
 
           {/* Statistics Cards */}
           <div className="stats-cards">
@@ -974,9 +1193,7 @@ const AdminTransport = () => {
                   <circle className="bg" cx="60" cy="60" r="50"></circle>
                   <circle
                     className="progress"
-                    cx="60"
-                    cy="60"
-                    r="50"
+                    cx="60" cy="60" r="50"
                     style={{
                       strokeDashoffset: 314 - (314 * (vehicleStats.occupiedVehicles / Math.max(vehicleStats.totalVehicles, 1)))
                     }}
@@ -1010,8 +1227,25 @@ const AdminTransport = () => {
           <div className="chart-container">
             <h3>Vehicle Type Distribution</h3>
             <div className="bar-chart">
-              {['Motorbike', 'Car', 'Van', 'Scooter', 'Bicycle', 'Truck', 'Other'].map(type => {
+              {vehicleTypes.map(type => {
                 const count = vehicles.filter(v => v.vehicle_type === type).length;
+                const percentage = vehicles.length > 0 ? (count / vehicles.length) * 100 : 0;
+                return (
+                  <div key={type} className="bar" style={{ height: `${percentage}%` }}>
+                    <div className="bar-label">{type}</div>
+                    <div className="bar-value">{count}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Fuel Type Distribution */}
+          <div className="chart-container">
+            <h3>Fuel Type Distribution</h3>
+            <div className="bar-chart">
+              {fuelTypes.map(type => {
+                const count = vehicles.filter(v => v.fuel_type === type).length;
                 const percentage = vehicles.length > 0 ? (count / vehicles.length) * 100 : 0;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>

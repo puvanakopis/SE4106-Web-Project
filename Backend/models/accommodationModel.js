@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Counter = require("./counterModel");
 
-const transportSchema = new mongoose.Schema({
+const accommodationSchema = new mongoose.Schema({
     _id: {
         type: String
     },
@@ -10,69 +10,35 @@ const transportSchema = new mongoose.Schema({
         ref: 'Owner',
         required: true
     },
-    available: {
-        type: String,
-        enum: ["Available", "Occupied"],
-        default: "Available"
-    },
-    status: {
-        type: String,
-        enum: ["Active", "Blocked"],
-        default: "Active"
-    },
-    vehicle_name: {
+    accommodationName: {
         type: String,
         required: true,
         trim: true
     },
-    vehicle_type: {
+    accommodationType: {
         type: String,
         required: true,
-        enum: ["Motorbike", "Car", "Scooter", "Bicycle", "Van", "Truck", "Other"]
+        enum: ["Single Bed", "Double Bed", "Triple Sharing", "Annexe"]
     },
-    brand: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    model: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    fuel_type: {
-        type: String,
-        required: true,
-        enum: ["Petrol", "Diesel", "Electric", "Hybrid", "CNG", "Other"]
-    },
-    year: {
-        type: Number,
-        required: true,
-        min: 1900,
-        max: new Date().getFullYear() + 1
-    },
-    registration_number: {
-        type: String,
-        required: true,
-        unique: true,
-        uppercase: true,
-        trim: true
-    },
-    rental_price_per_day: {
+    pricePerMonth: {
         type: Number,
         required: true,
         min: 0
     },
-    deposit_amount: {
+    SecurityDeposit: {
         type: Number,
         required: true,
         min: 0
     },
-    seating_capacity: {
+    noOfBed: {
         type: Number,
         required: true,
         min: 1,
-        max: 50
+        max: 10
+    },
+    isAvailable: {
+        type: Boolean,
+        default: true
     },
     address: {
         type: String,
@@ -86,11 +52,11 @@ const transportSchema = new mongoose.Schema({
             default: "Point"
         },
         coordinates: {
-            type: [Number],
+            type: [Number], 
             required: true
         },
         mapSrc: {
-            type: String,
+            type: String, 
             trim: true
         },
         title: {
@@ -98,19 +64,19 @@ const transportSchema = new mongoose.Schema({
             trim: true
         }
     },
-    features: [{
-        type: String,
-        trim: true
-    }],
-    vehicle_images: [{
-        type: String
-    }],
     description: {
         type: String,
         trim: true,
         maxlength: 1000,
         default: ""
     },
+    amenities: [{
+        type: String,
+        trim: true
+    }],
+    images: [{
+        type: String
+    }],
     totalReviews: {
         type: Number,
         default: 0
@@ -121,12 +87,18 @@ const transportSchema = new mongoose.Schema({
         min: 0,
         max: 5
     },
+
     ratingCount: {
         "1": { type: Number, default: 0 },
         "2": { type: Number, default: 0 },
         "3": { type: Number, default: 0 },
         "4": { type: Number, default: 0 },
         "5": { type: Number, default: 0 }
+    },
+    status: {
+        type: String,
+        enum: ["Active", "Blocked"],
+        default: "Active"
     },
     createdDate: {
         type: Date,
@@ -135,22 +107,22 @@ const transportSchema = new mongoose.Schema({
     lastUpdated: {
         type: Date,
         default: Date.now
-    }
+    },
 });
 
-transportSchema.pre("save", async function (next) {
+accommodationSchema.pre("save", async function (next) {
     const doc = this;
 
     if (!doc._id) {
         try {
             const counter = await Counter.findOneAndUpdate(
-                { id: "transport" },
+                { id: "accommodation" },
                 { $inc: { seq: 1 } },
                 { new: true, upsert: true }
             );
 
             const seqNumber = String(counter.seq).padStart(2, "0");
-            doc._id = `transport_${seqNumber}`;
+            doc._id = `accommodation_${seqNumber}`;
             next();
         } catch (err) {
             next(err);
@@ -161,16 +133,18 @@ transportSchema.pre("save", async function (next) {
 });
 
 // Update lastUpdated timestamp
-transportSchema.pre("save", function (next) {
+accommodationSchema.pre("save", function (next) {
     this.lastUpdated = Date.now();
     next();
 });
 
 // Indexes for better performance
-transportSchema.index({ owner_id: 1 });
-transportSchema.index({ vehicle_type: 1 });
-transportSchema.index({ isAvailable: 1 });
-transportSchema.index({ rental_price_per_day: 1 });
-transportSchema.index({ location: "2dsphere" });
+accommodationSchema.index({ owner_id: 1 });
+accommodationSchema.index({ accommodationType: 1 });
+accommodationSchema.index({ isAvailable: 1 });
+accommodationSchema.index({ pricePerMonth: 1 });
+accommodationSchema.index({ status: 1 });
+accommodationSchema.index({ noOfBed: 1 });
+accommodationSchema.index({ location: "2dsphere" });
 
-module.exports = mongoose.model("Transport", transportSchema);
+module.exports = mongoose.model("Accommodation", accommodationSchema);

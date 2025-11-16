@@ -17,15 +17,13 @@ const AdminDashboard = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Simulate API loading
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         // Set data from imported assets
         setAccommodations(accommodationsData);
         setVehicles(vehicleData);
         setOwners(ownerData);
 
-        // Combine upcoming and past bookings
         const allAccommodationBookings = [...upcomingBookings.accommodationBookings, ...pastBookings.accommodationBookings];
         const allVehicleBookings = [...upcomingBookings.vehicleBookings, ...pastBookings.vehicleBookings];
 

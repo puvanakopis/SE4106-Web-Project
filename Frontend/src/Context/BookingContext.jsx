@@ -9,7 +9,6 @@ export const BookingProvider = ({ children }) => {
     vehicleBookings: []
   });
 
-  // Load initial bookings from data files
   useEffect(() => {
     const initialBookings = {
       accommodationBookings: [...upcomingBookings.accommodationBookings, ...pastBookings.accommodationBookings],
