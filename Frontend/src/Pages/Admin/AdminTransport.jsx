@@ -274,7 +274,10 @@ const AdminTransport = () => {
     const confirmedBookings = bookings.filter(b => b.booking_status === 'confirmed').length;
     const cancelledBookings = bookings.filter(b => b.booking_status === 'cancelled').length;
     const completedBookings = bookings.filter(b => b.booking_status === 'completed').length;
-    const totalRevenue = bookings.reduce((sum, booking) => sum + (booking.isPaid ? booking.totalPrice : 0), 0);
+    const totalRevenue = bookings.reduce(
+      (sum, b) => sum + (b.paymentDetails?.paymentStatus === "completed" ? b.totalPrice : 0),
+      0
+    );
 
     return {
       totalBookings,
@@ -359,7 +362,7 @@ const AdminTransport = () => {
         features: [...prev.features, prev.customFeature],
         customFeature: ''
       }));
-    } 
+    }
   };
 
   // Handle form submission
@@ -1071,7 +1074,8 @@ const AdminTransport = () => {
                 ))}
               </tbody>
             </table>
-          )}
+          )
+          }
 
           {vehicles.length === 0 && !loading && (
             <div className="no-data">
@@ -1145,9 +1149,21 @@ const AdminTransport = () => {
                   </td>
                   <td className='primary-text'>Rs {booking.totalPrice}</td>
                   <td>
-                    <span className={`payment-status ${booking.isPaid ? 'paid' : 'unpaid'}`}>
-                      {booking.isPaid ? 'Paid' : 'Unpaid'}
+                    <span
+                      className={`payment-status ${booking.paymentDetails?.paymentStatus === "completed"
+                          ? "paid"
+                          : booking.paymentDetails?.paymentStatus === "refunded"
+                            ? "refunded"
+                            : "pending"
+                        }`}
+                    >
+                      {booking.paymentDetails?.paymentStatus === "completed"
+                        ? "Paid"
+                        : booking.paymentDetails?.paymentStatus === "refunded"
+                          ? "Refunded"
+                          : "Pending"}
                     </span>
+
                   </td>
                   <td>
                     <span className={`status-badge ${booking.booking_status}`}>

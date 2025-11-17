@@ -3,65 +3,59 @@ import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaHeart, FaRegHeart, FaStar } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './PopularTransport.css';
+import './PopularAccommodations.css';
 
-const PopularTransport = () => {
+const PopularAccommodations = () => {
     const navigate = useNavigate();
-    const [transports, setTransports] = useState([]);
+    const [accommodations, setAccommodations] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [savedTransports, setSavedTransports] = useState(() => {
-        const saved = localStorage.getItem('savedTransports');
+    const [savedAccommodations, setSavedAccommodations] = useState(() => {
+        const saved = localStorage.getItem('savedAccommodations');
         return saved ? JSON.parse(saved) : [];
     });
 
-    // Fetch top 3 rated transports
+    // Fetch top 3 rated accommodations
     useEffect(() => {
-        const fetchTopRatedTransports = async () => {
+        const fetchTopRatedAccommodations = async () => {
             try {
                 setLoading(true);
                 const response = await fetch(
-                    `http://localhost:5000/api/transports?limit=3&sort_by=averageRating&sort_order=desc`
+                    `http://localhost:5000/api/accommodations?limit=3&sort_by=averageRating&sort_order=desc`
                 );
                 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch transports');
+                    throw new Error('Failed to fetch accommodations');
                 }
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    const topRated = data.transports
-                        .filter(transport => transport.averageRating > 0)
+                    const topRated = data.accommodations
+                        .filter(acc => acc.averageRating > 0)
                         .slice(0, 3);
-                    setTransports(topRated);
+                    setAccommodations(topRated);
                 } else {
-                    throw new Error(data.message || 'Failed to fetch transports');
+                    throw new Error(data.message || 'Failed to fetch accommodations');
                 }
             } catch (err) {
-                console.error('Error fetching transports:', err);
-                toast.error('Failed to load featured transport options');
+                console.error('Error fetching accommodations:', err);
+                toast.error('Failed to load featured accommodations');
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchTopRatedTransports();
+        fetchTopRatedAccommodations();
     }, []);
 
-    const toggleSaveTransport = (transportId, transportName, e) => {
+    const toggleSaveAccommodation = (accommodationId, accommodationName, e) => {
         e.stopPropagation();
-        setSavedTransports((prev) => {
-            const isSaved = prev.includes(transportId);
+        setSavedAccommodations((prev) => {
+            const isSaved = prev.includes(accommodationId);
             const newSaved = isSaved
-                ? prev.filter((id) => id !== transportId)
-                : [...prev, transportId];
-            localStorage.setItem('savedTransports', JSON.stringify(newSaved));
-            
-            toast.success(
-                isSaved 
-                    ? `Removed ${transportName} from saved items` 
-                    : `Saved ${transportName} to your favorites`
-            );
+                ? prev.filter((id) => id !== accommodationId)
+                : [...prev, accommodationId];
+            localStorage.setItem('savedAccommodations', JSON.stringify(newSaved));          
             
             return newSaved;
         });
@@ -87,101 +81,99 @@ const PopularTransport = () => {
     };
 
     // Function to get the correct image URL
-    const getImageUrl = (transport) => {
-        if (transport.vehicle_images && transport.vehicle_images.length > 0) {
+    const getImageUrl = (accommodation) => {
+        if (accommodation.accommodation_images && accommodation.accommodation_images.length > 0) {
             // Check if the image path is already a full URL or needs the base URL
-            const imagePath = transport.vehicle_images[0];
+            const imagePath = accommodation.accommodation_images[0];
             if (imagePath.startsWith('http')) {
                 return imagePath;
             } else if (imagePath.startsWith('/uploads/')) {
                 return `http://localhost:5000${imagePath}`;
             } else {
-                return `http://localhost:5000/uploads/transports/${imagePath}`;
+                return `http://localhost:5000/uploads/accommodations/${imagePath}`;
             }
         }
         // Return a default image if no images available
-        return '/images/default-vehicle.jpg';
+        return '/images/default-accommodation.jpg';
     };
 
     if (loading) {
         return (
-            <div className="PopularTransport">
+            <div className="PopularAccommodations">
                 <div className="loading-section">
                     <div className="loading-spinner"></div>
-                    <p>Loading featured transport options...</p>
+                    <p>Loading featured accommodations...</p>
                 </div>
             </div>
         );
     }
 
-    if (transports.length === 0) {
+    if (accommodations.length === 0) {
         return (
-            <div className="PopularTransport">
-                <div className="no-transports">
-                    <p>No featured transport options available at the moment.</p>
+            <div className="PopularAccommodations">
+                <div className="no-accommodations">
+                    <p>No featured accommodations available at the moment.</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="PopularTransport">
-            <section className="featured-transport">
+        <div className="PopularAccommodations">
+            <section className="featured-properties">
                 <div className="section-header">
-                    <h2>Featured Transport Options</h2>
-                    <p>Top-rated vehicles selected by our travel experts</p>
+                    <h2>Featured Accommodations</h2>
+                    <p>Top-rated stays selected by our travel experts</p>
                 </div>
 
-                <div className="transport-grid">
-                    {transports.map(transport => (
+                <div className="properties-grid">
+                    {accommodations.map(accommodation => (
                         <div
                             className="card"
-                            key={transport._id}
+                            key={accommodation._id}
                             onClick={() => {
-                                navigate(`/transport/${transport._id}`)
+                                navigate(`/accommodation/${accommodation._id}`)
                             }}
                         >
                             <img
-                                src={getImageUrl(transport)}
-                                alt={`${transport.brand} ${transport.model}`}
+                                src={getImageUrl(accommodation)}
+                                alt={accommodation.accommodation_name}
                                 className="image"
                                 loading="lazy"
                                 onError={(e) => {
-                                    e.target.src = '/images/default-vehicle.jpg';
+                                    e.target.src = '/images/default-accommodation.jpg';
                                 }}
                             />
-                            <div className="transport-badge">{transport.vehicle_type}</div>
+                            <div className="property-badge">{accommodation.accommodation_type}</div>
                             <button
-                                className={`save-button ${savedTransports.includes(transport._id) ? 'saved' : ''}`}
-                                onClick={(e) => toggleSaveTransport(transport._id, `${transport.brand} ${transport.model}`, e)}
-                                aria-label={savedTransports.includes(transport._id) ? 'Remove from saved' : 'Save this vehicle'}
+                                className={`save-button ${savedAccommodations.includes(accommodation._id) ? 'saved' : ''}`}
+                                onClick={(e) => toggleSaveAccommodation(accommodation._id, accommodation.accommodation_name, e)}
+                                aria-label={savedAccommodations.includes(accommodation._id) ? 'Remove from saved' : 'Save this accommodation'}
                             >
-                                {savedTransports.includes(transport._id) ? (
+                                {savedAccommodations.includes(accommodation._id) ? (
                                     <FaHeart className="icon-heart-filled" />
                                 ) : (
                                     <FaRegHeart className="icon-heart-outline" />
                                 )}
                             </button>
-                            <div className="transport-info">
-                                <h3>{transport.brand} {transport.model}</h3>
-                                <p className="location">{transport.address}</p>
-                                <p className="vehicle-details">
-                                    {transport.vehicle_type} • {transport.fuel_type} • {transport.year}
-                                </p>
+                            <div className="accommodation-info">
+                                <h3>{accommodation.accommodation_name}</h3>
+                                <p className="location">{accommodation.address}</p>
+                                <p className="property-type">{accommodation.property_type} • {accommodation.bedrooms} bed • {accommodation.bathrooms} bath</p>
 
                                 <div className="rating-container">
-                                    <StarRating rating={transport.averageRating} />
+                                    <StarRating rating={accommodation.averageRating} />
                                     <span className="rating-text">
-                                        {transport.averageRating.toFixed(1)} ({transport.totalReviews} reviews)
+                                        {accommodation.averageRating.toFixed(1)} ({accommodation.totalReviews} reviews)
                                     </span>
                                 </div>
 
                                 <div className="price-action">
-                                    <p className="price">Rs {transport.rental_price_per_day?.toLocaleString()}/= per day</p>
+                                    <p className="price">Rs {accommodation.price_per_month?.toLocaleString()}/= per month</p>
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate(`/transport/${transport._id}`);
+                                            navigate(`/accommodation/${accommodation._id}`);
                                             window.scrollTo(0, 0);
                                         }}
                                     >
@@ -196,14 +188,14 @@ const PopularTransport = () => {
                 <button
                     className="view-all-button"
                     onClick={() => {
-                        navigate('/transport')
+                        navigate('/accommodation')
                     }}
                 >
-                    View All Transport Options <FaArrowRight className="arrow-icon" />
+                    View All Accommodations <FaArrowRight className="arrow-icon" />
                 </button>
             </section>
         </div>
     );
 };
 
-export default PopularTransport;
+export default PopularAccommodations;

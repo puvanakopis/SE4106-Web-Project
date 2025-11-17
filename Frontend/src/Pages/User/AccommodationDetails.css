@@ -185,6 +185,7 @@
 
 /* ==================== MAIN CONTENT LAYOUT ==================== */
 .accommodation-content {
+  width: 100%;
   display: flex;
   gap: 2rem;
   margin-bottom: 3rem;

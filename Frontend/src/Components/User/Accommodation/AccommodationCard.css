@@ -213,3 +213,54 @@
     font-size: 0.7rem;
   }
 }
+
+.accommodation-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.detail-item {
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: #6c757d;
+  border: 1px solid #e9ecef;
+}
+
+.availability-status {
+  margin: 8px 0;
+}
+
+.status-indicator {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-indicator.available {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-indicator.occupied {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.deposit-amount {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.location-icon {
+  margin-right: 4px;
+  color: #6c757d;
+}

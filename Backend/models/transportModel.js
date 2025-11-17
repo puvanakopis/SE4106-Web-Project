@@ -128,6 +128,33 @@ const transportSchema = new mongoose.Schema({
         "4": { type: Number, default: 0 },
         "5": { type: Number, default: 0 }
     },
+    reviews: [{
+        booking: {
+            type: String,
+            ref: 'TransportBooking',
+            required: true
+        },
+        renter: {
+            type: String,
+            ref: 'User',
+            required: true
+        },
+        rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5
+        },
+        comment: {
+            type: String,
+            trim: true,
+            maxlength: 500
+        },
+        reviewDate: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     createdDate: {
         type: Date,
         default: Date.now
@@ -160,13 +187,11 @@ transportSchema.pre("save", async function (next) {
     }
 });
 
-// Update lastUpdated timestamp
 transportSchema.pre("save", function (next) {
     this.lastUpdated = Date.now();
     next();
 });
 
-// Indexes for better performance
 transportSchema.index({ owner_id: 1 });
 transportSchema.index({ vehicle_type: 1 });
 transportSchema.index({ isAvailable: 1 });

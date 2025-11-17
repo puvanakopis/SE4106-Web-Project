@@ -10,35 +10,52 @@ const accommodationSchema = new mongoose.Schema({
         ref: 'Owner',
         required: true
     },
-    accommodationName: {
+    available: {
+        type: String,
+        enum: ["Available", "Occupied"],
+        default: "Available"
+    },
+    status: {
+        type: String,
+        enum: ["Active", "Blocked"],
+        default: "Active"
+    },
+    accommodation_name: {
         type: String,
         required: true,
         trim: true
     },
-    accommodationType: {
+    accommodation_type: {
         type: String,
         required: true,
-        enum: ["Single Bed", "Double Bed", "Triple Sharing", "Annexe"]
+        enum: ["Single Bed", "Double Bed", "Other"]
     },
-    pricePerMonth: {
+    property_type: {
+        type: String,
+        required: true,
+        enum: ["Hostel", "Apartment", "House", "Other"]
+    },
+    price_per_month: {
         type: Number,
         required: true,
         min: 0
     },
-    SecurityDeposit: {
+    deposit_amount: {
         type: Number,
         required: true,
         min: 0
     },
-    noOfBed: {
+    bedrooms: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 20
+    },
+    bathrooms: {
         type: Number,
         required: true,
         min: 1,
         max: 10
-    },
-    isAvailable: {
-        type: Boolean,
-        default: true
     },
     address: {
         type: String,
@@ -52,11 +69,11 @@ const accommodationSchema = new mongoose.Schema({
             default: "Point"
         },
         coordinates: {
-            type: [Number], 
+            type: [Number],
             required: true
         },
         mapSrc: {
-            type: String, 
+            type: String,
             trim: true
         },
         title: {
@@ -64,19 +81,19 @@ const accommodationSchema = new mongoose.Schema({
             trim: true
         }
     },
+    amenities: [{
+        type: String,
+        trim: true
+    }],
+    accommodation_images: [{
+        type: String
+    }],
     description: {
         type: String,
         trim: true,
         maxlength: 1000,
         default: ""
     },
-    amenities: [{
-        type: String,
-        trim: true
-    }],
-    images: [{
-        type: String
-    }],
     totalReviews: {
         type: Number,
         default: 0
@@ -87,7 +104,6 @@ const accommodationSchema = new mongoose.Schema({
         min: 0,
         max: 5
     },
-
     ratingCount: {
         "1": { type: Number, default: 0 },
         "2": { type: Number, default: 0 },
@@ -95,11 +111,33 @@ const accommodationSchema = new mongoose.Schema({
         "4": { type: Number, default: 0 },
         "5": { type: Number, default: 0 }
     },
-    status: {
-        type: String,
-        enum: ["Active", "Blocked"],
-        default: "Active"
-    },
+    reviews: [{
+        booking: {
+            type: String,
+            ref: 'AccommodationBooking',
+            required: true
+        },
+        renter: {
+            type: String,
+            ref: 'User',
+            required: true
+        },
+        rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5
+        },
+        comment: {
+            type: String,
+            trim: true,
+            maxlength: 500
+        },
+        reviewDate: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     createdDate: {
         type: Date,
         default: Date.now
@@ -107,7 +145,7 @@ const accommodationSchema = new mongoose.Schema({
     lastUpdated: {
         type: Date,
         default: Date.now
-    },
+    }
 });
 
 accommodationSchema.pre("save", async function (next) {
@@ -132,19 +170,17 @@ accommodationSchema.pre("save", async function (next) {
     }
 });
 
-// Update lastUpdated timestamp
 accommodationSchema.pre("save", function (next) {
     this.lastUpdated = Date.now();
     next();
 });
 
-// Indexes for better performance
 accommodationSchema.index({ owner_id: 1 });
-accommodationSchema.index({ accommodationType: 1 });
-accommodationSchema.index({ isAvailable: 1 });
-accommodationSchema.index({ pricePerMonth: 1 });
+accommodationSchema.index({ accommodation_type: 1 });
+accommodationSchema.index({ property_type: 1 });
+accommodationSchema.index({ available: 1 });
 accommodationSchema.index({ status: 1 });
-accommodationSchema.index({ noOfBed: 1 });
+accommodationSchema.index({ price_per_month: 1 });
 accommodationSchema.index({ location: "2dsphere" });
 
 module.exports = mongoose.model("Accommodation", accommodationSchema);

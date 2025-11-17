@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Counter = require("./counterModel");
 
-const transportBookingSchema = new mongoose.Schema({
+const accommodationBookingSchema = new mongoose.Schema({
     _id: {
         type: String
     },
@@ -15,9 +15,9 @@ const transportBookingSchema = new mongoose.Schema({
         ref: "Owner",
         required: true
     },
-    transport: {
+    accommodation: {
         type: String,
-        ref: "Transport",
+        ref: "Accommodation",
         required: true
     },
     booking_start: {
@@ -27,6 +27,11 @@ const transportBookingSchema = new mongoose.Schema({
     booking_end: {
         type: Date,
         required: true
+    },
+    numberOfGuests: {
+        type: Number,
+        required: true,
+        min: 1
     },
     securityDeposit: {
         type: Number,
@@ -46,7 +51,7 @@ const transportBookingSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['credit_card', 'debit_card', 'cash'],
+        enum: ['credit_card', 'debit_card', 'cash', 'online'],
         default: 'cash',
         required: true
     },
@@ -57,9 +62,14 @@ const transportBookingSchema = new mongoose.Schema({
         paymentAmount: Number,
         paymentStatus: {
             type: String,
-            enum: ['pending', 'completed', 'refunded'],
+            enum: ['pending', 'completed', 'failed', 'refunded'],
             default: 'pending'
-        }
+        },
+        transactionId: String
+    },
+    specialRequests: {
+        type: String,
+        maxlength: 500
     },
     review: {
         rating: {
@@ -70,30 +80,39 @@ const transportBookingSchema = new mongoose.Schema({
         comment: String,
         reviewDate: Date
     },
+    cancellationReason: String,
+    cancellationDate: Date,
     createdDate: {
+        type: Date,
+        default: Date.now
+    },
+    updatedDate: {
         type: Date,
         default: Date.now
     }
 });
 
-transportBookingSchema.pre("save", async function (next) {
+accommodationBookingSchema.pre("save", async function (next) {
     const doc = this;
 
     if (!doc._id) {
         try {
             const counter = await Counter.findOneAndUpdate(
-                { id: "transportBooking" },
+                { id: "accommodationBooking" },
                 { $inc: { seq: 1 } },
                 { new: true, upsert: true }
             );
 
             const seqNumber = String(counter.seq).padStart(2, "0");
-            doc._id = `transportbooking_${seqNumber}`;
+            doc._id = `accommodationbooking_${seqNumber}`;
             next();
         } catch (err) {
             next(err);
         }
-    } else next();
+    } else {
+        doc.updatedDate = Date.now();
+        next();
+    }
 });
 
-module.exports = mongoose.model("TransportBooking", transportBookingSchema);
+module.exports = mongoose.model("AccommodationBooking", accommodationBookingSchema);

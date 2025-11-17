@@ -12,52 +12,49 @@ import './Transport.css';
 const Transport = () => {
   const navigate = useNavigate();
   const [openFilters, setOpenFilters] = useState(false);
-  const [savedVehicles, setSavedVehicles] = useState(() => {
-    const saved = localStorage.getItem('savedVehicles');
-    return saved ? JSON.parse(saved) : [];
-  });
   const [showSavedNotification, setShowSavedNotification] = useState(false);
-  
-  // Backend data states
   const [transports, setTransports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  // Search and filter states
   const [searchName, setSearchName] = useState('');
   const [searchType, setSearchType] = useState('');
   const [searchMinPrice, setSearchMinPrice] = useState('');
   const [searchMaxPrice, setSearchMaxPrice] = useState('');
+  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState([]);
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+  const [selectedSortOption, setSelectedSortOption] = useState('');
+  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
+  const [savedVehicles, setSavedVehicles] = useState(() => {
+    const saved = localStorage.getItem('savedVehicles');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   // Filter options
   const vehicleTypes = ['Motorbike', 'Car', 'Scooter', 'Bicycle', 'Van', 'Truck', 'Other'];
   const priceRanges = ['0 to 2000', '2000 to 4000', '4000 to 6000'];
   const sortOptions = ['Price Low to High', 'Price High to Low', 'Seating Capacity'];
 
-  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState([]);
-  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
-  const [selectedSortOption, setSelectedSortOption] = useState('');
-  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
   const transportsPerPage = 9;
 
-  // Fetch transports from backend
+  // Get all transports
   useEffect(() => {
     const fetchTransports = async () => {
       try {
         setLoading(true);
         const response = await fetch('http://localhost:5000/api/transports');
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch transports');
         }
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
-          // Process images to ensure full URLs
           const processedTransports = data.transports.map(transport => ({
             ...transport,
             vehicle_images: processVehicleImages(transport.vehicle_images)
@@ -69,7 +66,6 @@ const Transport = () => {
       } catch (err) {
         console.error('Error fetching transports:', err);
         setError(err.message);
-        // Fallback to mock data if backend fails
         const processedMockData = vehicleData.map(vehicle => ({
           ...vehicle,
           vehicle_images: processVehicleImages(vehicle.vehicle_images)
@@ -88,21 +84,16 @@ const Transport = () => {
     if (!images || !Array.isArray(images)) {
       return ['/default-vehicle-image.jpg'];
     }
-    
+
     return images.map(image => {
-      if (!image) return '/default-vehicle-image.jpg';
-      
-      // If image already has full URL, return as is
       if (image.startsWith('http')) {
         return image;
       }
-      
-      // If image starts with /uploads, make it absolute path
+
       if (image.startsWith('/uploads')) {
         return `http://localhost:5000${image}`;
       }
-      
-      // If it's just a filename, construct the path
+
       return `http://localhost:5000/uploads/transports/${image}`;
     });
   };
@@ -111,10 +102,9 @@ const Transport = () => {
   const filteredTransports = useMemo(() => {
     let result = [...transports];
 
-    // Filter by availability (isAvailable === true AND status === 'Active')
     if (showAvailableOnly) {
-      result = result.filter(vehicle => 
-        vehicle.isAvailable === true && vehicle.status === 'Active'
+      result = result.filter(vehicle =>
+        vehicle.available === 'Available' && vehicle.status === 'Active'
       );
     }
 
@@ -170,12 +160,12 @@ const Transport = () => {
   }, [
     transports,
     showAvailableOnly,
-    searchName, 
-    searchType, 
-    searchMinPrice, 
+    searchName,
+    searchType,
+    searchMinPrice,
     searchMaxPrice,
-    selectedVehicleTypes, 
-    selectedPriceRanges, 
+    selectedVehicleTypes,
+    selectedPriceRanges,
     selectedSortOption
   ]);
 
@@ -270,9 +260,11 @@ const Transport = () => {
 
   if (loading) {
     return (
-      <div className="transport-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading available vehicles...</p>
+      <div className="booking-container">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading your accommodation...</p>
+        </div>
       </div>
     );
   }
@@ -337,7 +329,7 @@ const Transport = () => {
 
         <main className="transports-main">
           <ResultsHeader count={filteredTransports.length} />
-          
+
           {filteredTransports.length === 0 ? (
             <div className="no-results">
               <h3>No vehicles found matching your criteria</h3>

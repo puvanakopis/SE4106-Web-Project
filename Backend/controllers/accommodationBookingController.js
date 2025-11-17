@@ -1,34 +1,58 @@
-const TransportBooking = require("../models/transportBookingModel");
-const Transport = require("../models/transportModel");
+const AccommodationBooking = require("../models/accommodationBookingModel");
+const Accommodation = require("../models/accommodationModel");
 const Owner = require("../models/ownerModel");
 const User = require("../models/userModel");
 
-const createTransportBooking = async (req, res) => {
+const createAccommodationBooking = async (req, res) => {
     try {
         const {
             renter,
-            transport,
+            accommodation,
             booking_start,
             booking_end,
+            numberOfGuests,
             securityDeposit,
             totalPrice,
             paymentMethod,
-            paymentDetails
+            paymentDetails,
+            specialRequests,
         } = req.body;
 
-        if (!renter || !transport || !booking_start || !booking_end ||
-            !securityDeposit || !totalPrice || !paymentMethod) {
+        if (!renter || !accommodation || !booking_start || !booking_end ||
+            !numberOfGuests || !securityDeposit || !totalPrice || !paymentMethod) {
             return res.status(400).json({
                 success: false,
                 message: "All required fields must be provided"
             });
         }
 
-        const transportData = await Transport.findById(transport);
-        if (!transportData) {
+        const accommodationData = await Accommodation.findById(accommodation);
+        if (!accommodationData) {
             return res.status(404).json({
                 success: false,
-                message: "Transport not found"
+                message: "Accommodation not found"
+            });
+        }
+
+        const owner = await Owner.findById(accommodationData.owner_id);
+        if (!owner) {
+            return res.status(404).json({
+                success: false,
+                message: "Owner not found"
+            });
+        }
+
+        if (!accommodationData.owner_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Accommodation does not have an owner assigned"
+            });
+        }
+
+        if (numberOfGuests > accommodationData.maxGuests) {
+            return res.status(400).json({
+                success: false,
+                message: `Number of guests exceeds maximum capacity of ${accommodationData.maxGuests}`
             });
         }
 
@@ -40,16 +64,8 @@ const createTransportBooking = async (req, res) => {
             });
         }
 
-        const owner = await Owner.findById(transportData.owner_id);
-        if (!owner) {
-            return res.status(404).json({
-                success: false,
-                message: "Owner not found"
-            });
-        }
-
-        const existingBooking = await TransportBooking.findOne({
-            transport,
+        const existingBooking = await AccommodationBooking.findOne({
+            accommodation,
             $or: [
                 {
                     booking_start: { $lte: new Date(booking_end) },
@@ -62,19 +78,21 @@ const createTransportBooking = async (req, res) => {
         if (existingBooking) {
             return res.status(400).json({
                 success: false,
-                message: "Transport is already booked for the selected dates"
+                message: "Accommodation is already booked for the selected dates"
             });
         }
 
-        const booking = new TransportBooking({
+        const booking = new AccommodationBooking({
             renter,
-            owner: transportData.owner_id,
-            transport,
+            owner: accommodationData.owner_id, 
+            accommodation,
             booking_start: new Date(booking_start),
             booking_end: new Date(booking_end),
+            numberOfGuests,
             securityDeposit,
             totalPrice,
             paymentMethod,
+            specialRequests,
             paymentDetails: {
                 ...paymentDetails,
                 paymentDate: new Date(),
@@ -84,10 +102,10 @@ const createTransportBooking = async (req, res) => {
 
         await booking.save();
 
-        const populatedBooking = await TransportBooking.findById(booking._id)
+        const populatedBooking = await AccommodationBooking.findById(booking._id)
             .populate("renter", "fullName email phone")
             .populate("owner", "fullName displayName phoneNumber")
-            .populate("transport");
+            .populate("accommodation");
 
         res.status(201).json({
             success: true,
@@ -96,7 +114,7 @@ const createTransportBooking = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Create booking error:", error);
+        console.error("Create accommodation booking error:", error);
         res.status(500).json({
             success: false,
             message: "Server error",
@@ -105,7 +123,7 @@ const createTransportBooking = async (req, res) => {
     }
 };
 
-const getTransportBookings = async (req, res) => {
+const getAccommodationBookings = async (req, res) => {
     try {
         const { status, page = 1, limit = 10 } = req.query;
 
@@ -114,15 +132,19 @@ const getTransportBookings = async (req, res) => {
             query.booking_status = status;
         }
 
-        const bookings = await TransportBooking.find(query)
+        const bookings = await AccommodationBooking.find(query)
             .populate("renter", "fullName email phone")
-            .populate("owner", "fullName displayName phoneNumber")
-            .populate("transport")
+            .populate({
+                path: "owner",
+                select: "fullName displayName phoneNumber email firstName lastName",
+                model: [Owner, User]
+            })
+            .populate("accommodation")
             .sort({ createdDate: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
 
-        const total = await TransportBooking.countDocuments(query);
+        const total = await AccommodationBooking.countDocuments(query);
 
         res.json({
             success: true,
@@ -132,7 +154,7 @@ const getTransportBookings = async (req, res) => {
             total
         });
     } catch (error) {
-        console.error("Get bookings error:", error);
+        console.error("Get accommodation bookings error:", error);
         res.status(500).json({
             success: false,
             message: "Server error",
@@ -141,12 +163,16 @@ const getTransportBookings = async (req, res) => {
     }
 };
 
-const getTransportBooking = async (req, res) => {
+const getAccommodationBooking = async (req, res) => {
     try {
-        const booking = await TransportBooking.findById(req.params.id)
+        const booking = await AccommodationBooking.findById(req.params.id)
             .populate("renter", "fullName email phone")
-            .populate("owner", "fullName displayName phoneNumber")
-            .populate("transport");
+            .populate({
+                path: "owner",
+                select: "fullName displayName phoneNumber email firstName lastName",
+                model: [Owner, User] 
+            })
+            .populate("accommodation");
 
         if (!booking) {
             return res.status(404).json({
@@ -157,7 +183,7 @@ const getTransportBooking = async (req, res) => {
 
         res.json({ success: true, booking });
     } catch (error) {
-        console.error("Get booking error:", error);
+        console.error("Get accommodation booking error:", error);
         res.status(500).json({
             success: false,
             message: "Server error",
@@ -175,14 +201,18 @@ const getBookingsByRenter = async (req, res) => {
             query.booking_status = status;
         }
 
-        const bookings = await TransportBooking.find(query)
-            .populate("transport")
-            .populate("owner", "fullName phoneNumber")
+        const bookings = await AccommodationBooking.find(query)
+            .populate("accommodation")
+            .populate({
+                path: "owner",
+                select: "fullName displayName phoneNumber email firstName lastName",
+                model: [Owner, User] 
+            })
             .sort({ createdDate: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
 
-        const total = await TransportBooking.countDocuments(query);
+        const total = await AccommodationBooking.countDocuments(query);
 
         res.json({
             success: true,
@@ -192,7 +222,7 @@ const getBookingsByRenter = async (req, res) => {
             total
         });
     } catch (error) {
-        console.error("Get renter bookings error:", error);
+        console.error("Get renter accommodation bookings error:", error);
         res.status(500).json({
             success: false,
             message: "Server error",
@@ -210,14 +240,14 @@ const getBookingsByOwner = async (req, res) => {
             query.booking_status = status;
         }
 
-        const bookings = await TransportBooking.find(query)
-            .populate("transport")
+        const bookings = await AccommodationBooking.find(query)
+            .populate("accommodation")
             .populate("renter", "fullName email phone")
             .sort({ createdDate: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
 
-        const total = await TransportBooking.countDocuments(query);
+        const total = await AccommodationBooking.countDocuments(query);
 
         res.json({
             success: true,
@@ -227,7 +257,7 @@ const getBookingsByOwner = async (req, res) => {
             total
         });
     } catch (error) {
-        console.error("Get owner bookings error:", error);
+        console.error("Get owner accommodation bookings error:", error);
         res.status(500).json({
             success: false,
             message: "Server error",
@@ -236,7 +266,7 @@ const getBookingsByOwner = async (req, res) => {
     }
 };
 
-const updateTransportBooking = async (req, res) => {
+const updateAccommodationBooking = async (req, res) => {
     try {
         const allowedUpdates = [
             'booking_status',
@@ -244,7 +274,9 @@ const updateTransportBooking = async (req, res) => {
             'review',
             'booking_start',
             'booking_end',
-            'totalPrice'
+            'totalPrice',
+            'numberOfGuests',
+            'specialRequests'
         ];
 
         const updates = Object.keys(req.body);
@@ -257,13 +289,17 @@ const updateTransportBooking = async (req, res) => {
             });
         }
 
-        const booking = await TransportBooking.findByIdAndUpdate(
+        const booking = await AccommodationBooking.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true, runValidators: true }
         ).populate("renter", "fullName email phone")
-            .populate("owner", "fullName displayName phoneNumber")
-            .populate("transport");
+            .populate({
+                path: "owner",
+                select: "fullName displayName phoneNumber email firstName lastName",
+                model: [Owner, User]
+            })
+            .populate("accommodation");
 
         if (!booking) {
             return res.status(404).json({
@@ -278,7 +314,64 @@ const updateTransportBooking = async (req, res) => {
             booking
         });
     } catch (error) {
-        console.error("Update booking error:", error);
+        console.error("Update accommodation booking error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message
+        });
+    }
+};
+
+const cancelBooking = async (req, res) => {
+    try {
+        const { cancellationReason } = req.body;
+
+        const booking = await AccommodationBooking.findById(req.params.id);
+
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                message: "Booking not found"
+            });
+        }
+
+        if (booking.booking_status === 'cancelled') {
+            return res.status(400).json({
+                success: false,
+                message: "Booking is already cancelled"
+            });
+        }
+
+        if (booking.booking_status === 'completed') {
+            return res.status(400).json({
+                success: false,
+                message: "Cannot cancel completed booking"
+            });
+        }
+
+        booking.booking_status = 'cancelled';
+        booking.cancellationReason = cancellationReason;
+        booking.cancellationDate = new Date();
+
+        await booking.save();
+
+        const updatedBooking = await AccommodationBooking.findById(booking._id)
+            .populate("renter", "fullName email phone")
+            .populate({
+                path: "owner",
+                select: "fullName displayName phoneNumber email firstName lastName",
+                model: [Owner, User] 
+            })
+            .populate("accommodation");
+
+        res.json({
+            success: true,
+            message: "Booking cancelled successfully",
+            booking: updatedBooking
+        });
+    } catch (error) {
+        console.error("Cancel booking error:", error);
         res.status(500).json({
             success: false,
             message: "Server error",
@@ -298,8 +391,8 @@ const addReview = async (req, res) => {
             });
         }
 
-        const booking = await TransportBooking.findById(req.params.id)
-            .populate("transport")
+        const booking = await AccommodationBooking.findById(req.params.id)
+            .populate("accommodation")
             .populate("renter");
 
         if (!booking) {
@@ -331,16 +424,16 @@ const addReview = async (req, res) => {
 
         await booking.save();
 
-        const transport = await Transport.findById(booking.transport._id);
-        if (transport) {
-            transport.ratingCount[rating] = (transport.ratingCount[rating] || 0) + 1;
+        const accommodation = await Accommodation.findById(booking.accommodation._id);
+        if (accommodation) {
+            accommodation.ratingCount[rating] = (accommodation.ratingCount[rating] || 0) + 1;
 
-            const totalRatings = Object.values(transport.ratingCount).reduce((sum, count) => sum + count, 0);
-            const ratingSum = Object.entries(transport.ratingCount).reduce((sum, [star, count]) => sum + (parseInt(star) * count), 0);
-            transport.averageRating = totalRatings > 0 ? ratingSum / totalRatings : 0;
-            transport.totalReviews = totalRatings;
+            const totalRatings = Object.values(accommodation.ratingCount).reduce((sum, count) => sum + count, 0);
+            const ratingSum = Object.entries(accommodation.ratingCount).reduce((sum, [star, count]) => sum + (parseInt(star) * count), 0);
+            accommodation.averageRating = totalRatings > 0 ? ratingSum / totalRatings : 0;
+            accommodation.totalReviews = totalRatings;
 
-            transport.reviews.push({
+            accommodation.reviews.push({
                 booking: booking._id,
                 renter: booking.renter._id,
                 rating,
@@ -348,13 +441,17 @@ const addReview = async (req, res) => {
                 reviewDate: new Date()
             });
 
-            await transport.save();
+            await accommodation.save();
         }
 
-        const updatedBooking = await TransportBooking.findById(booking._id)
+        const updatedBooking = await AccommodationBooking.findById(booking._id)
             .populate("renter", "fullName email phone")
-            .populate("owner", "fullName displayName phoneNumber")
-            .populate("transport");
+            .populate({
+                path: "owner",
+                select: "fullName displayName phoneNumber email firstName lastName",
+                model: [Owner, User] 
+            })
+            .populate("accommodation");
 
         res.json({
             success: true,
@@ -372,11 +469,12 @@ const addReview = async (req, res) => {
 };
 
 module.exports = {
-    createTransportBooking,
-    getTransportBookings,
-    getTransportBooking,
+    createAccommodationBooking,
+    getAccommodationBookings,
+    getAccommodationBooking,
     getBookingsByRenter,
     getBookingsByOwner,
-    updateTransportBooking,
-    addReview
+    updateAccommodationBooking,
+    addReview,
+    cancelBooking
 };
