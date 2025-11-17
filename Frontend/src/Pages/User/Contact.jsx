@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { assets } from '../../Assets/assets';
 import './Contact.css';
 
@@ -13,6 +13,18 @@ const Contact = () => {
 
     const [submitted, setSubmitted] = useState(false);
     const [activeFaq, setActiveFaq] = useState(null);
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        setLoading(true);
+
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 200);
+
+        return () => clearTimeout(timer);
+    }, []);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -39,6 +51,18 @@ const Contact = () => {
     const toggleFaq = (index) => {
         setActiveFaq(activeFaq === index ? null : index);
     };
+
+
+    if (loading) {
+        return (
+            <div className="loading-container">
+                <div className="dashboard-loading">
+                    <div className="loading-spinner"></div>
+                    <p>Loading your contact page...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>  {/* ------------- Hero Section -------------*/}

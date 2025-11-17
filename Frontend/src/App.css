@@ -36,3 +36,30 @@
   --error-radius-sm: 0.25rem;
   --error-radius-md: 0.5rem;
 }
+
+
+/* Loading */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 70vh;
+}
+
+.dashboard-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}

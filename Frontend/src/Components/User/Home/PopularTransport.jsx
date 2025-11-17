@@ -5,37 +5,35 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './PopularTransport.css';
 
-const PopularTransport = () => {
+const PopularTransport = ({ setLoading }) => {
     const navigate = useNavigate();
     const [transports, setTransports] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [savedTransports, setSavedTransports] = useState(() => {
         const saved = localStorage.getItem('savedTransports');
         return saved ? JSON.parse(saved) : [];
     });
 
-    // Fetch top 3 rated transports
     useEffect(() => {
         const fetchTopRatedTransports = async () => {
             try {
                 setLoading(true);
+
                 const response = await fetch(
                     `http://localhost:5000/api/transports?limit=3&sort_by=averageRating&sort_order=desc`
                 );
-                
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch transports');
                 }
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     const topRated = data.transports
-                        .filter(transport => transport.averageRating > 0)
+                        .filter(t => t.averageRating > 0)
                         .slice(0, 3);
+
                     setTransports(topRated);
-                } else {
-                    throw new Error(data.message || 'Failed to fetch transports');
                 }
             } catch (err) {
                 console.error('Error fetching transports:', err);
@@ -50,75 +48,55 @@ const PopularTransport = () => {
 
     const toggleSaveTransport = (transportId, transportName, e) => {
         e.stopPropagation();
-        setSavedTransports((prev) => {
+
+        setSavedTransports(prev => {
             const isSaved = prev.includes(transportId);
-            const newSaved = isSaved
-                ? prev.filter((id) => id !== transportId)
+            const updated = isSaved
+                ? prev.filter(id => id !== transportId)
                 : [...prev, transportId];
-            localStorage.setItem('savedTransports', JSON.stringify(newSaved));
-            
+
+            localStorage.setItem('savedTransports', JSON.stringify(updated));
+
             toast.success(
-                isSaved 
-                    ? `Removed ${transportName} from saved items` 
-                    : `Saved ${transportName} to your favorites`
+                isSaved
+                    ? `Removed ${transportName} from saved`
+                    : `Saved ${transportName} to favorites`
             );
-            
-            return newSaved;
+
+            return updated;
         });
     };
 
     const StarRating = ({ rating }) => {
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 >= 0.5;
-        
+        const full = Math.floor(rating);
+        const half = rating % 1 >= 0.5;
+
         return (
             <div className="star-rating">
-                {[...Array(5)].map((_, index) => {
-                    if (index < fullStars) {
-                        return <FaStar key={index} className="star-icon filled" />;
-                    } else if (index === fullStars && hasHalfStar) {
-                        return <FaStar key={index} className="star-icon half-filled" />;
-                    } else {
-                        return <FaStar key={index} className="star-icon" />;
-                    }
+                {[...Array(5)].map((_, i) => {
+                    if (i < full) return <FaStar key={i} className="star-icon filled" />;
+                    if (i === full && half) return <FaStar key={i} className="star-icon half-filled" />;
+                    return <FaStar key={i} className="star-icon" />;
                 })}
             </div>
         );
     };
 
-    // Function to get the correct image URL
     const getImageUrl = (transport) => {
-        if (transport.vehicle_images && transport.vehicle_images.length > 0) {
-            // Check if the image path is already a full URL or needs the base URL
-            const imagePath = transport.vehicle_images[0];
-            if (imagePath.startsWith('http')) {
-                return imagePath;
-            } else if (imagePath.startsWith('/uploads/')) {
-                return `http://localhost:5000${imagePath}`;
-            } else {
-                return `http://localhost:5000/uploads/transports/${imagePath}`;
-            }
+        if (transport.vehicle_images?.length > 0) {
+            const img = transport.vehicle_images[0];
+            if (img.startsWith('http')) return img;
+            if (img.startsWith('/uploads/')) return `http://localhost:5000${img}`;
+            return `http://localhost:5000/uploads/transports/${img}`;
         }
-        // Return a default image if no images available
         return '/images/default-vehicle.jpg';
     };
-
-    if (loading) {
-        return (
-            <div className="PopularTransport">
-                <div className="loading-section">
-                    <div className="loading-spinner"></div>
-                    <p>Loading featured transport options...</p>
-                </div>
-            </div>
-        );
-    }
 
     if (transports.length === 0) {
         return (
             <div className="PopularTransport">
                 <div className="no-transports">
-                    <p>No featured transport options available at the moment.</p>
+                    <p>No featured transport options available</p>
                 </div>
             </div>
         );
@@ -137,31 +115,29 @@ const PopularTransport = () => {
                         <div
                             className="card"
                             key={transport._id}
-                            onClick={() => {
-                                navigate(`/transport/${transport._id}`)
-                            }}
+                            onClick={() => navigate(`/transport/${transport._id}`)}
                         >
                             <img
                                 src={getImageUrl(transport)}
                                 alt={`${transport.brand} ${transport.model}`}
                                 className="image"
                                 loading="lazy"
-                                onError={(e) => {
-                                    e.target.src = '/images/default-vehicle.jpg';
-                                }}
+                                onError={e => e.target.src = '/images/default-vehicle.jpg'}
                             />
+
                             <div className="transport-badge">{transport.vehicle_type}</div>
+
                             <button
                                 className={`save-button ${savedTransports.includes(transport._id) ? 'saved' : ''}`}
-                                onClick={(e) => toggleSaveTransport(transport._id, `${transport.brand} ${transport.model}`, e)}
-                                aria-label={savedTransports.includes(transport._id) ? 'Remove from saved' : 'Save this vehicle'}
+                                onClick={(e) =>
+                                    toggleSaveTransport(transport._id, `${transport.brand} ${transport.model}`, e)
+                                }
                             >
-                                {savedTransports.includes(transport._id) ? (
-                                    <FaHeart className="icon-heart-filled" />
-                                ) : (
-                                    <FaRegHeart className="icon-heart-outline" />
-                                )}
+                                {savedTransports.includes(transport._id)
+                                    ? <FaHeart className="icon-heart-filled" />
+                                    : <FaRegHeart className="icon-heart-outline" />}
                             </button>
+
                             <div className="transport-info">
                                 <h3>{transport.brand} {transport.model}</h3>
                                 <p className="location">{transport.address}</p>
@@ -177,7 +153,9 @@ const PopularTransport = () => {
                                 </div>
 
                                 <div className="price-action">
-                                    <p className="price">Rs {transport.rental_price_per_day?.toLocaleString()}/= per day</p>
+                                    <p className="price">
+                                        Rs {transport.rental_price_per_day?.toLocaleString()}/= per day
+                                    </p>
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -195,9 +173,7 @@ const PopularTransport = () => {
 
                 <button
                     className="view-all-button"
-                    onClick={() => {
-                        navigate('/transport')
-                    }}
+                    onClick={() => navigate('/transport')}
                 >
                     View All Transport Options <FaArrowRight className="arrow-icon" />
                 </button>

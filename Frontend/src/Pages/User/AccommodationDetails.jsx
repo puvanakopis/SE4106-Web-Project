@@ -27,7 +27,7 @@ const AccommodationDetails = () => {
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showOwnerDetails, setShowOwnerDetails] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [isBooking, setIsBooking] = useState(false);
 
   const API_BASE_URL = 'http://localhost:5000';
@@ -55,7 +55,7 @@ const AccommodationDetails = () => {
 
   const fetchAccommodationData = async () => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       const response = await fetch(`${API_BASE_URL}/api/accommodations/${id}`, {
         method: 'GET',
         headers: {
@@ -92,7 +92,7 @@ const AccommodationDetails = () => {
       const errorMessage = error.message || 'Failed to load accommodation details';
       toast.error(errorMessage);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -316,11 +316,13 @@ const AccommodationDetails = () => {
     e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(accommodation?.owner_id?.fullName || 'Owner')}&background=random&color=fff`;
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="accommodation-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading accommodation details...</p>
+      <div className="loading-container">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading your accommodation details...</p>
+        </div>
       </div>
     );
   }
@@ -370,7 +372,7 @@ const AccommodationDetails = () => {
           bookingDetails={getBookingDetails()}
           onPaymentSuccess={handlePaymentSuccess}
           paymentMethod={paymentMethod}
-          isLoading={isBooking}
+          loading={isBooking}
         />
       )}
 

@@ -171,10 +171,10 @@ const Accommodation = () => {
 
   if (loading) {
     return (
-      <div className="booking-container">
+      <div className="loading-container">
         <div className="dashboard-loading">
           <div className="loading-spinner"></div>
-          <p>Loading your accommodation...</p>
+          <p>Loading your accommodations...</p>
         </div>
       </div>
     );

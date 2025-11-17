@@ -228,7 +228,7 @@ const TransportDetails = () => {
       if (bookingResult) {
         toast.success('Booking confirmed successfully!');
         setShowPaymentPopup(false);
-        
+
         // Reset booking form
         setStartDate(null);
         setEndDate(null);
@@ -271,7 +271,7 @@ const TransportDetails = () => {
       deposit: securityDeposit,
       rentalCost: totalCost,
       securityDeposit: securityDeposit,
-      bookingStatus: 'confirmed' 
+      bookingStatus: 'confirmed'
     };
   };
 
@@ -287,9 +287,11 @@ const TransportDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="transport-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading transport details...</p>
+      <div className="loading-container">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading transport details...</p>
+        </div>
       </div>
     );
   }
@@ -452,11 +454,11 @@ const TransportDetails = () => {
             {transport.features && transport.features.length > 0 && (
               <div className="specs-item">
                 <h3 className="specs-title">Features</h3>
-                  {transport.features.map((item, index) => (
-                    <div key={index} className="specs-value">
-                      <span>{item}</span>
-                    </div>
-                  ))}
+                {transport.features.map((item, index) => (
+                  <div key={index} className="specs-value">
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
             )}
 

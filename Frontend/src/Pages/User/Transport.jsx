@@ -263,7 +263,7 @@ const Transport = () => {
       <div className="booking-container">
         <div className="dashboard-loading">
           <div className="loading-spinner"></div>
-          <p>Loading your accommodation...</p>
+          <p>Loading your transport...</p>
         </div>
       </div>
     );
