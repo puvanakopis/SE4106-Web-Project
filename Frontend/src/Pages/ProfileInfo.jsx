@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import "./ProfileInfo.css";
 import { useNavigate } from "react-router-dom";
@@ -91,7 +91,6 @@ const ProfileInfo = () => {
     if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       return;
     }
-
     setLoading(true);
 
     try {
@@ -106,8 +105,26 @@ const ProfileInfo = () => {
     }
   };
 
-  if (!user) {
-    return <div>Loading user data...</div>;
+  useEffect(() => {
+    setLoading(true);
+
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500); 
+
+    return () => clearTimeout(timer); 
+  }, []);
+
+
+  if (loading) {
+    return (
+      <div className="booking-container">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading your home page...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

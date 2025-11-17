@@ -491,6 +491,105 @@ const updateTransportStatus = async (req, res) => {
   }
 };
 
+const getTransportsByOwner = async (req, res) => {
+  try {
+    const { owner_id } = req.params;
+
+    if (!owner_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Owner ID is required"
+      });
+    }
+
+    const owner = await Owner.findById(owner_id);
+    if (!owner) {
+      return res.status(404).json({
+        success: false,
+        message: "Owner not found"
+      });
+    }
+
+    const {
+      page = 1,
+      limit = 10,
+      vehicle_type,
+      status,
+      isAvailable,
+      sort_by = 'createdDate',
+      sort_order = 'desc'
+    } = req.query;
+
+    const filter = { owner_id };
+
+    if (vehicle_type) filter.vehicle_type = vehicle_type;
+    if (status) filter.status = status;
+    if (isAvailable !== undefined) filter.isAvailable = isAvailable === 'true';
+
+    const sortConfig = { [sort_by]: sort_order === 'desc' ? -1 : 1 };
+
+    const [transports, total] = await Promise.all([
+      Transport.find(filter)
+        .populate('owner_id', 'fullName displayName profile_pic phoneNumber email averageRating totalReviews')
+        .sort(sortConfig)
+        .limit(limit * 1)
+        .skip((page - 1) * limit),
+      Transport.countDocuments(filter)
+    ]);
+
+    const stats = await Transport.aggregate([
+      { $match: filter },
+      {
+        $group: {
+          _id: null,
+          totalVehicles: { $sum: 1 },
+          availableVehicles: {
+            $sum: { $cond: [{ $eq: ["$available", "Available"] }, 1, 0] }
+          },
+          activeVehicles: {
+            $sum: { $cond: [{ $eq: ["$status", "Active"] }, 1, 0] }
+          },
+          averageRating: { $avg: "$averageRating" },
+          totalRevenue: { $sum: "$rental_price_per_day" }
+        }
+      }
+    ]);
+
+    const statistics = stats[0] || {
+      totalVehicles: 0,
+      availableVehicles: 0,
+      activeVehicles: 0,
+      averageRating: 0,
+      totalRevenue: 0
+    };
+
+    res.json({
+      success: true,
+      transports,
+      statistics,
+      pagination: {
+        totalPages: Math.ceil(total / limit),
+        currentPage: parseInt(page),
+        total,
+        limit: parseInt(limit)
+      },
+      owner: {
+        _id: owner._id,
+        fullName: owner.fullName,
+        displayName: owner.displayName,
+        profile_pic: owner.profile_pic
+      }
+    });
+
+  } catch (error) {
+    console.error("Get transports by owner error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching owner's transports"
+    });
+  }
+};
+
 
 module.exports = {
   createTransport,
@@ -499,4 +598,5 @@ module.exports = {
   updateTransport,
   deleteTransport,
   updateTransportStatus,
+  getTransportsByOwner
 };

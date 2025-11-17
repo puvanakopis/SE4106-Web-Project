@@ -3,14 +3,11 @@ import StarRating from '../../Rating/StarRating';
 import './AccommodationCard.css';
 
 const AccommodationCard = ({ accommodation, saved, onSave, onClick }) => {
-  // Handle missing images
   const getImageUrl = (imagePath) => {
     if (!imagePath) return '/images/default-accommodation.jpg';
 
-    // If it's already a full URL, return as is
     if (imagePath.startsWith('http')) return imagePath;
 
-    // If it's a relative path, make sure it points to the correct backend URL
     if (imagePath.startsWith('/uploads/')) {
       return `http://localhost:5000${imagePath}`;
     }
@@ -18,15 +15,63 @@ const AccommodationCard = ({ accommodation, saved, onSave, onClick }) => {
     return imagePath;
   };
 
-  // Format price with safety check
   const formatPrice = (price) => {
     if (!price && price !== 0) return 'Price not available';
     return `Rs ${price.toLocaleString()}`;
   };
 
-  // Handle image error
   const handleImageError = (e) => {
     e.target.src = '/images/default-accommodation.jpg';
+  };
+
+  // Get accommodation display name based on available properties
+  const getDisplayName = () => {
+    return accommodation.accommodation_name || 
+           accommodation.accommodationName || 
+           `${accommodation.accommodation_type} Accommodation` ||
+           'Unnamed Accommodation';
+  };
+
+  // Get accommodation type for badge
+  const getAccommodationType = () => {
+    return accommodation.accommodation_type || 
+           accommodation.accommodationType || 
+           '';
+  };
+
+  // Get price value
+  const getPrice = () => {
+    return accommodation.price_per_month || 
+           accommodation.pricePerMonth || 
+           0;
+  };
+
+  // Get rating value
+  const getRating = () => {
+    return accommodation.averageRating || 0;
+  };
+
+  // Get review count
+  const getReviewCount = () => {
+    return accommodation.totalReviews || 0;
+  };
+
+  // Get address
+  const getAddress = () => {
+    return accommodation.address || 
+           'Address not specified';
+  };
+
+  // Get amenities
+  const getAmenities = () => {
+    return accommodation.amenities || [];
+  };
+
+  // Get images
+  const getImages = () => {
+    return accommodation.accommodation_images || 
+           accommodation.images || 
+           [];
   };
 
   return (
@@ -35,16 +80,16 @@ const AccommodationCard = ({ accommodation, saved, onSave, onClick }) => {
       {/* ------------- Image Section ------------- */}
       <div className="accommodation-image-container">
         <img
-          src={getImageUrl(accommodation.images?.[0])}
-          alt={accommodation.accommodationName || 'Accommodation'}
+          src={getImageUrl(getImages()[0])}
+          alt={getDisplayName()}
           className="accommodation-image"
           loading="lazy"
           onError={handleImageError}
         />
 
         {/* Accommodation Type Badge */}
-        {accommodation.accommodationType && (
-          <span className="accommodation-badge">{accommodation.accommodationType}</span>
+        {getAccommodationType() && (
+          <span className="accommodation-badge">{getAccommodationType()}</span>
         )}
 
         {/* Save Button */}
@@ -69,35 +114,38 @@ const AccommodationCard = ({ accommodation, saved, onSave, onClick }) => {
         {/* Title, Name, Address */}
         <div className="accommodation-main-info">
           <h2 className="accommodation-title">
-            {accommodation.accommodationName || 'Unnamed Accommodation'}
+            {getDisplayName()}
           </h2>
-          <div className="accommodation-location">{accommodation.address} cekjn</div>
+          <div className="accommodation-location">
+            {getAddress()}
+          </div>
         </div>
 
         {/* Rating & Reviews */}
         <div className="accommodation-rating-reviews">
-          <StarRating rating={accommodation.averageRating || 0} />
+          <StarRating rating={getRating()} />
           <span className="reviews">
-            {accommodation.totalReviews || 0} review{accommodation.totalReviews !== 1 ? 's' : ''}
+            {getReviewCount()} review{getReviewCount() !== 1 ? 's' : ''}
           </span>
         </div>
 
         {/* Amenities Preview */}
-        {accommodation.amenities && accommodation.amenities.length > 0 && (
+        {getAmenities().length > 0 && (
           <div className="accommodation-amenities-preview">
-            {accommodation.amenities.slice(0, 3).map((item, index) => (
+            {getAmenities().slice(0, 3).map((item, index) => (
               <span key={index} className="amenity-tag">{item}</span>
             ))}
-            {accommodation.amenities.length > 3 && (
-              <span className="amenity-tag-more">+{accommodation.amenities.length - 3} more</span>
+            {getAmenities().length > 3 && (
+              <span className="amenity-tag-more">+{getAmenities().length - 3} more</span>
             )}
           </div>
         )}
 
+
         {/* Price & Button */}
         <div className="accommodation-bottom-row">
           <div className="accommodation-price-simple">
-            {formatPrice(accommodation.pricePerMonth)}
+            {formatPrice(getPrice())}
             <span className="price-period"> / month</span>
           </div>
           <button

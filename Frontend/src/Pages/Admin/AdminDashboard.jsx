@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { accommodationsData, vehicleData, ownerData, upcomingBookings, pastBookings } from '../../Assets/assets';
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../Context/AuthContext';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './AdminDashboard.css';
 
+const API_BASE = 'http://localhost:5000/api';
+
 const AdminDashboard = () => {
-  // ----------------------- State Management -----------------------
   const [accommodations, setAccommodations] = useState([]);
   const [accommodationBookings, setAccommodationBookings] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -11,73 +14,188 @@ const AdminDashboard = () => {
   const [owners, setOwners] = useState([]);
   const [activeTab, setActiveTab] = useState('overview');
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const { getOwners } = useContext(AuthContext);
 
   // ----------------------- Data Loading -----------------------
   useEffect(() => {
-    const loadData = async () => {
+    const fetchAllData = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 300));
+        setIsLoading(true);
 
-        // Set data from imported assets
-        setAccommodations(accommodationsData);
-        setVehicles(vehicleData);
-        setOwners(ownerData);
-
-        const allAccommodationBookings = [...upcomingBookings.accommodationBookings, ...pastBookings.accommodationBookings];
-        const allVehicleBookings = [...upcomingBookings.vehicleBookings, ...pastBookings.vehicleBookings];
-
-        setAccommodationBookings(allAccommodationBookings);
-        setVehicleBookings(allVehicleBookings);
+        await Promise.all([
+          fetchAccommodations(),
+          fetchAccommodationBookings(),
+          fetchVehicles(),
+          fetchVehicleBookings(),
+          fetchOwnersData()
+        ]);
 
         setIsLoading(false);
-      } catch (err) {
-        setError(err.message);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
         setIsLoading(false);
+        toast.error('Failed to load dashboard data');
       }
     };
 
-    loadData();
+    fetchAllData();
   }, []);
+
+  // Fetch accommodations
+  const fetchAccommodations = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/accommodations?limit=100`);
+      const data = await response.json();
+      if (data.success) {
+        setAccommodations(data.accommodations || []);
+      } else {
+        throw new Error(data.message || 'Failed to fetch accommodations');
+      }
+    } catch (error) {
+      console.error('Error fetching accommodations:', error);
+      throw new Error('Failed to load accommodations');
+    }
+  };
+
+  // Fetch accommodation bookings
+  const fetchAccommodationBookings = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/accommodation-bookings`);
+      const data = await response.json();
+      if (data.success) {
+        setAccommodationBookings(data.bookings || []);
+      } else {
+        throw new Error(data.message || 'Failed to fetch accommodation bookings');
+      }
+    } catch (error) {
+      console.error('Error fetching accommodation bookings:', error);
+      throw new Error('Failed to load accommodation bookings');
+    }
+  };
+
+  // Fetch vehicles
+  const fetchVehicles = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/transports?limit=100`);
+      const data = await response.json();
+      if (data.success) {
+        setVehicles(data.transports || []);
+      } else {
+        throw new Error(data.message || 'Failed to fetch vehicles');
+      }
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+      throw new Error('Failed to load vehicles');
+    }
+  };
+
+  // Fetch vehicle bookings
+  const fetchVehicleBookings = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/transport-bookings`);
+      const data = await response.json();
+      if (data.success) {
+        setVehicleBookings(data.bookings || []);
+      } else {
+        throw new Error(data.message || 'Failed to fetch vehicle bookings');
+      }
+    } catch (error) {
+      console.error('Error fetching vehicle bookings:', error);
+      throw new Error('Failed to load vehicle bookings');
+    }
+  };
+
+  // Fetch owners
+  const fetchOwnersData = async () => {
+    try {
+      const ownersData = await getOwners();
+      setOwners(ownersData || []);
+    } catch (error) {
+      console.error('Error fetching owners:', error);
+      throw new Error('Failed to load owners');
+    }
+  };
+
+  // Refresh data
+  const refreshData = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.all([
+        fetchAccommodations(),
+        fetchAccommodationBookings(),
+        fetchVehicles(),
+        fetchVehicleBookings(),
+        fetchOwnersData()
+      ]);
+    } catch (err) {
+      console.error('Error refreshing data:', err);
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // ----------------------- Data Processing -----------------------
   const calculateAccommodationStats = () => {
     const totalAccommodations = accommodations.length;
-    const occupiedAccommodations = accommodations.filter(accommodation => !accommodation.isAvailable).length;
+    const occupiedAccommodations = accommodations.filter(acc => !acc.isAvailable).length;
     const availableAccommodations = totalAccommodations - occupiedAccommodations;
-    const averageRating = accommodations.reduce((sum, accommodation) => sum + (accommodation.averageRating || 0), 0) / totalAccommodations;
-    const averagePrice = accommodations.reduce((sum, accommodation) => sum + accommodation.pricePerMonth, 0) / totalAccommodations;
+    
+    const averageRating = accommodations.length > 0
+      ? accommodations.reduce((sum, acc) => sum + (acc.averageRating || 0), 0) / totalAccommodations
+      : 0;
+    
+    const averagePrice = accommodations.length > 0
+      ? accommodations.reduce((sum, acc) => sum + (acc.price_per_month || 0), 0) / totalAccommodations
+      : 0;
 
     return {
       totalAccommodations,
       occupiedAccommodations,
       availableAccommodations,
-      averageRating,
+      averageRating: averageRating.toFixed(1),
       averagePrice: Math.round(averagePrice)
     };
   };
 
   const calculateVehicleStats = () => {
     const totalVehicles = vehicles.length;
-    const rentedVehicles = vehicles.filter(v => !v.isAvailable).length;
+    const rentedVehicles = vehicles.filter(vehicle => !vehicle.isAvailable).length;
     const availableVehicles = totalVehicles - rentedVehicles;
-    const averageRating = vehicles.reduce((sum, vehicle) => sum + vehicle.averageRating, 0) / totalVehicles;
-    const averagePrice = vehicles.reduce((sum, vehicle) => sum + vehicle.rental_price_per_day, 0) / totalVehicles;
+    
+    const averageRating = vehicles.length > 0
+      ? vehicles.reduce((sum, vehicle) => sum + (vehicle.averageRating || 0), 0) / totalVehicles
+      : 0;
+    
+    const averagePrice = vehicles.length > 0
+      ? vehicles.reduce((sum, vehicle) => sum + (vehicle.rental_price_per_day || 0), 0) / totalVehicles
+      : 0;
 
     return {
       totalVehicles,
       rentedVehicles,
       availableVehicles,
-      averageRating,
+      averageRating: averageRating.toFixed(1),
       averagePrice: Math.round(averagePrice)
     };
   };
 
   const calculateOwnerStats = () => {
     const totalOwners = owners.length;
-    const activeOwners = owners.filter(owner => owner.Status === 'Active').length;
+    const activeOwners = owners.filter(owner => owner.status === 'Active').length;
     const blockedOwners = totalOwners - activeOwners;
-    const ownersWithProperties = owners.filter(owner => owner.properties && owner.properties.length > 0).length;
+
+    // Count owners with properties (both accommodations and vehicles)
+    const ownersWithProperties = owners.filter(owner => {
+      const hasAccommodations = accommodations.some(acc => 
+        acc.owner_id === owner._id || acc.owner_id?._id === owner._id
+      );
+      const hasVehicles = vehicles.some(vehicle => 
+        vehicle.owner_id === owner._id || vehicle.owner_id?._id === owner._id
+      );
+      return hasAccommodations || hasVehicles;
+    }).length;
 
     return {
       totalOwners,
@@ -88,35 +206,51 @@ const AdminDashboard = () => {
   };
 
   const calculateBookingStats = () => {
+    // Accommodation bookings stats
     const totalAccommodationBookings = accommodationBookings.length;
     const confirmedAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'confirmed').length;
-    const canceledAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'canceled').length;
+    const cancelledAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'cancelled').length;
     const completedAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'completed').length;
-    const accommodationRevenue = accommodationBookings.reduce((sum, booking) => sum + (booking.isPaid ? booking.totalPrice : 0), 0);
+    
+    // Calculate accommodation revenue from completed payments
+    const accommodationRevenue = accommodationBookings.reduce((sum, booking) => {
+      if (booking.paymentDetails?.paymentStatus === "completed" || booking.isPaid) {
+        return sum + (booking.totalPrice || 0);
+      }
+      return sum;
+    }, 0);
 
+    // Vehicle bookings stats
     const totalVehicleBookings = vehicleBookings.length;
     const confirmedVehicleBookings = vehicleBookings.filter(b => b.booking_status === 'confirmed').length;
-    const canceledVehicleBookings = vehicleBookings.filter(b => b.booking_status === 'canceled').length;
+    const cancelledVehicleBookings = vehicleBookings.filter(b => b.booking_status === 'cancelled').length;
     const completedVehicleBookings = vehicleBookings.filter(b => b.booking_status === 'completed').length;
-    const vehicleRevenue = vehicleBookings.reduce((sum, booking) => sum + (booking.isPaid ? booking.totalPrice : 0), 0);
+    
+    // Calculate vehicle revenue from completed payments
+    const vehicleRevenue = vehicleBookings.reduce((sum, booking) => {
+      if (booking.paymentDetails?.paymentStatus === "completed" || booking.isPaid) {
+        return sum + (booking.totalPrice || 0);
+      }
+      return sum;
+    }, 0);
 
     return {
       totalBookings: totalAccommodationBookings + totalVehicleBookings,
       confirmedBookings: confirmedAccommodationBookings + confirmedVehicleBookings,
-      pendingBookings: canceledAccommodationBookings + canceledVehicleBookings,
+      cancelledBookings: cancelledAccommodationBookings + cancelledVehicleBookings,
       completedBookings: completedAccommodationBookings + completedVehicleBookings,
       totalRevenue: accommodationRevenue + vehicleRevenue,
       accommodationStats: {
         total: totalAccommodationBookings,
         confirmed: confirmedAccommodationBookings,
-        pending: canceledAccommodationBookings,
+        cancelled: cancelledAccommodationBookings,
         completed: completedAccommodationBookings,
         revenue: accommodationRevenue
       },
       vehicleStats: {
         total: totalVehicleBookings,
         confirmed: confirmedVehicleBookings,
-        pending: canceledVehicleBookings,
+        cancelled: cancelledVehicleBookings,
         completed: completedVehicleBookings,
         revenue: vehicleRevenue
       }
@@ -153,28 +287,30 @@ const AdminDashboard = () => {
       ...accommodationBookings.map(booking => ({
         id: booking._id,
         type: 'accommodation',
-        date: booking.booking_start,
+        date: booking.createdAt || booking.booking_start,
         checkInDate: booking.booking_start,
         checkOutDate: booking.booking_end,
-        details: `${booking.accommodation?.accommodationName || 'N/A'} (${booking.accommodation?.accommodationType || 'N/A'})`,
-        customer: booking.renter?.displayNamename || 'N/A',
+        details: `${booking.accommodation?.accommodation_name || 'N/A'} (${booking.accommodation?.accommodation_type || 'N/A'})`,
+        customer: booking.renter?.fullName || 'N/A',
         days: booking.booking_start && booking.booking_end
           ? Math.ceil((new Date(booking.booking_end) - new Date(booking.booking_start)) / (1000 * 60 * 60 * 24))
           : 0,
         amount: booking.totalPrice || 0,
         status: booking.booking_status?.toLowerCase() || 'unknown',
-        isPaid: booking.isPaid || false
+        isPaid: booking.paymentDetails?.paymentStatus === "completed" || booking.isPaid || false
       })),
       ...vehicleBookings.map(booking => ({
         id: booking._id,
         type: 'vehicle',
-        date: booking.booking_start,
-        details: `${booking.vehicle?.brand || 'N/A'} ${booking.vehicle?.model || 'N/A'} (${booking.vehicle?.vehicle_type || 'N/A'})`,
-        customer: booking.renter?.displayNamename || 'N/A',
-        days: booking.booking_start && booking.booking_end,
+        date: booking.createdAt || booking.booking_start,
+        details: `${booking.transport?.vehicle_name || booking.transport?.brand || 'N/A'} ${booking.transport?.model || 'N/A'} (${booking.transport?.vehicle_type || 'N/A'})`,
+        customer: booking.renter?.fullName || 'N/A',
+        days: booking.booking_start && booking.booking_end
+          ? Math.ceil((new Date(booking.booking_end) - new Date(booking.booking_start)) / (1000 * 60 * 60 * 24))
+          : 0,
         amount: booking.totalPrice || 0,
         status: booking.booking_status?.toLowerCase() || 'unknown',
-        isPaid: booking.isPaid || false
+        isPaid: booking.paymentDetails?.paymentStatus === "completed" || booking.isPaid || false
       }))
     ].sort((a, b) => new Date(b.date) - new Date(a.date));
   };
@@ -188,8 +324,8 @@ const AdminDashboard = () => {
         id: booking._id,
         type: 'accommodation',
         title: `Accommodation Booking ${booking.booking_status}`,
-        description: `Booking for ${booking.accommodation?.accommodationName || 'N/A'}`,
-        date: booking.booking_start,
+        description: `Booking for ${booking.accommodation?.accommodation_name || 'N/A'}`,
+        date: booking.createdAt || booking.booking_start,
         status: booking.booking_status?.toLowerCase(),
         amount: booking.totalPrice
       })),
@@ -197,23 +333,34 @@ const AdminDashboard = () => {
         id: booking._id,
         type: 'vehicle',
         title: `Vehicle Booking ${booking.booking_status}`,
-        description: `Booking for ${booking.vehicle?.brand || 'N/A'} ${booking.vehicle?.model || 'N/A'}`,
-        date: booking.booking_start,
+        description: `Booking for ${booking.transport?.vehicle_name || booking.transport?.brand || 'N/A'} ${booking.transport?.model || 'N/A'}`,
+        date: booking.createdAt || booking.booking_start,
         status: booking.booking_status?.toLowerCase(),
         amount: booking.totalPrice
       })),
       ...owners.slice(0, 2).map(owner => ({
-        id: owner.id || owner._id,
+        id: owner._id,
         type: 'owner',
-        title: `${owner.isBlocked ? 'Blocked' : 'Registered'} Owner`,
-        description: `${owner.FullName || owner.username || 'N/A'} - ${owner.email || 'N/A'}`,
-        date: owner.accontCretDate || '2023-01-01',
-        status: owner.isBlocked ? 'blocked' : 'active'
+        title: `${owner.status === 'Blocked' ? 'Blocked' : 'Registered'} Owner`,
+        description: `${owner.fullName || 'N/A'} - ${owner.email || 'N/A'}`,
+        date: owner.createdAt || '2023-01-01',
+        status: owner.status === 'Blocked' ? 'blocked' : 'active'
       }))
     ].sort((a, b) => new Date(b.date) - new Date(a.date));
   };
 
   const recentActivities = getRecentActivities();
+
+  // ----------------------- Get unique types for charts -----------------------
+  const getAccommodationTypes = () => {
+    const types = [...new Set(accommodations.map(acc => acc.accommodation_type))];
+    return types.filter(type => type).length > 0 ? types : ['Single Bed', 'Double Bed', 'Other'];
+  };
+
+  const getVehicleTypes = () => {
+    const types = [...new Set(vehicles.map(vehicle => vehicle.vehicle_type))];
+    return types.filter(type => type).length > 0 ? types : ['Motorbike', 'Car', 'Scooter', 'Bicycle', 'Van', 'Truck', 'Other'];
+  };
 
   // ----------------------- Render Method -----------------------
   if (isLoading) {
@@ -225,22 +372,30 @@ const AdminDashboard = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="dashboard-error">
-        <div className="error-icon">⚠️</div>
-        <h2>Error Loading Dashboard</h2>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
-      </div>
-    );
-  }
-
   return (
     <div className="dashboard">
+      {/* Toast Container for notifications */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      
       {/* ----------------------- Header Section ----------------------- */}
       <div className="dashboard-header">
         <h1 className="title">Admin Dashboard</h1>
+        <div className="header-actions">
+          <button onClick={refreshData} className="refresh-button" disabled={isLoading}>
+            {isLoading ? 'Refreshing...' : 'Refresh Data'}
+          </button>
+        </div>
       </div>
 
       {/* ----------------------- Navigation Tabs ----------------------- */}
@@ -248,35 +403,30 @@ const AdminDashboard = () => {
         <button
           className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
-          disabled={isLoading}
         >
           Overview
         </button>
         <button
           className={`tab-button ${activeTab === 'accommodations' ? 'active' : ''}`}
           onClick={() => setActiveTab('accommodations')}
-          disabled={isLoading}
         >
           Accommodations
         </button>
         <button
           className={`tab-button ${activeTab === 'transport' ? 'active' : ''}`}
           onClick={() => setActiveTab('transport')}
-          disabled={isLoading}
         >
           Transport
         </button>
         <button
           className={`tab-button ${activeTab === 'owners' ? 'active' : ''}`}
           onClick={() => setActiveTab('owners')}
-          disabled={isLoading}
         >
           Owners
         </button>
         <button
           className={`tab-button ${activeTab === 'bookings' ? 'active' : ''}`}
           onClick={() => setActiveTab('bookings')}
-          disabled={isLoading}
         >
           Bookings
         </button>
@@ -291,7 +441,7 @@ const AdminDashboard = () => {
               <div className="card-content">
                 <h3>Total Revenue</h3>
                 <p>{formatCurrency(bookingStats.totalRevenue)}</p>
-                <span className="card-subtext">All bookings</span>
+                <span className="card-subtext">All completed bookings</span>
               </div>
             </div>
 
@@ -329,14 +479,14 @@ const AdminDashboard = () => {
                   <div
                     className="chart-segment accommodations"
                     style={{
-                      '--percentage': `${Math.round((bookingStats.accommodationStats.revenue / bookingStats.totalRevenue) * 100)}%`,
+                      '--percentage': `${Math.round((bookingStats.accommodationStats.revenue / Math.max(bookingStats.totalRevenue, 1)) * 100)}%`,
                       '--color': '#3b82f6'
                     }}
-                  > </div>
+                  ></div>
                   <div
                     className="chart-segment vehicles"
                     style={{
-                      '--percentage': `${Math.round((bookingStats.vehicleStats.revenue / bookingStats.totalRevenue) * 100)}%`,
+                      '--percentage': `${Math.round((bookingStats.vehicleStats.revenue / Math.max(bookingStats.totalRevenue, 1)) * 100)}%`,
                       '--color': '#f59e0b'
                     }}
                   ></div>
@@ -353,6 +503,24 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
+
+            <div className="chart-card">
+              <h3>Booking Status Distribution</h3>
+              <div className="status-chart">
+                <div className="status-bar confirmed">
+                  <div className="status-label">Confirmed - </div>
+                  <div className="status-count">{bookingStats.confirmedBookings}</div>
+                </div>
+                <div className="status-bar completed">
+                  <div className="status-label">Completed - </div>
+                  <div className="status-count">{bookingStats.completedBookings}</div>
+                </div>
+                <div className="status-bar cancelled">
+                  <div className="status-label">Cancelled - </div>
+                  <div className="status-count"> {bookingStats.cancelledBookings}</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Recent Activities */}
@@ -363,7 +531,7 @@ const AdminDashboard = () => {
             ) : (
               <div className="activities-list">
                 {recentActivities.map((activity, index) => (
-                  <div key={`${activity.id}-${index}`} className={`activity-item ${activity.type}`}>
+                  <div key={`${activity.id}-${index}`} className={`activity-item`}>
                     <div className="activity-icon">
                       {activity.type === 'accommodation' && '🛏️'}
                       {activity.type === 'vehicle' && '🚗'}
@@ -418,14 +586,20 @@ const AdminDashboard = () => {
                 <p>{formatCurrency(accommodationStats.averagePrice)}</p>
               </div>
             </div>
+            <div className="stat-card">
+              <div>
+                <h3>Revenue</h3>
+                <p>{formatCurrency(bookingStats.accommodationStats.revenue)}</p>
+              </div>
+            </div>
           </div>
 
           <div className="chart-container">
             <h3>Accommodation Type Distribution</h3>
             <div className="bar-chart">
-              {['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'].map(type => {
-                const count = accommodations.filter(r => r.accommodationType === type).length;
-                const percentage = (count / accommodationStats.totalAccommodations) * 100;
+              {getAccommodationTypes().map(type => {
+                const count = accommodations.filter(acc => acc.accommodation_type === type).length;
+                const percentage = accommodationStats.totalAccommodations > 0 ? (count / accommodationStats.totalAccommodations) * 100 : 0;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>
                     <div className="bar-label">{type}</div>
@@ -455,12 +629,12 @@ const AdminDashboard = () => {
                 <tbody>
                   {accommodationBookings.slice(0, 5).map(booking => (
                     <tr key={booking._id}>
-                      <td className="booking-id">{booking._id}</td>
+                      <td className="booking-id">{booking._id?.substring(0, 8)}...</td>
                       <td>
-                        <div>{booking.accommodation?.accommodationName || 'N/A'}</div>
-                        <div className="small-text">{booking.accommodation?.accommodationType || 'N/A'}</div>
+                        <div>{booking.accommodation?.accommodation_name || 'N/A'}</div>
+                        <div className="small-text">{booking.accommodation?.accommodation_type || 'N/A'}</div>
                       </td>
-                      <td>{booking.renter?.displayNamename || 'N/A'}</td>
+                      <td>{booking.renter?.fullName || 'N/A'}</td>
                       <td>
                         <div>{formatDate(booking.booking_start)}</div>
                         <div className="small-text">to {formatDate(booking.booking_end)}</div>
@@ -508,14 +682,20 @@ const AdminDashboard = () => {
                 <p>{formatCurrency(vehicleStats.averagePrice)}</p>
               </div>
             </div>
+            <div className="stat-card">
+              <div>
+                <h3>Revenue</h3>
+                <p>{formatCurrency(bookingStats.vehicleStats.revenue)}</p>
+              </div>
+            </div>
           </div>
 
           <div className="chart-container">
             <h3>Vehicle Type Distribution</h3>
             <div className="bar-chart">
-              {['Motorbike', 'Car', 'Van', 'SUV', 'Truck', 'Bus'].map(type => {
-                const count = vehicles.filter(v => v.vehicle_type === type).length;
-                const percentage = (count / vehicleStats.totalVehicles) * 100;
+              {getVehicleTypes().map(type => {
+                const count = vehicles.filter(vehicle => vehicle.vehicle_type === type).length;
+                const percentage = vehicleStats.totalVehicles > 0 ? (count / vehicleStats.totalVehicles) * 100 : 0;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>
                     <div className="bar-label">{type}</div>
@@ -545,12 +725,12 @@ const AdminDashboard = () => {
                 <tbody>
                   {vehicleBookings.slice(0, 5).map(booking => (
                     <tr key={booking._id}>
-                      <td className="booking-id">{booking._id}</td>
+                      <td className="booking-id">{booking._id?.substring(0, 8)}...</td>
                       <td>
-                        <div>{booking.vehicle?.brand || 'N/A'} {booking.vehicle?.model || 'N/A'}</div>
-                        <div className="small-text">{booking.vehicle?.vehicle_type || 'N/A'}</div>
+                        <div>{booking.transport?.vehicle_name || booking.transport?.brand || 'N/A'} {booking.transport?.model || 'N/A'}</div>
+                        <div className="small-text">{booking.transport?.vehicle_type || 'N/A'}</div>
                       </td>
-                      <td>{booking.renter?.displayNamename || 'N/A'}</td>
+                      <td>{booking.renter?.fullName || 'N/A'}</td>
                       <td>
                         <div>{formatDate(booking.booking_start)}</div>
                         <div className="small-text">to {formatDate(booking.booking_end)}</div>
@@ -607,14 +787,14 @@ const AdminDashboard = () => {
                 <div
                   className="chart-segment active"
                   style={{
-                    '--percentage': `${Math.round((ownerStats.activeOwners / ownerStats.totalOwners) * 100)}%`,
+                    '--percentage': `${Math.round((ownerStats.activeOwners / Math.max(ownerStats.totalOwners, 1)) * 100)}%`,
                     '--color': '#10b981'
                   }}
                 ></div>
                 <div
                   className="chart-segment blocked"
                   style={{
-                    '--percentage': `${Math.round((ownerStats.blockedOwners / ownerStats.totalOwners) * 100)}%`,
+                    '--percentage': `${Math.round((ownerStats.blockedOwners / Math.max(ownerStats.totalOwners, 1)) * 100)}%`,
                     '--color': '#ef4444'
                   }}
                 ></div>
@@ -649,29 +829,39 @@ const AdminDashboard = () => {
                 </thead>
                 <tbody>
                   {owners.slice(0, 5).map(owner => (
-                    <tr key={owner.id || owner._id}>
+                    <tr key={owner._id}>
                       <td>
                         <div className="owner-info">
                           <img
-                            src={owner.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.FullName || owner.username || 'Owner')}&background=random&color=fff`}
-                            alt={owner.FullName || owner.username || 'Owner'}
+                            src={owner.profile_pic
+                              ? `http://localhost:5000${owner.profile_pic}`
+                              : `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.fullName || 'Owner')}&background=random&color=fff`
+                            }
+                            alt={owner.fullName || 'Owner'}
                             className="owner-avatar"
                             onError={(e) => {
                               e.target.onerror = null;
-                              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.FullName || owner.username || 'Owner')}&background=random&color=fff`;
+                              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(owner.fullName || 'Owner')}&background=random&color=fff`;
                             }}
                           />
-                          <span>{owner.FullName || owner.username || 'N/A'}</span>
+                          <span>{owner.fullName || 'N/A'}</span>
                         </div>
                       </td>
                       <td>{owner.email || 'N/A'}</td>
-                      <td>{owner.properties?.length || 0}</td>
                       <td>
-                        <span className={`status-badge ${owner.Status}`}>
-                          {owner.Status}
+                        {accommodations.filter(acc => 
+                          acc.owner_id === owner._id || acc.owner_id?._id === owner._id
+                        ).length +
+                          vehicles.filter(vehicle => 
+                            vehicle.owner_id === owner._id || vehicle.owner_id?._id === owner._id
+                          ).length}
+                      </td>
+                      <td>
+                        <span className={`status-badge ${owner.status?.toLowerCase() || 'active'}`}>
+                          {owner.status || 'Active'}
                         </span>
                       </td>
-                      <td>{formatDate(owner.accontCretDate)}</td>
+                      <td>{formatDate(owner.createdAt)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -705,8 +895,8 @@ const AdminDashboard = () => {
             </div>
             <div className="stat-card">
               <div>
-                <h3>Canceled</h3>
-                <p>{bookingStats.pendingBookings}</p>
+                <h3>Cancelled</h3>
+                <p>{bookingStats.cancelledBookings}</p>
               </div>
             </div>
             <div className="stat-card">
@@ -734,8 +924,8 @@ const AdminDashboard = () => {
                   <span>{bookingStats.accommodationStats.confirmed}</span>
                 </div>
                 <div>
-                  <span>Canceled:</span>
-                  <span>{bookingStats.accommodationStats.pending}</span>
+                  <span>Cancelled:</span>
+                  <span>{bookingStats.accommodationStats.cancelled}</span>
                 </div>
                 <div>
                   <span>Revenue:</span>
@@ -760,8 +950,8 @@ const AdminDashboard = () => {
                   <span>{bookingStats.vehicleStats.confirmed}</span>
                 </div>
                 <div>
-                  <span>Canceled:</span>
-                  <span>{bookingStats.vehicleStats.pending}</span>
+                  <span>Cancelled:</span>
+                  <span>{bookingStats.vehicleStats.cancelled}</span>
                 </div>
                 <div>
                   <span>Revenue:</span>
@@ -795,7 +985,7 @@ const AdminDashboard = () => {
                         {booking.type === 'accommodation' ? '🛏️ Accommodation' : '🚗 Vehicle'}
                       </td>
                       <td className="booking-id">
-                        {booking.id}
+                        {booking.id?.substring(0, 8)}...
                       </td>
                       <td>
                         {booking.details}
@@ -811,6 +1001,7 @@ const AdminDashboard = () => {
                       </td>
                       <td>
                         {formatCurrency(booking.amount)}
+                        {booking.isPaid && <div className="small-text paid">Paid</div>}
                       </td>
                       <td>
                         <span className={`status-badge ${booking.status}`}>

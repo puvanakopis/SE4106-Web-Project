@@ -1,8 +1,33 @@
+import { useEffect, useState } from 'react';
 import testimonial1 from '../../Assets/About/testimonial1.jpg'
 import testimonial2 from '../../Assets/About/testimonial2.jpg'
 import './About.css'
 
 const About = () => {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true);
+
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading your about page...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>{/* ------------- Hero Section ------------- */}
       <section className="about-hero">
@@ -11,8 +36,8 @@ const About = () => {
           <p>Exclusive accommodation solutions for Sabaragamuwa University students and staff</p>
         </div>
       </section>
-     
-     
+
+
       <div className="about-page">
         {/* ------------- Mission Section ------------- */}
         <section className="about-section mission-section">

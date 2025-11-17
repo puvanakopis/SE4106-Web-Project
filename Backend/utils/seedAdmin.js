@@ -6,7 +6,7 @@ const seedAdmin = async () => {
   try {
     const existingAdmin = await User.findOne({ role: 'admin' });
     if (existingAdmin) {
-      console.log('Admin already exists:', existingAdmin.email);
+      console.log('Admin already exists');
       return;
     }
 

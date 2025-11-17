@@ -1,31 +1,35 @@
 import { useState, useEffect } from 'react';
 import { assets } from '../../Assets/assets';
 import './AdminAccommodations.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE = 'http://localhost:5000/api';
 
 const AdminAccommodations = () => {
-  // State for form inputs - updated with all model fields
   const [formData, setFormData] = useState({
-    owner_id: '',
-    accommodationName: '',
-    accommodationType: '',
-    pricePerMonth: '',
-    SecurityDeposit: '',
+    accommodation_name: '',
+    accommodation_type: '',
+    property_type: '',
     description: '',
-    amenities: [],
-    customAmenity: '',
-    images: [],
-    isAvailable: true,
-    noOfBed: 1,
-    status: 'Active',
+    price_per_month: '',
+    deposit_amount: '',
+    bedrooms: 1,
+    bathrooms: 1,
+    area_sqft: '',
+    maxGuests: 2,
     address: '',
     location: {
       type: 'Point',
       coordinates: ['', ''],
       mapSrc: '',
       title: ''
-    }
+    },
+    amenities: [],
+    customAmenity: '',
+    isAvailable: true,
+    status: 'Active',
+    owner_id: ''
   });
 
   const [accommodations, setAccommodations] = useState([]);
@@ -37,106 +41,132 @@ const AdminAccommodations = () => {
   const [imageFiles, setImageFiles] = useState([]);
   const [bookingStatusFilter, setBookingStatusFilter] = useState('all');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   // Standard amenities options
   const standardAmenities = [
-    "Wi-Fi",
-    "Study Table",
-    "Laundry Service",
-    "Shared Kitchen",
-    "24/7 Water",
-    "Hot Water",
-    "Fan",
+    "WiFi",
+    "Air Conditioning",
+    "Heating",
+    "Kitchen",
+    "Washer",
+    "Dryer",
+    "Parking",
+    "Pool",
+    "Hot Tub",
+    "Gym",
+    "Elevator",
+    "Wheelchair Accessible",
+    "Security System",
+    "Smoke Alarm",
+    "Carbon Monoxide Alarm",
+    "Fire Extinguisher",
+    "First Aid Kit",
+    "Essentials",
+    "Shampoo",
+    "Hair Dryer",
+    "Iron",
+    "TV",
+    "Cable TV",
+    "Netflix",
+    "Workspace",
     "Balcony",
-    "Attached Bathroom",
-    "Meal Plan"
+    "Garden",
+    "BBQ Grill",
+    "Pet Friendly",
+    "Smoking Allowed"
   ];
 
-  // Fetch accommodations and owners on component mount
+  // Accommodation types
+  const accommodationTypes = ["Single Bed", "Double Bed", "Other"]
+
+  // Property types
+  const propertyTypes = ["Hostel", "Apartment", "House", "Other"]
+
+  // Status types
+  const statusTypes = ["Active", "Blocked"];
+
   useEffect(() => {
     fetchAccommodations();
-    fetchOwners();
     fetchBookings();
+    fetchOwners();
   }, []);
 
-  // API Functions
+  // Get all accommodations
   const fetchAccommodations = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/accommodations?limit=100`);
+      const response = await fetch(`${API_BASE}/accommodations?limit=100`);
       const data = await response.json();
-      
+
       if (data.success) {
         setAccommodations(data.accommodations);
-      } else {
-        setError('Failed to fetch accommodations');
       }
     } catch (error) {
       console.error('Error fetching accommodations:', error);
-      setError('Failed to fetch accommodations');
+      toast.error('Error loading accommodations');
     } finally {
       setLoading(false);
     }
   };
 
+  // Get all bookings
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/accommodation-bookings`);
+      const data = await response.json();
+
+      if (data.success) {
+        setBookings(data.bookings || []);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      toast.error('Error loading bookings');
+    }
+  };
+
+  // Get all owners
   const fetchOwners = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/owners`);
+      const response = await fetch(`${API_BASE}/owners`);
       const data = await response.json();
-      
+
       if (data.success) {
         setOwners(data.owners || []);
-        // Set default owner if available
         if (data.owners.length > 0 && !formData.owner_id) {
           setFormData(prev => ({ ...prev, owner_id: data.owners[0]._id }));
         }
       }
     } catch (error) {
       console.error('Error fetching owners:', error);
+      toast.error('Error loading owners');
     }
   };
 
-  const fetchBookings = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/accommodation-bookings`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setBookings(data.bookings || []);
-      }
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-    }
-  };
-
+  // Create Accommodation
   const createAccommodation = async (accommodationData) => {
     try {
       const formData = new FormData();
-      
-      // Append all fields
       Object.keys(accommodationData).forEach(key => {
         if (key === 'amenities') {
           formData.append(key, JSON.stringify(accommodationData[key]));
         } else if (key === 'location') {
           formData.append(key, JSON.stringify(accommodationData[key]));
-        } else if (key !== 'images' && key !== 'customAmenity') {
+        } else if (key !== 'accommodation_images' && key !== 'customAmenity') {
           formData.append(key, accommodationData[key]);
         }
       });
 
-      // Append images
       imageFiles.forEach(file => {
-        formData.append('images', file);
+        formData.append('accommodation_images', file);
       });
 
-      const response = await fetch(`${API_BASE_URL}/accommodations`, {
+      const response = await fetch(`${API_BASE}/accommodations`, {
         method: 'POST',
         body: formData,
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         await fetchAccommodations();
         return { success: true, data: data.accommodation };
@@ -149,33 +179,32 @@ const AdminAccommodations = () => {
     }
   };
 
+  // Update Accommodation
   const updateAccommodation = async (id, updateData) => {
     try {
       const formData = new FormData();
-      
-      // Append all fields
+
       Object.keys(updateData).forEach(key => {
         if (key === 'amenities') {
           formData.append(key, JSON.stringify(updateData[key]));
         } else if (key === 'location') {
           formData.append(key, JSON.stringify(updateData[key]));
-        } else if (key !== 'images' && key !== 'customAmenity') {
+        } else if (key !== 'accommodation_images' && key !== 'customAmenity') {
           formData.append(key, updateData[key]);
         }
       });
 
-      // Append new images if any
       imageFiles.forEach(file => {
-        formData.append('images', file);
+        formData.append('accommodation_images', file);
       });
 
-      const response = await fetch(`${API_BASE_URL}/accommodations/${id}`, {
+      const response = await fetch(`${API_BASE}/accommodations/${id}`, {
         method: 'PUT',
         body: formData,
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         await fetchAccommodations();
         return { success: true, data: data.accommodation };
@@ -188,14 +217,15 @@ const AdminAccommodations = () => {
     }
   };
 
+  // Delete Accommodation
   const deleteAccommodation = async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/accommodations/${id}`, {
+      const response = await fetch(`${API_BASE}/accommodations/${id}`, {
         method: 'DELETE',
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         await fetchAccommodations();
         return { success: true };
@@ -208,29 +238,10 @@ const AdminAccommodations = () => {
     }
   };
 
-  const toggleAccommodationAvailability = async (id) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/accommodations/${id}/availability/toggle`, {
-        method: 'PATCH',
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        await fetchAccommodations();
-        return { success: true };
-      } else {
-        return { success: false, message: data.message };
-      }
-    } catch (error) {
-      console.error('Error toggling availability:', error);
-      return { success: false, message: 'Failed to toggle availability' };
-    }
-  };
-
+  // Update Accommodation Status
   const updateAccommodationStatus = async (id, status) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/accommodations/${id}/status`, {
+      const response = await fetch(`${API_BASE}/accommodations/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -239,7 +250,7 @@ const AdminAccommodations = () => {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         await fetchAccommodations();
         return { success: true };
@@ -255,10 +266,10 @@ const AdminAccommodations = () => {
   // Accommodation statistics
   const calculateAccommodationStats = () => {
     const totalAccommodations = accommodations.length;
-    const occupiedAccommodations = accommodations.filter(accommodation => !accommodation.isAvailable).length;
+    const occupiedAccommodations = accommodations.filter(acc => !acc.available).length;
     const availableAccommodations = totalAccommodations - occupiedAccommodations;
-    const averageRating = accommodations.length > 0 
-      ? accommodations.reduce((sum, accommodation) => sum + (accommodation.averageRating || 0), 0) / totalAccommodations
+    const averageRating = accommodations.length > 0
+      ? accommodations.reduce((sum, acc) => sum + (acc.averageRating || 0), 0) / totalAccommodations
       : 0;
 
     return {
@@ -277,8 +288,10 @@ const AdminAccommodations = () => {
     const confirmedBookings = bookings.filter(b => b.booking_status === 'confirmed').length;
     const cancelledBookings = bookings.filter(b => b.booking_status === 'cancelled').length;
     const completedBookings = bookings.filter(b => b.booking_status === 'completed').length;
-    const totalRevenue = bookings.reduce((sum, booking) => sum + (booking.isPaid ? booking.totalPrice : 0), 0);
-
+    const totalRevenue = bookings.reduce(
+      (sum, b) => sum + (b.paymentDetails?.paymentStatus === "completed" ? b.totalPrice : 0),
+      0
+    );
     return {
       totalBookings,
       confirmedBookings,
@@ -322,7 +335,7 @@ const AdminAccommodations = () => {
       ...prev,
       location: {
         ...prev.location,
-        coordinates: prev.location.coordinates.map((coord, i) => 
+        coordinates: prev.location.coordinates.map((coord, i) =>
           i === index ? parseFloat(value) || '' : coord
         )
       }
@@ -337,6 +350,7 @@ const AdminAccommodations = () => {
     // Create preview URLs
     const previews = files.map(file => URL.createObjectURL(file));
     setImagePreviews(previews);
+    toast.success(`${files.length} images uploaded successfully!`);
   };
 
   // Handle amenity toggle
@@ -368,14 +382,16 @@ const AdminAccommodations = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const accommodationData = {
         ...formData,
-        pricePerMonth: parseFloat(formData.pricePerMonth),
-        SecurityDeposit: parseFloat(formData.SecurityDeposit) || 0,
-        noOfBed: parseInt(formData.noOfBed),
+        price_per_month: parseFloat(formData.price_per_month),
+        deposit_amount: parseFloat(formData.deposit_amount),
+        bedrooms: parseInt(formData.bedrooms),
+        bathrooms: parseInt(formData.bathrooms),
+        area_sqft: parseInt(formData.area_sqft),
+        maxGuests: parseInt(formData.maxGuests),
         isAvailable: formData.isAvailable === 'true' || formData.isAvailable === true,
         location: {
           ...formData.location,
@@ -391,15 +407,14 @@ const AdminAccommodations = () => {
       }
 
       if (result.success) {
-        alert(editingId ? 'Accommodation updated successfully!' : 'Accommodation added successfully!');
+        toast.success(editingId ? 'Accommodation updated successfully!' : 'Accommodation added successfully!');
         resetForm();
         setActiveTab('view');
       } else {
-        setError(result.message);
+        toast.error(result.message || 'Operation failed');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      setError('Failed to submit form');
     } finally {
       setLoading(false);
     }
@@ -408,16 +423,16 @@ const AdminAccommodations = () => {
   // Edit accommodation
   const handleEdit = (accommodation) => {
     setFormData({
-      owner_id: accommodation.owner_id?._id || accommodation.owner_id,
-      accommodationName: accommodation.accommodationName,
-      accommodationType: accommodation.accommodationType,
-      pricePerMonth: accommodation.pricePerMonth,
-      SecurityDeposit: accommodation.SecurityDeposit,
-      amenities: accommodation.amenities || [],
-      isAvailable: accommodation.isAvailable,
-      noOfBed: accommodation.noOfBed,
+      accommodation_name: accommodation.accommodation_name,
+      accommodation_type: accommodation.accommodation_type,
+      property_type: accommodation.property_type,
       description: accommodation.description || '',
-      status: accommodation.status,
+      price_per_month: accommodation.price_per_month,
+      deposit_amount: accommodation.deposit_amount,
+      bedrooms: accommodation.bedrooms,
+      bathrooms: accommodation.bathrooms,
+      area_sqft: accommodation.area_sqft,
+      maxGuests: accommodation.maxGuests,
       address: accommodation.address || '',
       location: {
         type: accommodation.location?.type || 'Point',
@@ -425,12 +440,15 @@ const AdminAccommodations = () => {
         mapSrc: accommodation.location?.mapSrc || '',
         title: accommodation.location?.title || ''
       },
+      amenities: accommodation.amenities || [],
+      isAvailable: accommodation.isAvailable,
+      status: accommodation.status,
+      owner_id: accommodation.owner_id?._id || accommodation.owner_id,
       customAmenity: '',
     });
 
-    // Set image previews from existing images
-    if (accommodation.images && accommodation.images.length > 0) {
-      setImagePreviews(accommodation.images.map(img =>
+    if (accommodation.accommodation_images && accommodation.accommodation_images.length > 0) {
+      setImagePreviews(accommodation.accommodation_images.map(img =>
         img.startsWith('http') ? img : `http://localhost:5000${img}`
       ));
     } else {
@@ -440,6 +458,7 @@ const AdminAccommodations = () => {
     setImageFiles([]);
     setEditingId(accommodation._id);
     setActiveTab('add');
+    toast.info('Editing accommodation: ' + (accommodation.accommodation_name || `${accommodation.accommodation_type}`));
   };
 
   // Delete accommodation
@@ -448,31 +467,31 @@ const AdminAccommodations = () => {
       setLoading(true);
       const result = await deleteAccommodation(id);
       if (!result.success) {
-        setError(result.message);
+        toast.error(result.message || 'Failed to delete accommodation');
       } else {
-        alert('Accommodation deleted successfully!');
+        toast.success('Accommodation deleted successfully!');
       }
       setLoading(false);
     }
   };
 
-  // Toggle accommodation availability
-  const toggleAvailability = async (id) => {
-    setLoading(true);
-    const result = await toggleAccommodationAvailability(id);
-    if (!result.success) {
-      setError(result.message);
-    }
-    setLoading(false);
-  };
-
-  // Toggle accommodation status between Active and Blocked
+  // Toggle accommodation status
   const toggleAccommodationStatus = async (id, currentStatus) => {
     setLoading(true);
-    const newStatus = currentStatus === 'Active' ? 'Blocked' : 'Active';
+    let newStatus;
+
+    // Cycle through statuses
+    if (currentStatus === 'Active') {
+      newStatus = 'Blocked';
+    } else {
+      newStatus = 'Active';
+    }
+
     const result = await updateAccommodationStatus(id, newStatus);
     if (!result.success) {
-      setError(result.message);
+      toast.error(result.message || 'Failed to update accommodation status');
+    } else {
+      toast.success(`Accommodation status updated to ${newStatus}`);
     }
     setLoading(false);
   };
@@ -480,7 +499,7 @@ const AdminAccommodations = () => {
   // Update booking status
   const updateBookingStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/accommodation-bookings/${id}`, {
+      const response = await fetch(`${API_BASE}/accommodation-bookings/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -489,45 +508,48 @@ const AdminAccommodations = () => {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         await fetchBookings();
+        toast.success(`Booking status updated to ${newStatus}`);
       } else {
-        setError('Failed to update booking status');
+        toast.error('Failed to update booking status');
       }
     } catch (error) {
       console.error('Error updating booking status:', error);
-      setError('Failed to update booking status');
+      toast.error('Failed to update booking status');
     }
   };
 
   // Reset form
   const resetForm = () => {
     setFormData({
-      owner_id: owners[0]?._id || '',
-      accommodationName: '',
-      accommodationType: '',
-      pricePerMonth: '',
-      SecurityDeposit: '',
+      accommodation_name: '',
+      accommodation_type: '',
+      property_type: '',
       description: '',
-      amenities: [],
-      customAmenity: '',
-      images: [],
-      isAvailable: true,
-      noOfBed: 1,
-      status: 'Active',
+      price_per_month: '',
+      deposit_amount: '',
+      bedrooms: 1,
+      bathrooms: 1,
+      area_sqft: '',
+      maxGuests: 2,
       address: '',
       location: {
         type: 'Point',
         coordinates: ['', ''],
         mapSrc: '',
         title: ''
-      }
+      },
+      amenities: [],
+      customAmenity: '',
+      isAvailable: true,
+      status: 'Active',
+      owner_id: owners[0]?._id || ''
     });
     setImagePreviews([]);
     setImageFiles([]);
     setEditingId(null);
-    setError('');
   };
 
   // Format date for display
@@ -536,26 +558,10 @@ const AdminAccommodations = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Calculate security deposit based on accommodation type
-  const calculateSecurityDeposit = (type) => {
-    switch (type) {
-      case 'Single Bed': return 10000;
-      case 'Double Bed': return 15000;
-      case 'Triple Sharing': return 20000;
-      case 'Annexe': return 25000;
-      default: return 0;
-    }
+  // Get accommodation display name
+  const getAccommodationDisplayName = (accommodation) => {
+    return accommodation.accommodation_name || `${accommodation.accommodation_type}`;
   };
-
-  // Update security deposit when accommodation type changes
-  useEffect(() => {
-    if (formData.accommodationType) {
-      setFormData(prev => ({
-        ...prev,
-        SecurityDeposit: calculateSecurityDeposit(prev.accommodationType)
-      }));
-    }
-  }, [formData.accommodationType]);
 
   // Get owner display name
   const getOwnerDisplayName = (owner) => {
@@ -565,20 +571,33 @@ const AdminAccommodations = () => {
     return 'N/A';
   };
 
+  // Remove image preview
+  const removeImagePreview = (index) => {
+    const newPreviews = [...imagePreviews];
+    newPreviews.splice(index, 1);
+    setImagePreviews(newPreviews);
+
+    const newFiles = [...imageFiles];
+    newFiles.splice(index, 1);
+    setImageFiles(newFiles);
+  };
+
+  // ----------------------- Render Method -----------------------
+  if (loading) {
+    return (
+      <div className="dashboard-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading dashboard data...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="accommodations-container">
-      {/* Error Message */}
-      {error && (
-        <div className="error-message">
-          {error}
-          <button onClick={() => setError('')} className="close-error">×</button>
-        </div>
-      )}
-
       {/* Page Title */}
       <h1 className="title">Accommodations & Bookings Management</h1>
 
-      {/* Navigation Tabs */}
+      {/* ----------------- Navigation Tabs ----------------- */}
       <div className="tabs">
         <button
           className={`tab-button ${activeTab === 'add' ? 'active' : ''}`}
@@ -606,7 +625,7 @@ const AdminAccommodations = () => {
         </button>
       </div>
 
-      {/* Add/Edit Accommodation Form */}
+      {/* ----------------- Add/Edit Accommodation Form ----------------- */}
       {activeTab === 'add' && (
         <form onSubmit={handleSubmit} className="accommodation-form">
           {/* Accommodation Statistics Summary */}
@@ -644,9 +663,10 @@ const AdminAccommodations = () => {
               <div className="form-group">
                 <label>Accommodation Name</label>
                 <input
-                  name="accommodationName"
-                  value={formData.accommodationName}
+                  name="accommodation_name"
+                  value={formData.accommodation_name}
                   onChange={handleInputChange}
+                  placeholder="e.g., Luxury Apartment, Cozy Studio"
                   required
                 />
               </div>
@@ -671,53 +691,95 @@ const AdminAccommodations = () => {
               <div className="form-group">
                 <label>Accommodation Type</label>
                 <select
-                  name="accommodationType"
-                  value={formData.accommodationType}
+                  name="accommodation_type"
+                  value={formData.accommodation_type}
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="">Select Accommodation Type</option>
-                  <option value="Single Bed">Single Bed</option>
-                  <option value="Double Bed">Double Bed</option>
-                  <option value="Triple Sharing">Triple Sharing</option>
-                  <option value="Annexe">Annexe</option>
+                  <option value="">Select Type</option>
+                  {accommodationTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
                 </select>
               </div>
+
+              <div className="form-group">
+                <label>Property Type</label>
+                <select
+                  name="property_type"
+                  value={formData.property_type}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Property Type</option>
+                  {propertyTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+
 
               <div className="form-group">
                 <label>Price Per Month (Rs)</label>
                 <input
                   type="number"
-                  name="pricePerMonth"
-                  value={formData.pricePerMonth}
+                  name="price_per_month"
+                  value={formData.price_per_month}
                   onChange={handleInputChange}
-                  required
                   min="0"
+                  required
                 />
               </div>
 
               <div className="form-group">
-                <label>Security Deposit (Rs)</label>
+                <label>Deposit Amount (Rs)</label>
                 <input
                   type="number"
-                  name="SecurityDeposit"
-                  value={formData.SecurityDeposit}
+                  name="deposit_amount"
+                  value={formData.deposit_amount}
                   onChange={handleInputChange}
-                  required
                   min="0"
+                  required
                 />
               </div>
 
               <div className="form-group">
-                <label>No of Beds</label>
+                <label>Bedrooms</label>
                 <input
                   type="number"
-                  name="noOfBed"
-                  value={formData.noOfBed}
+                  name="bedrooms"
+                  value={formData.bedrooms}
                   onChange={handleInputChange}
-                  required
                   min="1"
-                  max="10"
+                  max="20"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Bathrooms</label>
+                <input
+                  type="number"
+                  name="bathrooms"
+                  value={formData.bathrooms}
+                  onChange={handleInputChange}
+                  min="1"
+                  max="20"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Max Guests</label>
+                <input
+                  type="number"
+                  name="maxGuests"
+                  value={formData.maxGuests}
+                  onChange={handleInputChange}
+                  min="1"
+                  max="50"
+                  required
                 />
               </div>
 
@@ -734,13 +796,28 @@ const AdminAccommodations = () => {
                 </select>
               </div>
 
+              <div className="form-group">
+                <label>Status</label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  required
+                >
+                  {statusTypes.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className="form-group full-width">
                 <label>Address</label>
-                <input
+                <textarea
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  placeholder="Enter full address"
+                  placeholder="Enter accommodation full address..."
+                  rows="2"
                   required
                 />
               </div>
@@ -863,7 +940,7 @@ const AdminAccommodations = () => {
                 style={{ display: 'none' }}
               />
               <label htmlFor="accommodation-images" className="upload-button">
-                Choose Images (4 recommended)
+                Choose Images (6 recommended)
               </label>
 
               <div className="image-preview-grid">
@@ -872,15 +949,7 @@ const AdminAccommodations = () => {
                     <img src={image} alt={`Accommodation preview ${index}`} />
                     <button
                       type="button"
-                      onClick={() => {
-                        const newPreviews = [...imagePreviews];
-                        newPreviews.splice(index, 1);
-                        setImagePreviews(newPreviews);
-
-                        const newFiles = [...imageFiles];
-                        newFiles.splice(index, 1);
-                        setImageFiles(newFiles);
-                      }}
+                      onClick={() => removeImagePreview(index)}
                       className="remove-image"
                     >
                       ×
@@ -909,7 +978,7 @@ const AdminAccommodations = () => {
         </form>
       )}
 
-      {/* View All Accommodations */}
+      {/* ----------------- View All Accommodations ----------------- */}
       {activeTab === 'view' && (
         <div className="accommodations-list">
           {/* Accommodations List Header */}
@@ -919,10 +988,9 @@ const AdminAccommodations = () => {
               <input className='search-input' type="text" placeholder="Search accommodations..." />
               <select>
                 <option>Filter by Type</option>
-                <option value='Single Bed'>Single Bed</option>
-                <option value='Double Bed'>Double Bed</option>
-                <option value='Triple Sharing'>Triple Sharing</option>
-                <option value='Annexe'>Annexe</option>
+                {accommodationTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -937,9 +1005,9 @@ const AdminAccommodations = () => {
                   <th>ID</th>
                   <th>Accommodation Name</th>
                   <th>Type</th>
-                  <th>Price</th>
+                  <th>Bed/Bath</th>
+                  <th>Price/Month</th>
                   <th>Owner</th>
-                  <th>Address</th>
                   <th>Availability</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -951,46 +1019,36 @@ const AdminAccommodations = () => {
                   <tr key={accommodation._id} className={`table-row ${accommodation.status}`}>
                     <td>
                       <img
-                        src={accommodation.images?.[0] ?
-                          (accommodation.images[0].startsWith('http') ?
-                            accommodation.images[0] :
-                            `http://localhost:5000${accommodation.images[0]}`)
+                        src={accommodation.accommodation_images?.[0] ?
+                          (accommodation.accommodation_images[0].startsWith('http') ?
+                            accommodation.accommodation_images[0] :
+                            `http://localhost:5000${accommodation.accommodation_images[0]}`)
                           : assets.defaultAccommodation
                         }
-                        alt={accommodation.accommodationName}
+                        alt={getAccommodationDisplayName(accommodation)}
                         className="accommodation-thumbnail"
                       />
                     </td>
                     <td>{accommodation._id}</td>
-                    <td>{accommodation.accommodationName}</td>
-                    <td>{accommodation.accommodationType}</td>
-                    <td>Rs {accommodation.pricePerMonth}</td>
+                    <td>{getAccommodationDisplayName(accommodation)}</td>
+                    <td>{accommodation.accommodation_type}</td>
+                    <td>{accommodation.bedrooms} Beds / {accommodation.bathrooms} Baths</td>
+                    <td>Rs {accommodation.price_per_month}</td>
                     <td>{getOwnerDisplayName(accommodation.owner_id)}</td>
-                    <td className="address-cell">
-                      {accommodation.address ? (
-                        <span title={accommodation.address}>
-                          {accommodation.address.length > 30 
-                            ? `${accommodation.address.substring(0, 30)}...` 
-                            : accommodation.address
-                          }
-                        </span>
-                      ) : 'N/A'}
-                    </td>
                     <td>
                       <button
-                        onClick={() => toggleAvailability(accommodation._id)}
-                        className={`status-badge ${accommodation.isAvailable ? 'available' : 'occupied'}`}
+                        className={`status-badge ${accommodation.available === "Available" ? 'available' : 'occupied'}`}
                       >
-                        {accommodation.isAvailable ? 'Available' : 'Occupied'}
+                        {accommodation.available}
                       </button>
                     </td>
                     <td>
                       <span
-                        className={`status-badge ${accommodation.status === 'Blocked' ? 'blocked' : 'active'}`}
+                        className={`status-badge ${accommodation.status === 'Active' ? 'active' : 'blocked'}`}
                         onClick={() => toggleAccommodationStatus(accommodation._id, accommodation.status)}
                         style={{ cursor: 'pointer' }}
                       >
-                        {accommodation.status || 'Active'}
+                        {accommodation.status}
                       </span>
                     </td>
 
@@ -1022,7 +1080,7 @@ const AdminAccommodations = () => {
         </div>
       )}
 
-      {/* Bookings Management */}
+      {/* ----------------- Bookings Management ----------------- */}
       {activeTab === 'bookings' && (
         <div className="accommodations-list">
           {/* Bookings List Header */}
@@ -1038,7 +1096,6 @@ const AdminAccommodations = () => {
                 <option value="confirmed">Confirmed</option>
                 <option value="cancelled">Cancelled</option>
                 <option value="completed">Completed</option>
-                <option value="pending">Pending</option>
               </select>
             </div>
           </div>
@@ -1051,6 +1108,7 @@ const AdminAccommodations = () => {
                 <th>Accommodation</th>
                 <th>Renter</th>
                 <th>Dates</th>
+                <th>Guests</th>
                 <th>Price</th>
                 <th>Payment</th>
                 <th>Status</th>
@@ -1065,12 +1123,12 @@ const AdminAccommodations = () => {
                   <td>
                     <div className='primary-text'>
                       {booking.accommodation ?
-                        booking.accommodation.accommodationName :
+                        getAccommodationDisplayName(booking.accommodation) :
                         'Accommodation not found'
                       }
                     </div>
                     <div className="secondary-text">
-                      {booking.accommodation?.accommodationType || ''}
+                      {booking.accommodation?.accommodation_type || ''}
                     </div>
                   </td>
                   <td>
@@ -1085,10 +1143,22 @@ const AdminAccommodations = () => {
                     <div className='primary-text'>{formatDate(booking.booking_start)}</div>
                     <div className="secondary-text">to {formatDate(booking.booking_end)}</div>
                   </td>
+                  <td className='primary-text'>{booking.numberOfGuests} guests</td>
                   <td className='primary-text'>Rs {booking.totalPrice}</td>
                   <td>
-                    <span className={`payment-status ${booking.isPaid ? 'paid' : 'unpaid'}`}>
-                      {booking.isPaid ? 'Paid' : 'Unpaid'}
+                    <span
+                      className={`payment-status ${booking.paymentDetails?.paymentStatus === "completed"
+                        ? "paid"
+                        : booking.paymentDetails?.paymentStatus === "refunded"
+                          ? "refunded"
+                          : "pending"
+                        }`}
+                    >
+                      {booking.paymentDetails?.paymentStatus === "completed"
+                        ? "Paid"
+                        : booking.paymentDetails?.paymentStatus === "refunded"
+                          ? "Refunded"
+                          : "Pending"}
                     </span>
                   </td>
                   <td>
@@ -1103,7 +1173,6 @@ const AdminAccommodations = () => {
                       onChange={(e) => updateBookingStatus(booking._id, e.target.value)}
                       className="status-select"
                     >
-                      <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
                       <option value="cancelled">Cancelled</option>
                       <option value="completed">Completed</option>
@@ -1170,8 +1239,25 @@ const AdminAccommodations = () => {
           <div className="chart-container">
             <h3>Accommodation Type Distribution</h3>
             <div className="bar-chart">
-              {['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'].map(type => {
-                const count = accommodations.filter(r => r.accommodationType === type).length;
+              {accommodationTypes.map(type => {
+                const count = accommodations.filter(a => a.accommodation_type === type).length;
+                const percentage = accommodations.length > 0 ? (count / accommodations.length) * 100 : 0;
+                return (
+                  <div key={type} className="bar" style={{ height: `${percentage}%` }}>
+                    <div className="bar-label">{type}</div>
+                    <div className="bar-value">{count}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Property Type Distribution */}
+          <div className="chart-container">
+            <h3>Property Type Distribution</h3>
+            <div className="bar-chart">
+              {propertyTypes.map(type => {
+                const count = accommodations.filter(a => a.property_type === type).length;
                 const percentage = accommodations.length > 0 ? (count / accommodations.length) * 100 : 0;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>

@@ -47,7 +47,7 @@ const Accommodation = () => {
   const fetchAccommodations = async (page = 1) => {
     try {
       setLoading(true);
-      
+
       // Build query parameters
       const params = new URLSearchParams({
         page: page.toString(),
@@ -70,13 +70,13 @@ const Accommodation = () => {
       }
 
       const response = await fetch(`http://localhost:5000/api/accommodations?${params}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch accommodations');
       }
 
       const data = await response.json();
-      
+
       if (data.success) {
         setAccommodations(data.accommodations);
         setTotalPages(data.totalPages);
@@ -169,6 +169,17 @@ const Accommodation = () => {
     !searchMaxPrice
   );
 
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading your accommodations...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="accommodation">
       <AccommodationBanner
@@ -216,7 +227,7 @@ const Accommodation = () => {
         />
 
         {openFilters && (
-          <div 
+          <div
             className="filters-overlay"
             onClick={() => setOpenFilters(false)}
           />

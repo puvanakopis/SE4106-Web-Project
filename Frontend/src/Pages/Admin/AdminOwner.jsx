@@ -40,7 +40,7 @@ const AdminOwner = () => {
       const ownersData = await getOwners();
       setOwners(ownersData);
     } catch (err) {
-      toast.error(err.message || 'Failed to load owners');
+      toast.error('Failed to load owners');
       console.error('Error fetching owners:', err);
     } finally {
       setLoading(false);
@@ -119,7 +119,7 @@ const AdminOwner = () => {
       await loadOwners();
       resetForm();
     } catch (err) {
-      toast.error(err.message || 'Failed to save owner');
+      toast.error('Failed to save owner');
       console.error('Error saving owner:', err);
     } finally {
       setLoading(false);
@@ -165,7 +165,7 @@ const AdminOwner = () => {
           resetForm();
         }
       } catch (err) {
-        toast.error(err.message || 'Failed to delete owner');
+        toast.error('Failed to delete owner');
         console.error('Error deleting owner:', err);
       } finally {
         setLoading(false);
@@ -183,7 +183,7 @@ const AdminOwner = () => {
         owner._id === ownerId ? { ...owner, status: newStatus } : owner
       ));
     } catch (err) {
-      toast.error(err.message || 'Failed to update owner status');
+      toast.error('Failed to update owner status');
       console.error('Error updating owner status:', err);
     }
   };

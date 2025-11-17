@@ -47,6 +47,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  // Add saved items arrays
+  savedAccommodations: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Accommodation'
+  }],
+  savedTransports: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Transport'
+  }],
   isActive: {
     type: Boolean,
     default: true

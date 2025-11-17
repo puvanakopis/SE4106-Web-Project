@@ -182,6 +182,7 @@ const TransportDetails = () => {
         securityDeposit: transport?.deposit_amount || 0,
         totalPrice: totalCost,
         paymentMethod: paymentMethod,
+        booking_status: 'confirmed',
         paymentDetails: {
           ...paymentDetails,
           paymentDate: new Date().toISOString(),
@@ -227,8 +228,12 @@ const TransportDetails = () => {
       if (bookingResult) {
         toast.success('Booking confirmed successfully!');
         setShowPaymentPopup(false);
-        // Optionally redirect to bookings page
-        // navigate('/my-bookings');
+
+        // Reset booking form
+        setStartDate(null);
+        setEndDate(null);
+        setTotalDays(0);
+        setTotalCost(0);
       }
     } catch (error) {
       console.error('Payment success handling error:', error);
@@ -265,7 +270,8 @@ const TransportDetails = () => {
       dailyRate: transport.rental_price_per_day,
       deposit: securityDeposit,
       rentalCost: totalCost,
-      securityDeposit: securityDeposit
+      securityDeposit: securityDeposit,
+      bookingStatus: 'confirmed'
     };
   };
 
@@ -281,9 +287,11 @@ const TransportDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="transport-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading transport details...</p>
+      <div className="loading-container">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading transport details...</p>
+        </div>
       </div>
     );
   }
@@ -310,7 +318,7 @@ const TransportDetails = () => {
 
   const images = transport.vehicle_images || [];
   const owner = transport.owner_id || {};
-  const isAvailable = transport.isAvailable && transport.status === 'Active';
+  const isAvailable = transport.available === 'Available' && transport.status === 'Active';
 
   return (
     <main className="transport-details">
@@ -446,11 +454,11 @@ const TransportDetails = () => {
             {transport.features && transport.features.length > 0 && (
               <div className="specs-item">
                 <h3 className="specs-title">Features</h3>
-                  {transport.features.map((item, index) => (
-                    <div key={index} className="specs-value">
-                      <span>{item}</span>
-                    </div>
-                  ))}
+                {transport.features.map((item, index) => (
+                  <div key={index} className="specs-value">
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -640,12 +648,6 @@ const TransportDetails = () => {
                 !isAvailable ? 'Not Available' :
                   'Book Now'}
             </button>
-
-            {!isAvailable && (
-              <div className="booking-notice">
-                This vehicle is currently {transport.status?.toLowerCase()}.
-              </div>
-            )}
           </div>
         </aside>
       </div>

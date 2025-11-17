@@ -115,6 +115,7 @@
 
 .navbar__profile-dropdown--open {
   display: flex;
+  align-items: start;
 }
 
 .navbar__dropdown-link {

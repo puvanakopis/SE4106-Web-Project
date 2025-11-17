@@ -17,11 +17,13 @@ const Booking = () => {
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  // Separate state variables for each booking type
   const [confirmedBookings, setConfirmedBookings] = useState([]);
   const [completedBookings, setCompletedBookings] = useState([]);
   const [cancelledBookings, setCancelledBookings] = useState([]);
+  const [updateTransportLoading, setUpdateTransportLoading] = useState({});
+  const [updateAccommodationLoading, setUpdateAccommodationLoading] = useState({});
+  const [reviewError, setReviewError] = useState('');
+  const [updateError, setUpdateError] = useState('');
 
   const itemsPerPage = 6;
 
@@ -33,7 +35,7 @@ const Booking = () => {
     }
   }, [isLoggedIn, navigate, user?.id]);
 
-  // Fetch bookings from API and store in separate state variables
+  // Get all bookings
   const fetchBookings = async () => {
     try {
       setLoading(true);
@@ -44,7 +46,7 @@ const Booking = () => {
       const transportData = await transportResponse.json();
 
       // Fetch accommodation bookings
-      const accommodationResponse = await fetch(`http://localhost:5000/api/accommodationsbookings/renter/${user.id}`);
+      const accommodationResponse = await fetch(`http://localhost:5000/api/accommodation-bookings/renter/${user.id}`);
       let accommodationData = { bookings: [] };
 
       if (accommodationResponse.ok) {
@@ -54,7 +56,6 @@ const Booking = () => {
       const roomBookings = accommodationData.bookings || [];
       const vehicleBookings = transportData.bookings || transportData.data?.bookings || [];
 
-      // Process and separate bookings by status
       const { confirmed, completed, cancelled } = processBookingsData(roomBookings, vehicleBookings);
       
       setConfirmedBookings(confirmed);
@@ -62,7 +63,6 @@ const Booking = () => {
       setCancelledBookings(cancelled);
     } catch (error) {
       console.error('Error fetching bookings:', error);
-      // Reset all bookings on error
       setConfirmedBookings([]);
       setCompletedBookings([]);
       setCancelledBookings([]);
@@ -71,21 +71,21 @@ const Booking = () => {
     }
   };
 
-  // Process bookings data and separate by status
+  // Process bookings data
   const processBookingsData = (roomBookings, vehicleBookings) => {
     const confirmed = [];
     const completed = [];
     const cancelled = [];
 
-    // Process room bookings
+    // Process accommodation bookings
     roomBookings.forEach(booking => {
-      const bookingData = createBookingData(booking, 'room');
+      const bookingData = createBookingData(booking, 'accommodation');
       categorizeBooking(bookingData, confirmed, completed, cancelled);
     });
 
-    // Process vehicle bookings
+    // Process transport bookings
     vehicleBookings.forEach(booking => {
-      const bookingData = createBookingData(booking, 'vehicle');
+      const bookingData = createBookingData(booking, 'transport');
       categorizeBooking(bookingData, confirmed, completed, cancelled);
     });
 
@@ -94,89 +94,230 @@ const Booking = () => {
 
   // Create standardized booking data
   const createBookingData = (booking, type) => {
+    const isAccommodation = type === 'accommodation';
+    
+    // Handle different field names between accommodation and transport bookings
+    const reviewRating = booking.review?.rating;
+    const reviewComment = booking.review?.comment;
+    
+    const item = isAccommodation ? booking.accommodation : booking.transport;
+    const owner = booking.owner || {};
+    const renter = booking.renter || {};
+
     return {
       id: booking._id || booking.id,
       type: type,
-      item: booking.accommodation || booking.transport || booking.vehicle || booking.room || booking.item || {},
-      owner: booking.owner || {},
-      renter: booking.renter || {},
+      item: item || {},
+      owner: owner,
+      renter: renter,
       startDate: booking.booking_start || booking.startDate,
       endDate: booking.booking_end || booking.endDate,
       totalPrice: booking.totalPrice || booking.price || 0,
-      status: (booking.booking_status || booking.status || 'confirmed').toLowerCase(),
+      status: (booking.booking_status || booking.status).toLowerCase(),
       isPaid: booking.isPaid || false,
-      rating: booking.rating || booking.review?.rating,
-      feedback: booking.feedback || booking.review?.comment
+      rating: reviewRating,
+      feedback: reviewComment,
+      numberOfGuests: booking.numberOfGuests,
+      securityDeposit: booking.securityDeposit,
+      paymentMethod: booking.paymentMethod,
+      specialRequests: booking.specialRequests,
+      originalData: booking
     };
   };
 
-  // Categorize booking into appropriate array
   const categorizeBooking = (bookingData, confirmed, completed, cancelled) => {
     if (bookingData.status === 'completed') {
       completed.push(bookingData);
     } else if (bookingData.status === 'cancelled') {
       cancelled.push(bookingData);
     } else {
+      // Consider 'confirmed' as confirmed for display
       confirmed.push(bookingData);
     }
   };
 
-  // Update booking status
-  const updateBookingStatus = async (bookingId, type, status, reviewData = null) => {
+  // Add review to accommodation booking
+  const addAccommodationReview = async (bookingId, reviewData) => {
     try {
-      if (type === 'room') {
-        const endpoint = `/api/accommodations/bookings/${bookingId}`;
-        const updateData = { booking_status: status };
+      setReviewError('');
 
-        if (reviewData) {
-          updateData.rating = reviewData.rating;
-          updateData.feedback = reviewData.feedback;
-        }
+      const response = await fetch(`http://localhost:5000/api/accommodation-bookings/${bookingId}/review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rating: reviewData.rating,
+          comment: reviewData.feedback
+        })
+      });
 
-        const response = await fetch(endpoint, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updateData)
-        });
-
-        if (!response.ok) throw new Error('Failed to update booking');
-      } else {
-        if (reviewData) {
-          const reviewResponse = await fetch(`/api/transport-bookings/${bookingId}/review`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              rating: reviewData.rating,
-              comment: reviewData.feedback
-            })
-          });
-
-          if (!reviewResponse.ok) throw new Error('Failed to submit review');
-        }
-
-        if (status === 'completed') {
-          const statusResponse = await fetch(`/api/transport-bookings/${bookingId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ booking_status: status })
-          });
-
-          if (!statusResponse.ok) throw new Error('Failed to update booking status');
-        }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit review');
       }
 
-      // Refresh all bookings after update
-      await fetchBookings();
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error adding accommodation review:', error);
+      setReviewError(error.message);
+      throw error;
+    }
+  };
+
+  // Add review to transport booking
+  const addTransportReview = async (bookingId, reviewData) => {
+    try {
+      setReviewError('');
+
+      const response = await fetch(`http://localhost:5000/api/transport-bookings/${bookingId}/review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rating: reviewData.rating,
+          comment: reviewData.feedback
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit review');
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error adding transport review:', error);
+      setReviewError(error.message);
+      throw error;
+    }
+  };
+
+  // Update accommodation booking status
+  const updateAccommodationBookingStatus = async (bookingId, status, cancellationReason = '') => {
+    try {
+      setUpdateAccommodationLoading(prev => ({ ...prev, [bookingId]: true }));
+      setUpdateError('');
+
+      let endpoint = `http://localhost:5000/api/accommodation-bookings/${bookingId}`;
+      let method = 'PUT';
+      let body = { booking_status: status };
+
+      // For cancellation, use PATCH method with cancellation reason
+      if (status === 'cancelled') {
+        endpoint = `http://localhost:5000/api/accommodation-bookings/${bookingId}/cancel`;
+        method = 'PATCH';
+        body = { cancellationReason };
+      }
+
+      const response = await fetch(endpoint, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update accommodation booking status');
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error updating accommodation booking:', error);
+      setUpdateError(error.message);
+      throw error;
+    } finally {
+      setUpdateAccommodationLoading(prev => ({ ...prev, [bookingId]: false }));
+    }
+  };
+
+  // Update transport booking status
+  const updateTransportBookingStatus = async (bookingId, status) => {
+    try {
+      setUpdateTransportLoading(prev => ({ ...prev, [bookingId]: true }));
+      setUpdateError('');
+
+      const response = await fetch(`http://localhost:5000/api/transport-bookings/${bookingId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          booking_status: status 
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update transport booking status');
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error updating transport booking:', error);
+      setUpdateError(error.message);
+      throw error;
+    } finally {
+      setUpdateTransportLoading(prev => ({ ...prev, [bookingId]: false }));
+    }
+  };
+
+  // Complete booking with review
+  const completeBookingWithReview = async (bookingId, type, reviewData) => {
+    try {
+      setIsSubmitting(true);
+      
+      if (type === 'accommodation') {
+        // First update status to completed
+        await updateAccommodationBookingStatus(bookingId, 'completed');
+        
+        // Then add review if provided
+        if (reviewData.rating > 0) {
+          await addAccommodationReview(bookingId, reviewData);
+        }
+      } else {
+        // First update status to completed
+        await updateTransportBookingStatus(bookingId, 'completed');
+        
+        // Then add review if provided
+        if (reviewData.rating > 0) {
+          await addTransportReview(bookingId, reviewData);
+        }
+      }
+      
       return true;
     } catch (error) {
-      console.error('Error updating booking:', error);
+      console.error('Error completing booking with review:', error);
       throw error;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Complete booking without review
+  const completeBookingWithoutReview = async (bookingId, type) => {
+    try {
+      setIsSubmitting(true);
+      
+      if (type === 'accommodation') {
+        await updateAccommodationBookingStatus(bookingId, 'completed');
+      } else {
+        await updateTransportBookingStatus(bookingId, 'completed');
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error completing booking without review:', error);
+      throw error;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -214,46 +355,51 @@ const Booking = () => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
 
-    if (typeof dateString === 'object') {
-      if (dateString instanceof Date) {
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return dateString.toLocaleDateString(undefined, options);
-      }
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid Date';
+      
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return date.toLocaleDateString(undefined, options);
+    } catch (error) {
+      console.error('Error formatting date:', error);
       return 'Invalid Date';
     }
-
-    if (typeof dateString === 'string') {
-      const parsed = new Date(dateString);
-      if (isNaN(parsed.getTime())) return 'Invalid Date';
-
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      return parsed.toLocaleDateString(undefined, options);
-    }
-
-    return 'N/A';
   };
 
   const calculateDays = (startDate, endDate) => {
     if (!startDate || !endDate) return 0;
 
-    const start = typeof startDate === 'object' && !(startDate instanceof Date)
-      ? new Date()
-      : new Date(startDate);
-    const end = typeof endDate === 'object' && !(endDate instanceof Date)
-      ? new Date()
-      : new Date(endDate);
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
 
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
 
-    const diffTime = Math.abs(end - start);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffTime = Math.abs(end - start);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    } catch (error) {
+      console.error('Error calculating days:', error);
+      return 0;
+    }
   };
 
+  // Cancel booking
   const cancelBooking = async (bookingId, type, e) => {
     e.stopPropagation();
+    
+    const cancellationReason = prompt('Please provide a reason for cancellation:');
+    if (!cancellationReason) return;
+    
     if (window.confirm('Are you sure you want to cancel this booking?')) {
       try {
-        await updateBookingStatus(bookingId, type, 'cancelled');
+        if (type === 'accommodation') {
+          await updateAccommodationBookingStatus(bookingId, 'cancelled', cancellationReason);
+        } else {
+          await updateTransportBookingStatus(bookingId, 'cancelled');
+        }
+        
+        await fetchBookings();
         alert('Booking cancelled successfully');
       } catch (error) {
         alert('Failed to cancel booking. Please try again.');
@@ -262,6 +408,7 @@ const Booking = () => {
     }
   };
 
+  // Handle complete click - show rating popup
   const handleCompleteClick = (booking, e) => {
     e.stopPropagation();
 
@@ -276,23 +423,35 @@ const Booking = () => {
     setShowRatingPopup(true);
   };
 
+  // Handle rating submission
   const handleRatingSubmit = async (ratingData) => {
     if (!selectedBooking) return;
 
     setIsSubmitting(true);
+    setReviewError('');
+
     try {
-      await updateBookingStatus(selectedBooking.id, selectedBooking.type, 'completed', {
-        rating: ratingData.rating,
-        feedback: ratingData.feedback
-      });
+      // If user provided rating/feedback, complete with review
+      if (ratingData.rating > 0) {
+        await completeBookingWithReview(selectedBooking.id, selectedBooking.type, {
+          rating: ratingData.rating,
+          feedback: ratingData.feedback
+        });
+        alert('Thank you for your feedback!');
+      } else {
+        // If no rating provided, just complete the booking
+        await completeBookingWithoutReview(selectedBooking.id, selectedBooking.type);
+        alert('Booking marked as completed!');
+      }
+      
+      await fetchBookings();
       setShowRatingPopup(false);
       setSelectedBooking(null);
       setRating(0);
       setFeedback('');
-      alert('Thank you for your feedback!');
     } catch (error) {
-      console.error('Error submitting feedback:', error);
-      alert('Failed to submit feedback. Please try again.');
+      console.error('Error completing booking:', error);
+      alert(reviewError || 'Failed to complete booking. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -303,88 +462,95 @@ const Booking = () => {
     setSelectedBooking(null);
     setRating(0);
     setFeedback('');
+    setReviewError('');
   };
 
-  // CORRECTED: Proper image URL construction
+  // Image URL construction
   const getImageUrl = (imagePath) => {
     if (!imagePath) {
-      return '/default-vehicle.jpg'; // Fallback image
+      return '/default-image.jpg';
     }
 
-    // If it's already a full URL, return as is
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
 
-    // If it starts with /uploads/, prepend the backend URL
     if (imagePath.startsWith('/uploads/')) {
       return `http://localhost:5000${imagePath}`;
     }
 
-    // If it's just a filename, assume it's in the uploads directory
     if (!imagePath.includes('/')) {
-      return `http://localhost:5000/uploads/transports/${imagePath}`;
+      return `http://localhost:5000/uploads/${imagePath}`;
     }
 
-    // Return as is for other cases
     return imagePath;
   };
 
   // Booking card data processing
   const processBookingCardData = (booking) => {
-    const isRoom = booking.type === 'room';
+    const isAccommodation = booking.type === 'accommodation';
 
-    // CORRECTED: Image processing with proper URL construction
     const getImage = () => {
-      if (isRoom) {
-        const roomImage = booking.item.images?.[0];
-        return roomImage ? getImageUrl(roomImage) : '/default-room.jpg';
+      if (isAccommodation) {
+        const accommodationImage = booking.item.accommodation_images?.[0];
+        return accommodationImage ? getImageUrl(accommodationImage) : '/default-room.jpg';
       } else {
         const vehicleImage = booking.item.vehicle_images?.[0] || booking.item.images?.[0];
         return vehicleImage ? getImageUrl(vehicleImage) : '/default-vehicle.jpg';
       }
     };
 
-    // Title processing
     const getTitle = () => {
-      if (isRoom) {
-        return `${booking.item.roomType || 'Room'} at ${booking.item.roomName || booking.item.name || 'Unknown'}`;
+      if (isAccommodation) {
+        return booking.item.roomName || booking.item.name || 'Accommodation';
       } else {
         return `${booking.item.brand || ''} ${booking.item.model || ''}`.trim() || 'Vehicle';
       }
     };
 
-    // Review count processing
-    const getReviewCount = () => {
-      const reviewCount = booking.item.totalReviews || booking.item.reviewCount || 0;
-      if (typeof reviewCount === 'object') return 0;
-      const count = Number(reviewCount);
-      return isNaN(count) ? 0 : count;
+    const getSubtitle = () => {
+      if (isAccommodation) {
+        return `${booking.item.roomType || 'Room'} • ${booking.item.location || 'Unknown Location'}`;
+      } else {
+        return `${booking.item.vehicle_type || 'Vehicle'} • ${booking.item.transmission || 'Auto'}`;
+      }
     };
 
-    // Vehicle type processing
-    const getVehicleType = () => {
-      return booking.item.vehicle_type || booking.item.type || 'vehicle';
+    const getPropertyType = () => {
+      if (isAccommodation) {
+        return booking.item.roomType || 'Accommodation';
+      } else {
+        return booking.item.vehicle_type || 'Vehicle';
+      }
     };
 
     return {
       image: getImage(),
       title: getTitle(),
-      reviewCount: getReviewCount(),
-      vehicleType: getVehicleType(),
-      isRoom,
-      averageRating: booking.item.averageRating || booking.item.rating || 0
+      subtitle: getSubtitle(),
+      propertyType: getPropertyType(),
+      isAccommodation,
+      averageRating: booking.item.averageRating || booking.item.rating || 0,
+      reviewCount: booking.item.totalReviews || booking.item.reviewCount || 0
     };
   };
 
-  // CORRECTED: Image error handler
-  const handleImageError = (e, isRoom) => {
-    e.target.src = isRoom ? '/default-room.jpg' : '/default-vehicle.jpg';
+  const handleImageError = (e, isAccommodation) => {
+    e.target.src = isAccommodation ? '/default-room.jpg' : '/default-vehicle.jpg';
+  };
+
+  // Check if booking is currently being updated
+  const isBookingUpdating = (bookingId, type) => {
+    if (type === 'accommodation') {
+      return updateAccommodationLoading[bookingId] || false;
+    } else {
+      return updateTransportLoading[bookingId] || false;
+    }
   };
 
   if (loading) {
     return (
-      <div className="booking-container">
+      <div className="loading-container">
         <div className="dashboard-loading">
           <div className="loading-spinner"></div>
           <p>Loading your bookings...</p>
@@ -395,6 +561,15 @@ const Booking = () => {
 
   return (
     <div className="booking-profile">
+      {/* Error Display */}
+      {(reviewError || updateError) && (
+        <div className="error-banner">
+          {reviewError && <p>Review Error: {reviewError}</p>}
+          {updateError && <p>Update Error: {updateError}</p>}
+          <button onClick={() => { setReviewError(''); setUpdateError(''); }}>Dismiss</button>
+        </div>
+      )}
+
       {/* Page Title */}
       <div className="booking-header">
         <div>My Bookings</div>
@@ -436,15 +611,14 @@ const Booking = () => {
           {/* Confirmed Bookings View */}
           {activeTab === 'confirmed' && (
             <div className="bookings-list">
-              {/* Bookings List Header */}
               <div className="list-header">
                 <h2 className='section-title'>Confirmed Bookings ({confirmedBookings.length})</h2>
                 <div className="search-filter">
                   <input className='search-input' type="text" placeholder="Search bookings..." />
                   <select>
                     <option>All Types</option>
-                    <option value="room">Accommodation</option>
-                    <option value="vehicle">Vehicle</option>
+                    <option value="accommodation">Accommodation</option>
+                    <option value="transport">Vehicle</option>
                   </select>
                 </div>
               </div>
@@ -453,42 +627,50 @@ const Booking = () => {
                 <div className="no-bookings">
                   <h3>No confirmed bookings found</h3>
                   <p>You don't have any confirmed bookings yet.</p>
-                  <button
-                    className="browse-button"
-                    onClick={() => navigate('/room')}
-                  >
-                    Browse Accommodations
-                  </button>
-                  <button
-                    className="browse-button"
-                    onClick={() => navigate('/transport')}
-                  >
-                    Browse Vehicles
-                  </button>
+                  <div className="browse-buttons">
+                    <button
+                      className="browse-button"
+                      onClick={() => navigate('/accommodation')}
+                    >
+                      Browse Accommodations
+                    </button>
+                    <button
+                      className="browse-button"
+                      onClick={() => navigate('/transport')}
+                    >
+                      Browse Vehicles
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <>
                   <div className='booking-grid'>
                     {paginatedBookings.map((booking) => {
                       const cardData = processBookingCardData(booking);
+                      const isUpdating = isBookingUpdating(booking.id, booking.type);
 
                       return (
                         <div
                           key={`${booking.type}-${booking.id}`}
-                          className={`card ${booking.type === 'room' ? 'accommodation-card' : 'vehicle-card'}`}
-                          onClick={() => navigate(`/${booking.type === 'room' ? 'accommodation' : 'transport'}/${booking.item._id || booking.item.id}`)}
+                          className={`card ${booking.type === 'accommodation' ? 'accommodation-card' : 'vehicle-card'} ${isUpdating ? 'updating' : ''}`}
+                          onClick={() => !isUpdating && navigate(`/${booking.type === 'accommodation' ? 'accommodation' : 'transport'}/${booking.item._id || booking.item.id}`)}
                         >
+                          {isUpdating && (
+                            <div className="updating-overlay">
+                              <div className="loading-spinner-small"></div>
+                              <p>Updating...</p>
+                            </div>
+                          )}
+
                           <div className="card-image-container">
                             <img
                               src={cardData.image}
                               alt={cardData.title}
                               className="card-image"
-                              onError={(e) => handleImageError(e, cardData.isRoom)}
+                              onError={(e) => handleImageError(e, cardData.isAccommodation)}
                             />
                             <div className="property-badge">
-                              {cardData.isRoom
-                                ? booking.item.roomType || 'Accommodation'
-                                : cardData.vehicleType}
+                              {cardData.propertyType}
                             </div>
                             <div className={`status-badge ${booking.status}`}>
                               {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
@@ -497,6 +679,7 @@ const Booking = () => {
 
                           <div className="card-info">
                             <h3 className="card-title">{cardData.title}</h3>
+                            <p className="card-subtitle">{cardData.subtitle}</p>
 
                             <div className="booking-dates">
                               <div className="card-detail">
@@ -510,9 +693,15 @@ const Booking = () => {
                               <div className="card-detail">
                                 <span className="detail-label">Duration:</span>
                                 <span className="detail-value">
-                                  {calculateDays(booking.startDate, booking.endDate)} {cardData.isRoom ? 'nights' : 'days'}
+                                  {calculateDays(booking.startDate, booking.endDate)} {'days'}
                                 </span>
                               </div>
+                              {booking.numberOfGuests && (
+                                <div className="card-detail">
+                                  <span className="detail-label">Guests:</span>
+                                  <span className="detail-value">{booking.numberOfGuests}</span>
+                                </div>
+                              )}
                             </div>
 
                             <div className="price-section">
@@ -524,12 +713,14 @@ const Booking = () => {
                               <button
                                 className="cancel-btn"
                                 onClick={(e) => cancelBooking(booking.id, booking.type, e)}
+                                disabled={isUpdating}
                               >
-                                Cancel Booking
+                                {isUpdating ? 'Cancelling...' : 'Cancel Booking'}
                               </button>
                               <button
                                 className="complete-btn"
                                 onClick={(e) => handleCompleteClick(booking, e)}
+                                disabled={isUpdating}
                               >
                                 Mark Complete
                               </button>
@@ -575,15 +766,14 @@ const Booking = () => {
           {/* Completed Bookings View */}
           {activeTab === 'completed' && (
             <div className="bookings-list">
-              {/* Bookings List Header */}
               <div className="list-header">
                 <h2 className='section-title'>Completed Bookings ({completedBookings.length})</h2>
                 <div className="search-filter">
                   <input className='search-input' type="text" placeholder="Search bookings..." />
                   <select>
                     <option>All Types</option>
-                    <option value="room">Accommodation</option>
-                    <option value="vehicle">Vehicle</option>
+                    <option value="accommodation">Accommodation</option>
+                    <option value="transport">Vehicle</option>
                   </select>
                 </div>
               </div>
@@ -602,20 +792,18 @@ const Booking = () => {
                       return (
                         <div
                           key={`${booking.type}-${booking.id}`}
-                          className={`card ${booking.type === 'room' ? 'accommodation-card' : 'vehicle-card'}`}
-                          onClick={() => navigate(`/${booking.type === 'room' ? 'accommodation' : 'transport'}/${booking.item._id || booking.item.id}`)}
+                          className={`card ${booking.type === 'accommodation' ? 'accommodation-card' : 'vehicle-card'}`}
+                          onClick={() => navigate(`/${booking.type === 'accommodation' ? 'accommodation' : 'transport'}/${booking.item._id || booking.item.id}`)}
                         >
                           <div className="card-image-container">
                             <img
                               src={cardData.image}
                               alt={cardData.title}
                               className="card-image"
-                              onError={(e) => handleImageError(e, cardData.isRoom)}
+                              onError={(e) => handleImageError(e, cardData.isAccommodation)}
                             />
                             <div className="property-badge">
-                              {cardData.isRoom
-                                ? booking.item.roomType || 'Accommodation'
-                                : cardData.vehicleType}
+                              {cardData.propertyType}
                             </div>
                             <div className={`status-badge ${booking.status}`}>
                               {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
@@ -624,6 +812,7 @@ const Booking = () => {
 
                           <div className="card-info">
                             <h3 className="card-title">{cardData.title}</h3>
+                            <p className="card-subtitle">{cardData.subtitle}</p>
 
                             <div className="booking-dates">
                               <div className="card-detail">
@@ -631,8 +820,8 @@ const Booking = () => {
                                 <span className="detail-value">{formatDate(booking.startDate)} to {formatDate(booking.endDate)}</span>
                               </div>
                               <div className="card-detail">
-                                <span className="detail-label">Rs {booking.totalPrice?.toLocaleString()}</span>
-                                <span className="detail-value">Amount paid</span>
+                                <span className="detail-label">Amount paid:</span>
+                                <span className="detail-value">Rs {booking.totalPrice?.toLocaleString()}</span>
                               </div>
                             </div>
 
@@ -642,6 +831,7 @@ const Booking = () => {
                                   <span className="detail-label">Your Rating:</span>
                                   <div className="star-rating">
                                     <StarRating rating={booking.rating} />
+                                    <span className="rating-value">({booking.rating}/5)</span>
                                   </div>
                                 </div>
                                 {booking.feedback && (
@@ -697,15 +887,14 @@ const Booking = () => {
           {/* Cancelled Bookings View */}
           {activeTab === 'cancelled' && (
             <div className="bookings-list">
-              {/* Bookings List Header */}
               <div className="list-header">
                 <h2 className='section-title'>Cancelled Bookings ({cancelledBookings.length})</h2>
                 <div className="search-filter">
                   <input className='search-input' type="text" placeholder="Search bookings..." />
                   <select>
                     <option>All Types</option>
-                    <option value="room">Accommodation</option>
-                    <option value="vehicle">Vehicle</option>
+                    <option value="accommodation">Accommodation</option>
+                    <option value="transport">Vehicle</option>
                   </select>
                 </div>
               </div>
@@ -724,20 +913,18 @@ const Booking = () => {
                       return (
                         <div
                           key={`${booking.type}-${booking.id}`}
-                          className={`card cancelled-booking ${booking.type === 'room' ? 'accommodation-card' : 'vehicle-card'}`}
-                          onClick={() => navigate(`/${booking.type === 'room' ? 'accommodation' : 'transport'}/${booking.item._id || booking.item.id}`)}
+                          className={`card cancelled-booking ${booking.type === 'accommodation' ? 'accommodation-card' : 'vehicle-card'}`}
+                          onClick={() => navigate(`/${booking.type === 'accommodation' ? 'accommodation' : 'transport'}/${booking.item._id || booking.item.id}`)}
                         >
                           <div className="card-image-container">
                             <img
                               src={cardData.image}
                               alt={cardData.title}
                               className="card-image"
-                              onError={(e) => handleImageError(e, cardData.isRoom)}
+                              onError={(e) => handleImageError(e, cardData.isAccommodation)}
                             />
                             <div className="property-badge">
-                              {cardData.isRoom
-                                ? booking.item.roomType || 'Accommodation'
-                                : cardData.vehicleType}
+                              {cardData.propertyType}
                             </div>
                             <div className={`status-badge ${booking.status}`}>
                               {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
@@ -746,6 +933,7 @@ const Booking = () => {
 
                           <div className="card-info">
                             <h3 className="card-title">{cardData.title}</h3>
+                            <p className="card-subtitle">{cardData.subtitle}</p>
 
                             <div className="booking-dates">
                               <div className="card-detail">
@@ -753,13 +941,18 @@ const Booking = () => {
                                 <span className="detail-value">{formatDate(booking.startDate)} to {formatDate(booking.endDate)}</span>
                               </div>
                               <div className="card-detail">
-                                <span className="detail-label cancelled-price">Rs {booking.totalPrice?.toLocaleString()}</span>
-                                <span className="detail-value">Booking amount</span>
+                                <span className="detail-label cancelled-price">Booking amount:</span>
+                                <span className="detail-value">Rs {booking.totalPrice?.toLocaleString()}</span>
                               </div>
                             </div>
 
                             <div className="cancelled-notice">
                               <p>This booking has been cancelled</p>
+                              {booking.originalData.cancellationReason && (
+                                <p className="cancellation-reason">
+                                  Reason: {booking.originalData.cancellationReason}
+                                </p>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -800,6 +993,8 @@ const Booking = () => {
           )}
         </div>
       </div>
+
+      {/* Rating Popup */}
       {showRatingPopup && (
         <Feedback
           rating={rating}

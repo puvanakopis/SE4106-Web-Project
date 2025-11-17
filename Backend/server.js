@@ -20,6 +20,7 @@ app.use('/api/owners', require('./routes/ownerRoutes'));
 app.use('/api/transports', require('./routes/transportRoutes'));
 app.use('/api/accommodations', require('./routes/accommodationRoutes'));
 app.use('/api/transport-bookings', require('./routes/transportBookingRoutes'));
+app.use('/api/accommodation-bookings', require('./routes/accommodationBookingRoutes'));
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
