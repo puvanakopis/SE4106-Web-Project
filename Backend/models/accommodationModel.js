@@ -81,7 +81,7 @@ const accommodationSchema = new mongoose.Schema({
             trim: true
         }
     },
-    amenities: [{
+    features: [{
         type: String,
         trim: true
     }],

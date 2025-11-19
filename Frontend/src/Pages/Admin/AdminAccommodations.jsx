@@ -24,7 +24,7 @@ const AdminAccommodations = () => {
       mapSrc: '',
       title: ''
     },
-    amenities: [],
+    features: [],
     customAmenity: '',
     isAvailable: true,
     status: 'Active',
@@ -41,8 +41,8 @@ const AdminAccommodations = () => {
   const [bookingStatusFilter, setBookingStatusFilter] = useState('all');
   const [loading, setLoading] = useState(false);
 
-  // Standard amenities options
-  const standardAmenities = [
+  // Standard features options
+  const standardFeatures = [
     "WiFi",
     "Air Conditioning",
     "Heating",
@@ -146,7 +146,7 @@ const AdminAccommodations = () => {
     try {
       const formData = new FormData();
       Object.keys(accommodationData).forEach(key => {
-        if (key === 'amenities') {
+        if (key === 'features') {
           formData.append(key, JSON.stringify(accommodationData[key]));
         } else if (key === 'location') {
           formData.append(key, JSON.stringify(accommodationData[key]));
@@ -184,7 +184,7 @@ const AdminAccommodations = () => {
       const formData = new FormData();
 
       Object.keys(updateData).forEach(key => {
-        if (key === 'amenities') {
+        if (key === 'features') {
           formData.append(key, JSON.stringify(updateData[key]));
         } else if (key === 'location') {
           formData.append(key, JSON.stringify(updateData[key]));
@@ -355,23 +355,23 @@ const AdminAccommodations = () => {
   // Handle amenity toggle
   const toggleAmenity = (amenity) => {
     setFormData(prev => {
-      const newAmenities = prev.amenities.includes(amenity)
-        ? prev.amenities.filter(a => a !== amenity)
-        : [...prev.amenities, amenity];
+      const newFeatures = prev.features.includes(amenity)
+        ? prev.features.filter(a => a !== amenity)
+        : [...prev.features, amenity];
 
       return {
         ...prev,
-        amenities: newAmenities
+        features: newFeatures
       };
     });
   };
 
   // Add custom amenity
   const addCustomAmenity = () => {
-    if (formData.customAmenity.trim() && !formData.amenities.includes(formData.customAmenity)) {
+    if (formData.customAmenity.trim() && !formData.features.includes(formData.customAmenity)) {
       setFormData(prev => ({
         ...prev,
-        amenities: [...prev.amenities, prev.customAmenity],
+        features: [...prev.features, prev.customAmenity],
         customAmenity: ''
       }));
     }
@@ -437,7 +437,7 @@ const AdminAccommodations = () => {
         mapSrc: accommodation.location?.mapSrc || '',
         title: accommodation.location?.title || ''
       },
-      amenities: accommodation.amenities || [],
+      features: accommodation.features || [],
       isAvailable: accommodation.isAvailable,
       status: accommodation.status,
       owner_id: accommodation.owner_id?._id || accommodation.owner_id,
@@ -537,7 +537,7 @@ const AdminAccommodations = () => {
         mapSrc: '',
         title: ''
       },
-      amenities: [],
+      features: [],
       customAmenity: '',
       isAvailable: true,
       status: 'Active',
@@ -880,16 +880,16 @@ const AdminAccommodations = () => {
             </div>
           </div>
 
-          {/* Amenities */}
+          {/* Features */}
           <div className="form-section">
-            <h2 className='section-title'>Amenities</h2>
-            <div className="amenities-grid">
-              {standardAmenities.map((amenity, index) => (
+            <h2 className='section-title'>Features</h2>
+            <div className="features-grid">
+              {standardFeatures.map((amenity, index) => (
                 <div key={index} className="amenity-item">
                   <input
                     type="checkbox"
                     id={`amenity-${index}`}
-                    checked={formData.amenities.includes(amenity)}
+                    checked={formData.features.includes(amenity)}
                     onChange={() => toggleAmenity(amenity)}
                   />
                   <label className='amenity-label' htmlFor={`amenity-${index}`}>{amenity}</label>
@@ -907,8 +907,8 @@ const AdminAccommodations = () => {
               <button type="button" onClick={addCustomAmenity}>Add</button>
             </div>
 
-            <div className="selected-amenities">
-              {formData.amenities.map((amenity, index) => (
+            <div className="selected-features">
+              {formData.features.map((amenity, index) => (
                 <span key={index} className="amenity-tag">
                   {amenity}
                   <button

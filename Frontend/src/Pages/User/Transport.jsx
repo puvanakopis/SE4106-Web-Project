@@ -1,250 +1,58 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaFilter, FaTimes } from 'react-icons/fa';
-import FiltersSidebar from '../../Components/User/Transport/FiltersSidebar';
+import { FaTimes, FaFilter } from 'react-icons/fa';
+import FiltersSidebar from '../../Components/User/FiltersSidebar';
 import Pagination from '../../Components/Pagination';
-import TransportCard from '../../Components/User/Transport/TransportCards';
-import { vehicleData } from '../../Assets/assets';
+import ItemCard from '../../Components/User/ItemCard';
 import './Transport.css';
 
 const Transport = () => {
   const navigate = useNavigate();
   const [openFilters, setOpenFilters] = useState(false);
-  const [showSavedNotification, setShowSavedNotification] = useState(false);
-  const [transports, setTransports] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchName, setSearchName] = useState('');
-  const [searchType, setSearchType] = useState('');
-  const [searchMinPrice, setSearchMinPrice] = useState('');
-  const [searchMaxPrice, setSearchMaxPrice] = useState('');
+
+  // Filter states
   const [selectedVehicleTypes, setSelectedVehicleTypes] = useState([]);
   const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
   const [selectedSortOption, setSelectedSortOption] = useState('');
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
-  const [savedVehicles, setSavedVehicles] = useState(() => {
-    const saved = localStorage.getItem('savedVehicles');
-    return saved ? JSON.parse(saved) : [];
-  });
 
+  // Search states
+  const [searchName, setSearchName] = useState('');
+  const [searchType, setSearchType] = useState('');
+  const [searchMinPrice, setSearchMinPrice] = useState('');
+  const [searchMaxPrice, setSearchMaxPrice] = useState('');
+
+  // Transport data
+  const [transports, setTransports] = useState([]);
+  const [filteredTransports, setFilteredTransports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-
-
-  // Filter options
-  const vehicleTypes = ['Motorbike', 'Car', 'Scooter', 'Bicycle', 'Van', 'Bus', 'Other'];
-  const priceRanges = ['0 to 2000', '2000 to 4000', '4000 to 6000'];
-  const sortOptions = ['Price Low to High', 'Price High to Low', 'Seating Capacity'];
-
   const transportsPerPage = 9;
 
-  // Get all transports
-  useEffect(() => {
-    const fetchTransports = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:5000/api/transports');
+  // Filter options
+  const vehicleTypes = [
+    'Motorbike',
+    'Car',
+    'Scooter',
+    'Bicycle',
+    'Van',
+    'Bus',
+    'Other'
+  ];
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch transports');
-        }
+  const priceRanges = [
+    { label: '0 to 2500', min: 0, max: 2500 },
+    { label: '2500 to 5000', min: 2500, max: 5000 },
+    { label: '5000 to 10000', min: 5000, max: 10000 },
+    { label: '10000 to 15000', min: 10000, max: 15000 }
+  ];
 
-        const data = await response.json();
+  const sortOptions = ['Price Low to High', 'Price High to Low', 'Seating Capacity'];
 
-        if (data.success) {
-          const processedTransports = data.transports.map(transport => ({
-            ...transport,
-            vehicle_images: processVehicleImages(transport.vehicle_images)
-          }));
-          setTransports(processedTransports);
-        } else {
-          throw new Error(data.message || 'Failed to fetch transports');
-        }
-      } catch (err) {
-        console.error('Error fetching transports:', err);
-        setError(err.message);
-        const processedMockData = vehicleData.map(vehicle => ({
-          ...vehicle,
-          vehicle_images: processVehicleImages(vehicle.vehicle_images)
-        }));
-        setTransports(processedMockData);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTransports();
-  }, []);
-
-  // Helper function to process vehicle images
-  const processVehicleImages = (images) => {
-    if (!images || !Array.isArray(images)) {
-      return ['/default-vehicle-image.jpg'];
-    }
-
-    return images.map(image => {
-      if (image.startsWith('http')) {
-        return image;
-      }
-
-      if (image.startsWith('/uploads')) {
-        return `http://localhost:5000${image}`;
-      }
-
-      return `http://localhost:5000/uploads/transports/${image}`;
-    });
-  };
-
-  // Filter and sort vehicles
-  const filteredTransports = useMemo(() => {
-    let result = [...transports];
-
-    if (showAvailableOnly) {
-      result = result.filter(vehicle =>
-        vehicle.available === 'Available' && vehicle.status === 'Active'
-      );
-    }
-
-    if (searchName.trim()) {
-      result = result.filter(vehicle =>
-        `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchName.toLowerCase()) ||
-        vehicle.address.toLowerCase().includes(searchName.toLowerCase())
-      );
-    }
-
-    if (searchType.trim()) {
-      result = result.filter(vehicle =>
-        vehicle.vehicle_type.toLowerCase().includes(searchType.toLowerCase())
-      );
-    }
-
-    if (searchMinPrice) {
-      result = result.filter(vehicle =>
-        vehicle.rental_price_per_day >= Number(searchMinPrice)
-      );
-    }
-
-    if (searchMaxPrice) {
-      result = result.filter(vehicle =>
-        vehicle.rental_price_per_day <= Number(searchMaxPrice)
-      );
-    }
-
-    if (selectedVehicleTypes.length > 0) {
-      result = result.filter(vehicle =>
-        selectedVehicleTypes.includes(vehicle.vehicle_type)
-      );
-    }
-
-    if (selectedPriceRanges.length > 0) {
-      result = result.filter(vehicle =>
-        selectedPriceRanges.some(range => {
-          const [min, max] = range.split(' to ').map(Number);
-          return vehicle.rental_price_per_day >= min && vehicle.rental_price_per_day <= max;
-        })
-      );
-    }
-
-    if (selectedSortOption === 'Price Low to High') {
-      result.sort((a, b) => a.rental_price_per_day - b.rental_price_per_day);
-    } else if (selectedSortOption === 'Price High to Low') {
-      result.sort((a, b) => b.rental_price_per_day - a.rental_price_per_day);
-    } else if (selectedSortOption === 'Seating Capacity') {
-      result.sort((a, b) => b.seating_capacity - a.seating_capacity);
-    }
-
-    return result;
-  }, [
-    transports,
-    showAvailableOnly,
-    searchName,
-    searchType,
-    searchMinPrice,
-    searchMaxPrice,
-    selectedVehicleTypes,
-    selectedPriceRanges,
-    selectedSortOption
-  ]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredTransports.length / transportsPerPage);
-  const paginatedTransports = useMemo(() => {
-    const startIdx = (currentPage - 1) * transportsPerPage;
-    return filteredTransports.slice(startIdx, startIdx + transportsPerPage);
-  }, [filteredTransports, currentPage, transportsPerPage]);
-
-  // Handlers
-  const handleVehicleTypeChange = (checked, label) => {
-    setSelectedVehicleTypes(prev =>
-      checked ? [...prev, label] : prev.filter(type => type !== label)
-    );
-    setCurrentPage(1);
-  };
-
-  const handlePriceRangeChange = (checked, label) => {
-    setSelectedPriceRanges(prev =>
-      checked ? [...prev, label] : prev.filter(range => range !== label)
-    );
-    setCurrentPage(1);
-  };
-
-  const handleSortChange = (label) => {
-    setSelectedSortOption(label);
-    setCurrentPage(1);
-  };
-
-  const handleAvailableChange = (checked) => {
-    setShowAvailableOnly(checked);
-    setCurrentPage(1);
-  };
-
-  const resetAllFilters = () => {
-    setSelectedVehicleTypes([]);
-    setSelectedPriceRanges([]);
-    setSelectedSortOption('');
-    setShowAvailableOnly(false);
-    setSearchName('');
-    setSearchType('');
-    setSearchMinPrice('');
-    setSearchMaxPrice('');
-    setCurrentPage(1);
-  };
-
-  const toggleSaveVehicle = (vehicleId, e) => {
-    e.stopPropagation();
-    setSavedVehicles(prev => {
-      const isSaved = prev.includes(vehicleId);
-      const newSaved = isSaved
-        ? prev.filter(id => id !== vehicleId)
-        : [...prev, vehicleId];
-      localStorage.setItem('savedVehicles', JSON.stringify(newSaved));
-      setShowSavedNotification(true);
-      return newSaved;
-    });
-  };
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const handleVehicleClick = (vehicleId) => {
-    navigate(`/transport/${vehicleId}`);
-  };
-
-  // Notification effect
-  useEffect(() => {
-    if (showSavedNotification) {
-      const timer = setTimeout(() => {
-        setShowSavedNotification(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSavedNotification]);
-
+  // Check if filters can be reset
   const canResetFilters = !(
     selectedVehicleTypes.length === 0 &&
     selectedPriceRanges.length === 0 &&
@@ -256,12 +64,181 @@ const Transport = () => {
     !searchMaxPrice
   );
 
+  // ----------- Get all transports -----------
+  const fetchTransports = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:5000/api/transports');
+      if (!response.ok) throw new Error('Failed to fetch transports');
+
+      const data = await response.json();
+
+      if (data.success) {
+        setTransports(data.transports || []);
+      } else {
+        throw new Error(data.message || 'Failed to fetch transports');
+      }
+    } catch (err) {
+      console.error('Error fetching transports:', err);
+      setError(err.message);
+      setTransports([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransports();
+  }, []);
+
+  // ----------- Apply filters & sorting (same as Accommodation) -----------
+  const applyFiltersAndSorting = () => {
+    let filtered = [...transports];
+
+    // Show available only
+    if (showAvailableOnly) {
+      filtered = filtered.filter(vehicle =>
+        vehicle.available === 'Available' && vehicle.status === 'Active'
+      );
+    }
+
+    // Search by name/brand/model/location
+    if (searchName.trim()) {
+      filtered = filtered.filter(vehicle =>
+        `${vehicle.brand} ${vehicle.model}`.toLowerCase().includes(searchName.toLowerCase()) ||
+        vehicle.location?.toLowerCase().includes(searchName.toLowerCase()) ||
+        vehicle.address?.toLowerCase().includes(searchName.toLowerCase())
+      );
+    }
+
+    // Search by type
+    if (searchType.trim()) {
+      filtered = filtered.filter(vehicle =>
+        vehicle.vehicle_type?.toLowerCase().includes(searchType.toLowerCase())
+      );
+    }
+
+    // Min price
+    if (searchMinPrice) {
+      filtered = filtered.filter(vehicle =>
+        (vehicle.rental_price_per_day || 0) >= Number(searchMinPrice)
+      );
+    }
+
+    // Max price
+    if (searchMaxPrice) {
+      filtered = filtered.filter(vehicle =>
+        (vehicle.rental_price_per_day || 0) <= Number(searchMaxPrice)
+      );
+    }
+
+    // Vehicle types filter
+    if (selectedVehicleTypes.length > 0) {
+      filtered = filtered.filter(vehicle =>
+        selectedVehicleTypes.includes(vehicle.vehicle_type)
+      );
+    }
+
+    // Price range filter (same style as Accommodation)
+    if (selectedPriceRanges.length > 0) {
+      filtered = filtered.filter(vehicle =>
+        selectedPriceRanges.some(range => {
+          const price = vehicle.rental_price_per_day || 0;
+          return price >= range.min && price <= range.max;
+        })
+      );
+    }
+
+    // Sort
+    if (selectedSortOption) {
+      filtered.sort((a, b) => {
+        const priceA = a.rental_price_per_day || 0;
+        const priceB = b.rental_price_per_day || 0;
+
+        if (selectedSortOption === 'Price Low to High') return priceA - priceB;
+        if (selectedSortOption === 'Price High to Low') return priceB - priceA;
+        if (selectedSortOption === 'Seating Capacity') {
+          return (b.seating_capacity || 0) - (a.seating_capacity || 0);
+        }
+        return 0;
+      });
+    }
+
+    setFilteredTransports(filtered);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    if (transports.length > 0) {
+      applyFiltersAndSorting();
+    }
+  }, [
+    transports,
+    selectedVehicleTypes,
+    selectedPriceRanges,
+    selectedSortOption,
+    showAvailableOnly,
+    searchName,
+    searchType,
+    searchMinPrice,
+    searchMaxPrice
+  ]);
+
+  // ----------- Get current transports per page -----------
+  const getCurrentTransports = () => {
+    const startIndex = (currentPage - 1) * transportsPerPage;
+    const endIndex = startIndex + transportsPerPage;
+    return filteredTransports.slice(startIndex, endIndex);
+  };
+
+  const currentTransports = getCurrentTransports();
+  const totalPages = Math.ceil(filteredTransports.length / transportsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // ----------- Filter handlers -----------
+  const handleVehicleTypeChange = (checked, type) => {
+    setSelectedVehicleTypes(prev =>
+      checked ? [...prev, type] : prev.filter(t => t !== type)
+    );
+  };
+
+  const handlePriceRangeChange = (checked, range) => {
+    setSelectedPriceRanges(prev =>
+      checked ? [...prev, range] : prev.filter(r => r.label !== range.label)
+    );
+  };
+
+  const handleSortChange = (option) => {
+    setSelectedSortOption(prev => prev === option ? '' : option);
+  };
+
+  const handleAvailableChange = (checked) => {
+    setShowAvailableOnly(checked);
+  };
+
+  const resetAllFilters = () => {
+    setSelectedVehicleTypes([]);
+    setSelectedPriceRanges([]);
+    setSelectedSortOption('');
+    setShowAvailableOnly(false);
+    setSearchName('');
+    setSearchType('');
+    setSearchMinPrice('');
+    setSearchMaxPrice('');
+  };
+
   if (loading) {
     return (
-      <div className="booking-container">
+      <div className="loading-container">
         <div className="dashboard-loading">
           <div className="loading-spinner"></div>
-          <p>Loading your transport...</p>
+          <p>Loading your vehicles...</p>
         </div>
       </div>
     );
@@ -286,21 +263,14 @@ const Transport = () => {
           onClick={() => setOpenFilters(!openFilters)}
           aria-expanded={openFilters}
         >
-          {openFilters ? (
-            <>
-              <FaTimes className="icon-close" /> Hide Filters
-            </>
-          ) : (
-            <>
-              <FaFilter className="icon-filter" /> Show Filters
-            </>
-          )}
+          {openFilters ? <><FaTimes /> Hide Filters</> : <><FaFilter /> Show Filters</> }
         </button>
       </div>
 
       <div className="transport-content">
+
         <FiltersSidebar
-          openFilters={openFilters}
+          open={openFilters}
           types={vehicleTypes}
           priceRanges={priceRanges}
           sortOptions={sortOptions}
@@ -312,15 +282,16 @@ const Transport = () => {
           onSortChange={handleSortChange}
           onResetFilters={resetAllFilters}
           cardType="Transport"
-
           canResetFilters={canResetFilters}
           onAvailableChange={handleAvailableChange}
           setOpenFilters={setOpenFilters}
           showAvailableOnly={showAvailableOnly}
         />
 
-        <main className="transports-main">
-          {filteredTransports.length === 0 ? (
+        {openFilters && <div className="filters-overlay" onClick={() => setOpenFilters(false)} />}
+
+        <main className="transports-list">
+          {currentTransports.length === 0 ? (
             <div className="no-results">
               <h3>No vehicles found matching your criteria</h3>
               <p>Try adjusting your filters to see more results</p>
@@ -330,33 +301,19 @@ const Transport = () => {
             </div>
           ) : (
             <>
-              <div className="transports-grid">
-                {paginatedTransports.map(vehicle => (
-                  <TransportCard
-                    key={vehicle._id}
-                    vehicle={{
-                      ...vehicle,
-                      vehicle_id: vehicle._id,
-                      // Ensure all required fields are present
-                      averageRating: vehicle.averageRating || 0,
-                      totalReviews: vehicle.totalReviews || 0,
-                      isAvailable: vehicle.isAvailable !== false,
-                      status: vehicle.status || 'Active',
-                      // Process images for this specific vehicle
-                      vehicle_images: processVehicleImages(vehicle.vehicle_images)
-                    }}
-                    saved={savedVehicles.includes(vehicle._id)}
-                    onSave={toggleSaveVehicle}
-                    onClick={() => handleVehicleClick(vehicle._id)}
-                  />
-                ))}
-              </div>
+              {currentTransports.map(vehicle => (
+                <ItemCard
+                  key={vehicle._id}
+                  item={vehicle}
+                  onClick={() => navigate(`/transport/${vehicle._id}`)}
+                />
+              ))}
 
               {totalPages > 1 && (
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
-                  handlePageChange={handlePageChange}
+                  onPageChange={handlePageChange}
                 />
               )}
             </>

@@ -20,12 +20,12 @@ const transportSchema = new mongoose.Schema({
         enum: ["Active", "Blocked"],
         default: "Active"
     },
-    vehicle_name: {
+    name: {
         type: String,
         required: true,
         trim: true
     },
-    vehicle_type: {
+    type: {
         type: String,
         required: true,
         enum: ["Motorbike", "Car", "Scooter", "Bicycle", "Van", "Bus", "Other"]
@@ -102,7 +102,7 @@ const transportSchema = new mongoose.Schema({
         type: String,
         trim: true
     }],
-    vehicle_images: [{
+    images: [{
         type: String
     }],
     description: {
@@ -193,7 +193,7 @@ transportSchema.pre("save", function (next) {
 });
 
 transportSchema.index({ owner_id: 1 });
-transportSchema.index({ vehicle_type: 1 });
+transportSchema.index({ type: 1 });
 transportSchema.index({ isAvailable: 1 });
 transportSchema.index({ rental_price_per_day: 1 });
 transportSchema.index({ location: "2dsphere" });

@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaFilter } from 'react-icons/fa';
-import './Accommodation.css';
-
-import FiltersSidebar from '../../Components/User/Accommodation/FiltersSidebar';
-import AccommodationCard from '../../Components/User/Accommodation/AccommodationCard';
+import FiltersSidebar from '../../Components/User/FiltersSidebar';
 import Pagination from '../../Components/Pagination';
+import ItemCard from '../../Components/User/ItemCard';
+import './Accommodation.css';
 
 const Accommodation = () => {
   const navigate = useNavigate();
@@ -31,7 +30,7 @@ const Accommodation = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const accommodationsPerPage = 10;
+  const accommodationsPerPage = 9;
 
   // Filter options
   const accommodationTypes = ['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'];
@@ -63,6 +62,7 @@ const Accommodation = () => {
       if (!response.ok) throw new Error('Failed to fetch accommodations');
 
       const data = await response.json();
+
       if (data.success) {
         setAccommodations(data.accommodations || []);
       } else {
@@ -162,9 +162,9 @@ const Accommodation = () => {
       applyFiltersAndSorting();
     }
   }, [
-    accommodations, 
-    selectedAccommodationTypes, 
-    selectedPriceRanges, 
+    accommodations,
+    selectedAccommodationTypes,
+    selectedPriceRanges,
     selectedSortOption,
     showAvailableOnly,
     searchName,
@@ -290,7 +290,7 @@ const Accommodation = () => {
           ) : (
             <>
               {currentAccommodations.map(item => (
-                <AccommodationCard
+                <ItemCard
                   key={item._id}
                   item={item}
                   onClick={() => navigate(`/accommodation/${item._id}`)}

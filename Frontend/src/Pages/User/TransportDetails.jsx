@@ -72,13 +72,13 @@ const TransportDetails = () => {
       if (result.success) {
         const processedTransport = {
           ...result.transport,
-          vehicle_images: processVehicleImages(result.transport.vehicle_images)
+          images: processVehicleImages(result.transport.images)
         };
 
         setTransport(processedTransport);
 
-        if (processedTransport.vehicle_images && processedTransport.vehicle_images.length > 0) {
-          setMainImage(processedTransport.vehicle_images[0]);
+        if (processedTransport.images && processedTransport.images.length > 0) {
+          setMainImage(processedTransport.images[0]);
         } else {
           setMainImage(assets.defaultTransportImage);
         }
@@ -316,7 +316,7 @@ const TransportDetails = () => {
     );
   }
 
-  const images = transport.vehicle_images || [];
+  const images = transport.images || [];
   const owner = transport.owner_id || {};
   const isAvailable = transport.available === 'Available' && transport.status === 'Active';
 
@@ -347,7 +347,7 @@ const TransportDetails = () => {
       <header className="transport-header">
         <h1 className="transport-title">
           <div className='transport-name'>{transport.brand} {transport.model}</div>
-          <div className="transport-type">{transport.vehicle_type}</div>
+          <div className="transport-type">{transport.type}</div>
         </h1>
 
         <div className="transport-meta">
@@ -407,7 +407,7 @@ const TransportDetails = () => {
             <div className="specs-grid">
               <div className="specs-item">
                 <span className="specs-title">Vehicle Type</span>
-                <span className="specs-value">{transport.vehicle_type}</span>
+                <span className="specs-value">{transport.type}</span>
               </div>
 
               <div className="specs-item">

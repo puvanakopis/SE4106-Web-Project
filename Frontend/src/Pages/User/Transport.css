@@ -42,9 +42,11 @@
   position: relative;
 }
 
-.transport .transports-main {
+.transport .transports-list {
   flex: 1;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .transport .transports-grid {

@@ -86,7 +86,7 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-const uploadTransportImages = upload.array('vehicle_images', 10);
+const uploadTransportImages = upload.array('images', 10);
 
 const createTransport = async (req, res) => {
   try {
@@ -131,7 +131,7 @@ const createTransport = async (req, res) => {
       delete transportData.replaceImages;
 
       if (req.files?.length > 0) {
-        transportData.vehicle_images = req.files.map(file =>
+        transportData.images = req.files.map(file =>
           `/uploads/transports/${path.basename(file.path)}`
         );
       }
@@ -140,7 +140,7 @@ const createTransport = async (req, res) => {
       await transport.save();
 
       if (req.files?.length > 0) {
-        transport.vehicle_images = await renameUploadedFiles(req.files, transport._id);
+        transport.images = await renameUploadedFiles(req.files, transport._id);
         await transport.save();
       }
 
@@ -183,7 +183,7 @@ const getTransports = async (req, res) => {
     const {
       page = 1,
       limit = 10,
-      vehicle_type,
+      type,
       min_price,
       max_price,
       fuel_type,
@@ -203,7 +203,7 @@ const getTransports = async (req, res) => {
 
     const filter = {};
 
-    if (vehicle_type) filter.vehicle_type = vehicle_type;
+    if (type) filter.type = type;
     if (fuel_type) filter.fuel_type = fuel_type;
     if (isAvailable !== undefined) filter.isAvailable = isAvailable === 'true';
     if (status) filter.status = status;
@@ -230,7 +230,7 @@ const getTransports = async (req, res) => {
       filter.$or = [
         { brand: { $regex: search, $options: 'i' } },
         { model: { $regex: search, $options: 'i' } },
-        { vehicle_name: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
         { address: { $regex: search, $options: 'i' } }
       ];
     }
@@ -326,13 +326,13 @@ const updateTransport = async (req, res) => {
 
       if (req.files?.length > 0) {
         const existingTransport = await Transport.findById(req.params.id);
-        const existingImagesCount = existingTransport ? existingTransport.vehicle_images.length : 0;
+        const existingImagesCount = existingTransport ? existingTransport.images.length : 0;
 
         const newImages = await renameUploadedFiles(req.files, req.params.id, existingImagesCount);
 
         if (updateData.replaceImages === 'true') {
-          if (existingTransport?.vehicle_images) {
-            existingTransport.vehicle_images.forEach(imagePath => {
+          if (existingTransport?.images) {
+            existingTransport.images.forEach(imagePath => {
               const fullPath = path.join(__dirname, '..', imagePath);
               if (fs.existsSync(fullPath)) {
                 try {
@@ -343,9 +343,9 @@ const updateTransport = async (req, res) => {
               }
             });
           }
-          updateData.vehicle_images = newImages;
+          updateData.images = newImages;
         } else {
-          updateData.vehicle_images = [...(existingTransport?.vehicle_images || []), ...newImages];
+          updateData.images = [...(existingTransport?.images || []), ...newImages];
         }
       }
 
@@ -399,8 +399,8 @@ const deleteTransport = async (req, res) => {
       });
     }
 
-    if (transport.vehicle_images?.length > 0) {
-      transport.vehicle_images.forEach(imagePath => {
+    if (transport.images?.length > 0) {
+      transport.images.forEach(imagePath => {
         const fullPath = path.join(__dirname, '..', imagePath);
         if (fs.existsSync(fullPath)) {
           try {
@@ -513,7 +513,7 @@ const getTransportsByOwner = async (req, res) => {
     const {
       page = 1,
       limit = 10,
-      vehicle_type,
+      type,
       status,
       isAvailable,
       sort_by = 'createdDate',
@@ -522,7 +522,7 @@ const getTransportsByOwner = async (req, res) => {
 
     const filter = { owner_id };
 
-    if (vehicle_type) filter.vehicle_type = vehicle_type;
+    if (type) filter.type = type;
     if (status) filter.status = status;
     if (isAvailable !== undefined) filter.isAvailable = isAvailable === 'true';
 

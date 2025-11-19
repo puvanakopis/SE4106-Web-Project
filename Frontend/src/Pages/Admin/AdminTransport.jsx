@@ -8,8 +8,8 @@ const API_BASE = 'http://localhost:5000/api';
 
 const AdminTransport = () => {
   const [formData, setFormData] = useState({
-    vehicle_name: '',
-    vehicle_type: '',
+    name: '',
+    type: '',
     brand: '',
     model: '',
     fuel_type: 'Petrol',
@@ -408,8 +408,8 @@ const AdminTransport = () => {
   // Edit vehicle
   const handleEdit = (vehicle) => {
     setFormData({
-      vehicle_name: vehicle.vehicle_name,
-      vehicle_type: vehicle.vehicle_type,
+      name: vehicle.name,
+      type: vehicle.type,
       brand: vehicle.brand,
       model: vehicle.model,
       fuel_type: vehicle.fuel_type,
@@ -444,7 +444,7 @@ const AdminTransport = () => {
     setImageFiles([]);
     setEditingId(vehicle._id);
     setActiveTab('add');
-    toast.info('Editing vehicle: ' + (vehicle.vehicle_name || `${vehicle.brand} ${vehicle.model}`));
+    toast.info('Editing vehicle: ' + (vehicle.name || `${vehicle.brand} ${vehicle.model}`));
   };
 
   // Delete vehicle
@@ -510,8 +510,8 @@ const AdminTransport = () => {
   // Reset form
   const resetForm = () => {
     setFormData({
-      vehicle_name: '',
-      vehicle_type: '',
+      name: '',
+      type: '',
       brand: '',
       model: '',
       fuel_type: 'Petrol',
@@ -547,7 +547,7 @@ const AdminTransport = () => {
 
   // Get vehicle display name
   const getVehicleDisplayName = (vehicle) => {
-    return vehicle.vehicle_name || `${vehicle.brand} ${vehicle.model}`;
+    return vehicle.name || `${vehicle.brand} ${vehicle.model}`;
   };
 
   // Get owner display name
@@ -650,8 +650,8 @@ const AdminTransport = () => {
               <div className="form-group">
                 <label>Vehicle Name</label>
                 <input
-                  name="vehicle_name"
-                  value={formData.vehicle_name}
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   placeholder="e.g., City Commuter, Family Van"
                   required
@@ -678,8 +678,8 @@ const AdminTransport = () => {
               <div className="form-group">
                 <label>Vehicle Type</label>
                 <select
-                  name="vehicle_type"
-                  value={formData.vehicle_type}
+                  name="type"
+                  value={formData.type}
                   onChange={handleInputChange}
                   required
                 >
@@ -1035,7 +1035,7 @@ const AdminTransport = () => {
                     </td>
                     <td>{vehicle._id}</td>
                     <td>{getVehicleDisplayName(vehicle)}</td>
-                    <td>{vehicle.vehicle_type}</td>
+                    <td>{vehicle.type}</td>
                     <td>{vehicle.brand} {vehicle.model}</td>
                     <td>Rs {vehicle.rental_price_per_day}</td>
                     <td>{getOwnerDisplayName(vehicle.owner_id)}</td>
@@ -1132,7 +1132,7 @@ const AdminTransport = () => {
                       }
                     </div>
                     <div className="secondary-text">
-                      {booking.transport?.vehicle_type || ''}
+                      {booking.transport?.type || ''}
                     </div>
                   </td>
                   <td>
@@ -1244,7 +1244,7 @@ const AdminTransport = () => {
             <h3>Vehicle Type Distribution</h3>
             <div className="bar-chart">
               {vehicleTypes.map(type => {
-                const count = vehicles.filter(v => v.vehicle_type === type).length;
+                const count = vehicles.filter(v => v.type === type).length;
                 const percentage = vehicles.length > 0 ? (count / vehicles.length) * 100 : 0;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>

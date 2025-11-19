@@ -15,15 +15,15 @@ const handleFileError = (files, res, message) => {
   return res.status(400).json({ success: false, message });
 };
 
-const processAmenities = (amenities) => {
-  if (typeof amenities === 'string') {
+const processFeatures = (features) => {
+  if (typeof features === 'string') {
     try {
-      return JSON.parse(amenities);
+      return JSON.parse(features);
     } catch (e) {
-      return amenities.split(',').map(a => a.trim());
+      return features.split(',').map(a => a.trim());
     }
   }
-  return amenities;
+  return features;
 };
 
 const renameUploadedFiles = async (files, accommodationId, existingCount = 0) => {
@@ -123,7 +123,7 @@ const createAccommodation = async (req, res) => {
 
       const accommodationData = {
         ...req.body,
-        amenities: processAmenities(req.body.amenities),
+        features: processFeatures(req.body.features),
         ...(Object.keys(locationData).length > 0 && { location: locationData })
       };
 
@@ -318,7 +318,7 @@ const updateAccommodation = async (req, res) => {
 
       const updateData = {
         ...req.body,
-        amenities: processAmenities(req.body.amenities),
+        features: processFeatures(req.body.features),
         ...(Object.keys(locationData).length > 0 && { location: locationData })
       };
 

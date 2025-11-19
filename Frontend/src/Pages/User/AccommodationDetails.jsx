@@ -472,13 +472,13 @@ const AccommodationDetails = () => {
               </div>
             </div>
 
-            {accommodation.amenities && accommodation.amenities.length > 0 && (
-              <div className="amenities-section">
-                <h3 className="specs-title">Amenities</h3>
-                <div className="amenities-grid">
-                  {accommodation.amenities.map((amenity, index) => (
-                    <div key={index} className="amenity-item">
-                      <span className="amenity-text">{amenity}</span>
+            {accommodation.features && accommodation.features.length > 0 && (
+              <div className="specs-item">
+                <h3 className="specs-title">Features</h3>
+                <div className="features-grid">
+                  {accommodation.features.map((feature, index) => (
+                    <div key={index} className="features-item">
+                      <span className="features-text">{feature}</span>
                     </div>
                   ))}
                 </div>
