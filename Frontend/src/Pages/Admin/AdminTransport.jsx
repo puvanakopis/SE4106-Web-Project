@@ -63,7 +63,7 @@ const AdminTransport = () => {
   ];
 
   // Vehicle types
-  const vehicleTypes = ["Motorbike", "Car", "Scooter", "Bicycle", "Van", "Truck", "Other"];
+  const vehicleTypes = ["Motorbike", "Car", "Scooter", "Bicycle", "Van", "Bus", "Other"];
 
   // Fuel types
   const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "CNG", "Other"];

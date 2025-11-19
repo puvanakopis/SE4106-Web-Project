@@ -1,70 +1,87 @@
-import './FiltersSidebar.css'
+import './FiltersSidebar.css';
 
 const FiltersSidebar = ({
   open,
-  accommodationTypes,
+  types,
   priceRanges,
   sortOptions,
-  selectedAccommodationTypes,
+  selectedTypes,
   selectedPriceRanges,
   selectedSortOption,
-  onAccommodationTypeChange,
+  onTypeChange,
   onPriceRangeChange,
   onSortChange,
   onResetFilters,
+  cardType,
+  canResetFilters,
+  onAvailableChange,
+  showAvailableOnly
 }) => (
   <aside className={`filters-sidebar ${open ? 'open' : ''}`}>
-    
-    {/* ---------------- Accommodation Types Section ----------------*/}
+
+    {/* Available Only Filter */}
     <div className="filter-section">
-      <h2 className="filter-section-title">Accommodation Types</h2>
+      <h3 className="filter-section-title">Availability</h3>
       <div className="filter-options">
-        {accommodationTypes.map((accommodation, i) => (
-          <label key={`accommodation-type-${i}`} className="filter-checkbox">
+        <label className="filter-checkbox">
+          <input
+            type="checkbox"
+            checked={showAvailableOnly}
+            onChange={e => onAvailableChange(e.target.checked)}
+          />
+          <span className="checkmark"></span>
+          <span className="filter-label">Show Available Only</span>
+        </label>
+      </div>
+    </div>
+
+    {/* Accommodation Types */}
+    <div className="filter-section">
+      <h3 className="filter-section-title">{cardType} Types</h3>
+      <div className="filter-options">
+        {types.map((type, i) => (
+          <label key={i} className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedAccommodationTypes.includes(accommodation)}
-              onChange={(e) => onAccommodationTypeChange(e.target.checked, accommodation)}
-              aria-label={accommodation}
+              checked={selectedTypes.includes(type)}
+              onChange={e => onTypeChange(e.target.checked, type)}
             />
             <span className="checkmark"></span>
-            <span className="filter-label">{accommodation}</span>
+            <span className="filter-label">{type}</span>
           </label>
         ))}
       </div>
     </div>
 
-    {/* ---------------- Price Range Section ---------------- */}
+    {/* Price Ranges */}
     <div className="filter-section">
-      <h2 className="filter-section-title">Price Range</h2>
+      <h3 className="filter-section-title">Price Range (per month)</h3>
       <div className="filter-options">
         {priceRanges.map((range, i) => (
-          <label key={`price-range-${i}`} className="filter-checkbox">
+          <label key={i} className="filter-checkbox">
             <input
               type="checkbox"
-              checked={selectedPriceRanges.includes(`Rs ${range}`)}
-              onChange={(e) => onPriceRangeChange(e.target.checked, range)}
-              aria-label={range}
+              checked={selectedPriceRanges.some(r => r.label === range.label)}
+              onChange={e => onPriceRangeChange(e.target.checked, range)}
             />
             <span className="checkmark"></span>
-            <span className="filter-label">{range}</span>
+            <span className="filter-label">₹{range.label}</span>
           </label>
         ))}
       </div>
     </div>
 
-    {/* ---------------- Sort Options Section ---------------- */}
+    {/* Sort Options */}
     <div className="filter-section">
-      <h2 className="filter-section-title">Sort By</h2>
+      <h3 className="filter-section-title">Sort By</h3>
       <div className="filter-options">
         {sortOptions.map((option, i) => (
-          <label key={`sort-option-${i}`} className="filter-radio">
+          <label key={i} className="filter-radio">
             <input
               type="radio"
               name="sortOption"
               checked={selectedSortOption === option}
               onChange={() => onSortChange(option)}
-              aria-label={option}
             />
             <span className="radiomark"></span>
             <span className="filter-label">{option}</span>
@@ -73,12 +90,13 @@ const FiltersSidebar = ({
       </div>
     </div>
 
-    {/* ---------------- Reset Button ---------------- */}
-    <button
-      className="resetButton"
+    {/* Reset Filters Button */}
+    <button 
+      className={`resetButton ${!canResetFilters ? 'resetButton--disabled' : ''}`} 
       onClick={onResetFilters}
+      disabled={!canResetFilters}
     >
-      Reset All Filters
+      Reset All
     </button>
   </aside>
 );

@@ -28,7 +28,7 @@ const transportSchema = new mongoose.Schema({
     vehicle_type: {
         type: String,
         required: true,
-        enum: ["Motorbike", "Car", "Scooter", "Bicycle", "Van", "Truck", "Other"]
+        enum: ["Motorbike", "Car", "Scooter", "Bicycle", "Van", "Bus", "Other"]
     },
     brand: {
         type: String,

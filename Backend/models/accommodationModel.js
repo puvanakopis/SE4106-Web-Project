@@ -20,12 +20,12 @@ const accommodationSchema = new mongoose.Schema({
         enum: ["Active", "Blocked"],
         default: "Active"
     },
-    accommodation_name: {
+    name: {
         type: String,
         required: true,
         trim: true
     },
-    accommodation_type: {
+    type: {
         type: String,
         required: true,
         enum: ["Single Bed", "Double Bed", "Other"]
@@ -85,7 +85,7 @@ const accommodationSchema = new mongoose.Schema({
         type: String,
         trim: true
     }],
-    accommodation_images: [{
+    images: [{
         type: String
     }],
     description: {
@@ -176,7 +176,7 @@ accommodationSchema.pre("save", function (next) {
 });
 
 accommodationSchema.index({ owner_id: 1 });
-accommodationSchema.index({ accommodation_type: 1 });
+accommodationSchema.index({ type: 1 });
 accommodationSchema.index({ property_type: 1 });
 accommodationSchema.index({ available: 1 });
 accommodationSchema.index({ status: 1 });

@@ -32,19 +32,20 @@ const RadioButton = ({ label, selected = false, onChange = () => {} }) => (
 const FiltersSidebar = ({
   openFilters,
   setOpenFilters,
-  vehicleTypes,
+  types,
   priceRanges,
   sortOptions,
-  selectedVehicleTypes,
+  selectedTypes,
   selectedPriceRanges,
   selectedSortOption,
   showAvailableOnly,
-  handleVehicleTypeChange,
-  handlePriceRangeChange,
-  handleSortChange,
-  handleAvailableChange,
-  resetAllFilters,
+  onTypeChange,
+  onPriceRangeChange,
+  onSortChange,
+  onAvailableChange,
+  onResetFilters,
   canResetFilters,
+  cardType
 }) => (
   <>
     <aside
@@ -58,7 +59,7 @@ const FiltersSidebar = ({
             <input
               type="checkbox"
               checked={showAvailableOnly}
-              onChange={(e) => handleAvailableChange(e.target.checked)}
+              onChange={(e) => onAvailableChange(e.target.checked)}
               aria-label="Show available vehicles only"
             />
             <span className="checkmark"></span>
@@ -70,14 +71,14 @@ const FiltersSidebar = ({
       </div>
 
       <div className="filter-section">
-        <h2 className="filter-section-title">Vehicle Types</h2>
+        <h2 className="filter-section-title">{cardType} Types</h2>
         <div className="filter-options">
-          {vehicleTypes.map((vehicle, i) => (
+          {types.map((vehicle, i) => (
             <CheckBox
               key={`vehicle-type-${i}`}
               label={vehicle}
-              selected={selectedVehicleTypes.includes(vehicle)}
-              onChange={handleVehicleTypeChange}
+              selected={selectedTypes.includes(vehicle)}
+              onChange={onTypeChange}
             />
           ))}
         </div>
@@ -91,7 +92,7 @@ const FiltersSidebar = ({
               key={`price-range-${i}`}
               label={range}
               selected={selectedPriceRanges.includes(range)}
-              onChange={handlePriceRangeChange}
+              onChange={onPriceRangeChange}
             />
           ))}
         </div>
@@ -105,7 +106,7 @@ const FiltersSidebar = ({
               key={`sort-option-${i}`}
               label={option}
               selected={selectedSortOption === option}
-              onChange={handleSortChange}
+              onChange={onSortChange}
             />
           ))}
         </div>
@@ -113,7 +114,7 @@ const FiltersSidebar = ({
 
       <button
         className="resetButton"
-        onClick={resetAllFilters}
+        onClick={onResetFilters}
         disabled={!canResetFilters}
       >
         Reset All Filters

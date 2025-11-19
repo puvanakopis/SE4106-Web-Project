@@ -492,7 +492,7 @@ const Booking = () => {
 
     const getImage = () => {
       if (isAccommodation) {
-        const accommodationImage = booking.item.accommodation_images?.[0];
+        const accommodationImage = booking.item.images?.[0];
         return accommodationImage ? getImageUrl(accommodationImage) : '/default-room.jpg';
       } else {
         const vehicleImage = booking.item.vehicle_images?.[0] || booking.item.images?.[0];

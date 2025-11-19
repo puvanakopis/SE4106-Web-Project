@@ -73,13 +73,13 @@ const AccommodationDetails = () => {
       if (result.success) {
         const processedAccommodation = {
           ...result.accommodation,
-          accommodation_images: processAccommodationImages(result.accommodation.accommodation_images)
+          images: processAccommodationImages(result.accommodation.images)
         };
 
         setAccommodation(processedAccommodation);
 
-        if (processedAccommodation.accommodation_images && processedAccommodation.accommodation_images.length > 0) {
-          setMainImage(processedAccommodation.accommodation_images[0]);
+        if (processedAccommodation.images && processedAccommodation.images.length > 0) {
+          setMainImage(processedAccommodation.images[0]);
         } else {
           setMainImage(assets.defaultAccommodationImage);
         }
@@ -347,7 +347,7 @@ const AccommodationDetails = () => {
     );
   }
 
-  const images = accommodation.accommodation_images || [];
+  const images = accommodation.images || [];
   const owner = accommodation.owner_id || {};
   const isAvailable = accommodation.available === 'Available' && accommodation.status === 'Active';
   const maxGuests = accommodation.maxGuests || accommodation.bedrooms * 2;
@@ -378,8 +378,8 @@ const AccommodationDetails = () => {
 
       <header className="accommodation-header">
         <h1 className="accommodation-title">
-          <div className='accommodation-name'>{accommodation.accommodation_name}</div>
-          <div className="accommodation-type">{accommodation.accommodation_type} • {accommodation.property_type}</div>
+          <div className='accommodation-name'>{accommodation.name}</div>
+          <div className="accommodation-type">{accommodation.type} • {accommodation.property_type}</div>
         </h1>
 
         <div className="accommodation-meta">

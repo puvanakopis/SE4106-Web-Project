@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaFilter, FaTimes, FaHeart, FaRegHeart } from 'react-icons/fa';
-import TransportBanner from '../../Components/User/Transport/TransportBanner';
+import { FaFilter, FaTimes } from 'react-icons/fa';
 import FiltersSidebar from '../../Components/User/Transport/FiltersSidebar';
-import ResultsHeader from '../../Components/User/Transport/ResultsHeader';
-import Pagination from '../../Components/User/Transport/Pagination';
+import Pagination from '../../Components/Pagination';
 import TransportCard from '../../Components/User/Transport/TransportCards';
 import { vehicleData } from '../../Assets/assets';
 import './Transport.css';
@@ -35,7 +33,7 @@ const Transport = () => {
 
 
   // Filter options
-  const vehicleTypes = ['Motorbike', 'Car', 'Scooter', 'Bicycle', 'Van', 'Truck', 'Other'];
+  const vehicleTypes = ['Motorbike', 'Car', 'Scooter', 'Bicycle', 'Van', 'Bus', 'Other'];
   const priceRanges = ['0 to 2000', '2000 to 4000', '4000 to 6000'];
   const sortOptions = ['Price Low to High', 'Price High to Low', 'Seating Capacity'];
 
@@ -281,14 +279,6 @@ const Transport = () => {
 
   return (
     <div className="transport">
-      <TransportBanner
-        searchName={searchName}
-        setSearchName={setSearchName}
-        searchType={searchType}
-        setSearchType={setSearchType}
-        setSearchMinPrice={setSearchMinPrice}
-        setSearchMaxPrice={setSearchMaxPrice}
-      />
 
       <div className="transport-header">
         <button
@@ -311,25 +301,25 @@ const Transport = () => {
       <div className="transport-content">
         <FiltersSidebar
           openFilters={openFilters}
-          setOpenFilters={setOpenFilters}
-          vehicleTypes={vehicleTypes}
+          types={vehicleTypes}
           priceRanges={priceRanges}
           sortOptions={sortOptions}
-          selectedVehicleTypes={selectedVehicleTypes}
+          selectedTypes={selectedVehicleTypes}
           selectedPriceRanges={selectedPriceRanges}
           selectedSortOption={selectedSortOption}
-          showAvailableOnly={showAvailableOnly}
-          handleVehicleTypeChange={handleVehicleTypeChange}
-          handlePriceRangeChange={handlePriceRangeChange}
-          handleSortChange={handleSortChange}
-          handleAvailableChange={handleAvailableChange}
-          resetAllFilters={resetAllFilters}
+          onTypeChange={handleVehicleTypeChange}
+          onPriceRangeChange={handlePriceRangeChange}
+          onSortChange={handleSortChange}
+          onResetFilters={resetAllFilters}
+          cardType="Transport"
+
           canResetFilters={canResetFilters}
+          onAvailableChange={handleAvailableChange}
+          setOpenFilters={setOpenFilters}
+          showAvailableOnly={showAvailableOnly}
         />
 
         <main className="transports-main">
-          <ResultsHeader count={filteredTransports.length} />
-
           {filteredTransports.length === 0 ? (
             <div className="no-results">
               <h3>No vehicles found matching your criteria</h3>

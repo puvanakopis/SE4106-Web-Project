@@ -8,15 +8,14 @@ const API_BASE = 'http://localhost:5000/api';
 
 const AdminAccommodations = () => {
   const [formData, setFormData] = useState({
-    accommodation_name: '',
-    accommodation_type: '',
+    name: '',
+    type: '',
     property_type: '',
     description: '',
     price_per_month: '',
     deposit_amount: '',
     bedrooms: 1,
     bathrooms: 1,
-    area_sqft: '',
     maxGuests: 2,
     address: '',
     location: {
@@ -151,13 +150,13 @@ const AdminAccommodations = () => {
           formData.append(key, JSON.stringify(accommodationData[key]));
         } else if (key === 'location') {
           formData.append(key, JSON.stringify(accommodationData[key]));
-        } else if (key !== 'accommodation_images' && key !== 'customAmenity') {
+        } else if (key !== 'images' && key !== 'customAmenity') {
           formData.append(key, accommodationData[key]);
         }
       });
 
       imageFiles.forEach(file => {
-        formData.append('accommodation_images', file);
+        formData.append('images', file);
       });
 
       const response = await fetch(`${API_BASE}/accommodations`, {
@@ -189,13 +188,13 @@ const AdminAccommodations = () => {
           formData.append(key, JSON.stringify(updateData[key]));
         } else if (key === 'location') {
           formData.append(key, JSON.stringify(updateData[key]));
-        } else if (key !== 'accommodation_images' && key !== 'customAmenity') {
+        } else if (key !== 'images' && key !== 'customAmenity') {
           formData.append(key, updateData[key]);
         }
       });
 
       imageFiles.forEach(file => {
-        formData.append('accommodation_images', file);
+        formData.append('images', file);
       });
 
       const response = await fetch(`${API_BASE}/accommodations/${id}`, {
@@ -390,7 +389,6 @@ const AdminAccommodations = () => {
         deposit_amount: parseFloat(formData.deposit_amount),
         bedrooms: parseInt(formData.bedrooms),
         bathrooms: parseInt(formData.bathrooms),
-        area_sqft: parseInt(formData.area_sqft),
         maxGuests: parseInt(formData.maxGuests),
         isAvailable: formData.isAvailable === 'true' || formData.isAvailable === true,
         location: {
@@ -423,15 +421,14 @@ const AdminAccommodations = () => {
   // Edit accommodation
   const handleEdit = (accommodation) => {
     setFormData({
-      accommodation_name: accommodation.accommodation_name,
-      accommodation_type: accommodation.accommodation_type,
+      name: accommodation.name,
+      type: accommodation.type,
       property_type: accommodation.property_type,
       description: accommodation.description || '',
       price_per_month: accommodation.price_per_month,
       deposit_amount: accommodation.deposit_amount,
       bedrooms: accommodation.bedrooms,
       bathrooms: accommodation.bathrooms,
-      area_sqft: accommodation.area_sqft,
       maxGuests: accommodation.maxGuests,
       address: accommodation.address || '',
       location: {
@@ -447,8 +444,8 @@ const AdminAccommodations = () => {
       customAmenity: '',
     });
 
-    if (accommodation.accommodation_images && accommodation.accommodation_images.length > 0) {
-      setImagePreviews(accommodation.accommodation_images.map(img =>
+    if (accommodation.images && accommodation.images.length > 0) {
+      setImagePreviews(accommodation.images.map(img =>
         img.startsWith('http') ? img : `http://localhost:5000${img}`
       ));
     } else {
@@ -458,7 +455,7 @@ const AdminAccommodations = () => {
     setImageFiles([]);
     setEditingId(accommodation._id);
     setActiveTab('add');
-    toast.info('Editing accommodation: ' + (accommodation.accommodation_name || `${accommodation.accommodation_type}`));
+    toast.info('Editing accommodation: ' + (accommodation.name || `${accommodation.type}`));
   };
 
   // Delete accommodation
@@ -524,15 +521,14 @@ const AdminAccommodations = () => {
   // Reset form
   const resetForm = () => {
     setFormData({
-      accommodation_name: '',
-      accommodation_type: '',
+      name: '',
+      type: '',
       property_type: '',
       description: '',
       price_per_month: '',
       deposit_amount: '',
       bedrooms: 1,
       bathrooms: 1,
-      area_sqft: '',
       maxGuests: 2,
       address: '',
       location: {
@@ -560,7 +556,7 @@ const AdminAccommodations = () => {
 
   // Get accommodation display name
   const getAccommodationDisplayName = (accommodation) => {
-    return accommodation.accommodation_name || `${accommodation.accommodation_type}`;
+    return accommodation.name || `${accommodation.type}`;
   };
 
   // Get owner display name
@@ -663,8 +659,8 @@ const AdminAccommodations = () => {
               <div className="form-group">
                 <label>Accommodation Name</label>
                 <input
-                  name="accommodation_name"
-                  value={formData.accommodation_name}
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   placeholder="e.g., Luxury Apartment, Cozy Studio"
                   required
@@ -691,8 +687,8 @@ const AdminAccommodations = () => {
               <div className="form-group">
                 <label>Accommodation Type</label>
                 <select
-                  name="accommodation_type"
-                  value={formData.accommodation_type}
+                  name="type"
+                  value={formData.type}
                   onChange={handleInputChange}
                   required
                 >
@@ -1019,10 +1015,10 @@ const AdminAccommodations = () => {
                   <tr key={accommodation._id} className={`table-row ${accommodation.status}`}>
                     <td>
                       <img
-                        src={accommodation.accommodation_images?.[0] ?
-                          (accommodation.accommodation_images[0].startsWith('http') ?
-                            accommodation.accommodation_images[0] :
-                            `http://localhost:5000${accommodation.accommodation_images[0]}`)
+                        src={accommodation.images?.[0] ?
+                          (accommodation.images[0].startsWith('http') ?
+                            accommodation.images[0] :
+                            `http://localhost:5000${accommodation.images[0]}`)
                           : assets.defaultAccommodation
                         }
                         alt={getAccommodationDisplayName(accommodation)}
@@ -1031,7 +1027,7 @@ const AdminAccommodations = () => {
                     </td>
                     <td>{accommodation._id}</td>
                     <td>{getAccommodationDisplayName(accommodation)}</td>
-                    <td>{accommodation.accommodation_type}</td>
+                    <td>{accommodation.type}</td>
                     <td>{accommodation.bedrooms} Beds / {accommodation.bathrooms} Baths</td>
                     <td>Rs {accommodation.price_per_month}</td>
                     <td>{getOwnerDisplayName(accommodation.owner_id)}</td>
@@ -1128,7 +1124,7 @@ const AdminAccommodations = () => {
                       }
                     </div>
                     <div className="secondary-text">
-                      {booking.accommodation?.accommodation_type || ''}
+                      {booking.accommodation?.type || ''}
                     </div>
                   </td>
                   <td>
@@ -1240,7 +1236,7 @@ const AdminAccommodations = () => {
             <h3>Accommodation Type Distribution</h3>
             <div className="bar-chart">
               {accommodationTypes.map(type => {
-                const count = accommodations.filter(a => a.accommodation_type === type).length;
+                const count = accommodations.filter(a => a.type === type).length;
                 const percentage = accommodations.length > 0 ? (count / accommodations.length) * 100 : 0;
                 return (
                   <div key={type} className="bar" style={{ height: `${percentage}%` }}>

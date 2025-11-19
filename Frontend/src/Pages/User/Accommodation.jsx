@@ -1,173 +1,227 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaFilter } from 'react-icons/fa';
 import './Accommodation.css';
 
-import AccommodationBanner from '../../Components/User/Accommodation/AccommodationBanner';
 import FiltersSidebar from '../../Components/User/Accommodation/FiltersSidebar';
-import ResultsHeader from '../../Components/User/Accommodation/ResultsHeader';
 import AccommodationCard from '../../Components/User/Accommodation/AccommodationCard';
-import Pagination from '../../Components/User/Accommodation/Pagination';
+import Pagination from '../../Components/Pagination';
 
 const Accommodation = () => {
   const navigate = useNavigate();
   const [openFilters, setOpenFilters] = useState(false);
-  const [savedAccommodations, setSavedAccommodations] = useState(() => {
-    const saved = localStorage.getItem('savedAccommodations');
-    return saved ? JSON.parse(saved) : [];
-  });
 
-  // Search and filter states
+  // Filter states
+  const [selectedAccommodationTypes, setSelectedAccommodationTypes] = useState([]);
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+  const [selectedSortOption, setSelectedSortOption] = useState('');
+  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
+
+  // Search states
   const [searchName, setSearchName] = useState('');
   const [searchType, setSearchType] = useState('');
   const [searchMinPrice, setSearchMinPrice] = useState('');
   const [searchMaxPrice, setSearchMaxPrice] = useState('');
 
-  // Filter options
-  const accommodationTypes = ['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'];
-  const priceRanges = ['0 to 2500', '2500 to 5000', '5000 to 10000', '10000 to 15000'];
-  const sortOptions = ['Price Low to High', 'Price High to Low'];
-
-  const [selectedAccommodationTypes, setSelectedAccommodationTypes] = useState([]);
-  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
-  const [selectedSortOption, setSelectedSortOption] = useState('');
-
-  // Accommodations data from backend
+  // Accommodations data
   const [accommodations, setAccommodations] = useState([]);
+  const [filteredAccommodations, setFilteredAccommodations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
   const accommodationsPerPage = 10;
 
-  // Fetch accommodations from backend
-  const fetchAccommodations = async (page = 1) => {
+  // Filter options
+  const accommodationTypes = ['Single Bed', 'Double Bed', 'Triple Sharing', 'Annexe'];
+  const priceRanges = [
+    { label: '0 to 2500', min: 0, max: 2500 },
+    { label: '2500 to 5000', min: 2500, max: 5000 },
+    { label: '5000 to 10000', min: 5000, max: 10000 },
+    { label: '10000 to 15000', min: 10000, max: 15000 }
+  ];
+  const sortOptions = ['Price Low to High', 'Price High to Low'];
+
+  // Check if filters can be reset
+  const canResetFilters = !(
+    selectedAccommodationTypes.length === 0 &&
+    selectedPriceRanges.length === 0 &&
+    selectedSortOption === '' &&
+    !showAvailableOnly &&
+    !searchName &&
+    !searchType &&
+    !searchMinPrice &&
+    !searchMaxPrice
+  );
+
+  // ----------- Get all accommodations -----------
+  const fetchAccommodations = async () => {
     try {
       setLoading(true);
-
-      // Build query parameters
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: accommodationsPerPage.toString()
-      });
-
-      // Add filters
-      if (searchName) params.append('search', searchName);
-      if (selectedAccommodationTypes.length > 0) {
-        params.append('accommodationType', selectedAccommodationTypes.join(','));
-      }
-      if (searchMinPrice) params.append('min_price', searchMinPrice);
-      if (searchMaxPrice) params.append('max_price', searchMaxPrice);
-      if (selectedSortOption === 'Price Low to High') {
-        params.append('sort_by', 'pricePerMonth');
-        params.append('sort_order', 'asc');
-      } else if (selectedSortOption === 'Price High to Low') {
-        params.append('sort_by', 'pricePerMonth');
-        params.append('sort_order', 'desc');
-      }
-
-      const response = await fetch(`http://localhost:5000/api/accommodations?${params}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch accommodations');
-      }
+      const response = await fetch('http://localhost:5000/api/accommodations');
+      if (!response.ok) throw new Error('Failed to fetch accommodations');
 
       const data = await response.json();
-
       if (data.success) {
-        setAccommodations(data.accommodations);
-        setTotalPages(data.totalPages);
-        setTotalCount(data.total);
-        setCurrentPage(data.currentPage);
+        setAccommodations(data.accommodations || []);
       } else {
         throw new Error(data.message || 'Failed to fetch accommodations');
       }
     } catch (err) {
-      setError(err.message);
       console.error('Error fetching accommodations:', err);
+      setError(err.message);
+      setAccommodations([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch accommodations on component mount and when filters change
   useEffect(() => {
-    fetchAccommodations(1);
-  }, [searchName, selectedAccommodationTypes, searchMinPrice, searchMaxPrice, selectedSortOption]);
+    fetchAccommodations();
+  }, []);
 
-  // Handle page change
+  // ----------- Apply filters -----------
+  const applyFiltersAndSorting = () => {
+    let filtered = [...accommodations];
+
+    // Show available only filter
+    if (showAvailableOnly) {
+      filtered = filtered.filter(accommodation =>
+        accommodation.available === 'Available' && accommodation.status === 'Active'
+      );
+    }
+
+    // Search by name/location
+    if (searchName.trim()) {
+      filtered = filtered.filter(accommodation =>
+        `${accommodation.title} ${accommodation.location}`.toLowerCase().includes(searchName.toLowerCase()) ||
+        accommodation.address?.toLowerCase().includes(searchName.toLowerCase())
+      );
+    }
+
+    // Search by type
+    if (searchType.trim()) {
+      filtered = filtered.filter(accommodation =>
+        accommodation.type?.toLowerCase().includes(searchType.toLowerCase())
+      );
+    }
+
+    // Search by min price
+    if (searchMinPrice) {
+      filtered = filtered.filter(accommodation =>
+        (accommodation.pricePerMonth || 0) >= Number(searchMinPrice)
+      );
+    }
+
+    // Search by max price
+    if (searchMaxPrice) {
+      filtered = filtered.filter(accommodation =>
+        (accommodation.pricePerMonth || 0) <= Number(searchMaxPrice)
+      );
+    }
+
+    // Accommodation types filter
+    if (selectedAccommodationTypes.length > 0) {
+      filtered = filtered.filter(accommodation =>
+        selectedAccommodationTypes.includes(accommodation.type)
+      );
+    }
+
+    // Price ranges filter
+    if (selectedPriceRanges.length > 0) {
+      filtered = filtered.filter(accommodation => {
+        return selectedPriceRanges.some(range => {
+          const price = accommodation.pricePerMonth || 0;
+          return price >= range.min && price <= range.max;
+        });
+      });
+    }
+
+    // Sort options
+    if (selectedSortOption) {
+      filtered.sort((a, b) => {
+        const priceA = a.pricePerMonth || 0;
+        const priceB = b.pricePerMonth || 0;
+
+        if (selectedSortOption === 'Price Low to High') {
+          return priceA - priceB;
+        } else if (selectedSortOption === 'Price High to Low') {
+          return priceB - priceA;
+        }
+        return 0;
+      });
+    }
+
+    setFilteredAccommodations(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  useEffect(() => {
+    if (accommodations.length > 0) {
+      applyFiltersAndSorting();
+    }
+  }, [
+    accommodations, 
+    selectedAccommodationTypes, 
+    selectedPriceRanges, 
+    selectedSortOption,
+    showAvailableOnly,
+    searchName,
+    searchType,
+    searchMinPrice,
+    searchMaxPrice
+  ]);
+
+  // ----------- Get current accommodations per page -----------
+  const getCurrentAccommodations = () => {
+    const startIndex = (currentPage - 1) * accommodationsPerPage;
+    const endIndex = startIndex + accommodationsPerPage;
+    return filteredAccommodations.slice(startIndex, endIndex);
+  };
+
+  // ----------- Pagination handler -----------
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
-      fetchAccommodations(page);
+      setCurrentPage(page);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  // Handlers
-  const handleAccommodationTypeChange = (checked, label) => {
+  // ----------- Filter handlers -----------
+  const handleAccommodationTypeChange = (checked, type) => {
     setSelectedAccommodationTypes(prev =>
-      checked ? [...prev, label] : prev.filter(type => type !== label)
+      checked ? [...prev, type] : prev.filter(t => t !== type)
     );
-    setCurrentPage(1);
   };
 
-  const handlePriceRangeChange = (checked, label) => {
-    const [min, max] = label.split(' to ').map(Number);
-    if (checked) {
-      setSearchMinPrice(min.toString());
-      setSearchMaxPrice(max.toString());
-    } else {
-      setSearchMinPrice('');
-      setSearchMaxPrice('');
-    }
-    setCurrentPage(1);
+  const handlePriceRangeChange = (checked, range) => {
+    setSelectedPriceRanges(prev =>
+      checked ? [...prev, range] : prev.filter(r => r.label !== range.label)
+    );
   };
 
-  const handleSortChange = (label) => {
-    setSelectedSortOption(label);
-    setCurrentPage(1);
+  const handleSortChange = (option) => {
+    setSelectedSortOption(prev => prev === option ? '' : option);
+  };
+
+  const handleAvailableChange = (checked) => {
+    setShowAvailableOnly(checked);
   };
 
   const resetAllFilters = () => {
     setSelectedAccommodationTypes([]);
     setSelectedPriceRanges([]);
     setSelectedSortOption('');
+    setShowAvailableOnly(false);
     setSearchName('');
     setSearchType('');
     setSearchMinPrice('');
     setSearchMaxPrice('');
-    setCurrentPage(1);
-    fetchAccommodations(1);
   };
 
-  const toggleSaveAccommodation = (accommodationId, e) => {
-    e.stopPropagation();
-    setSavedAccommodations(prev => {
-      const isSaved = prev.includes(accommodationId);
-      const newSaved = isSaved
-        ? prev.filter(id => id !== accommodationId)
-        : [...prev, accommodationId];
-      localStorage.setItem('savedAccommodations', JSON.stringify(newSaved));
-      return newSaved;
-    });
-  };
-
-  const handleAccommodationClick = (accommodationId) => {
-    navigate(`/accommodation/${accommodationId}`);
-  };
-
-  const canResetFilters = !(
-    selectedAccommodationTypes.length === 0 &&
-    selectedPriceRanges.length === 0 &&
-    selectedSortOption === '' &&
-    !searchName &&
-    !searchType &&
-    !searchMinPrice &&
-    !searchMaxPrice
-  );
+  const currentAccommodations = getCurrentAccommodations();
+  const totalPages = Math.ceil(filteredAccommodations.length / accommodationsPerPage);
 
   if (loading) {
     return (
@@ -180,76 +234,52 @@ const Accommodation = () => {
     );
   }
 
+  if (error && accommodations.length === 0) {
+    return (
+      <div className="accommodation-error">
+        <h3>Error loading accommodations</h3>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>Try Again</button>
+      </div>
+    );
+  }
+
   return (
     <div className="accommodation">
-      <AccommodationBanner
-        searchName={searchName}
-        setSearchName={setSearchName}
-        searchType={searchType}
-        setSearchType={setSearchType}
-        setSearchMinPrice={setSearchMinPrice}
-        setSearchMaxPrice={setSearchMaxPrice}
-        onSearch={() => fetchAccommodations(1)}
-      />
-
       <div className="accommodation-header">
         <button
           className="mobile-filter-toggle"
           onClick={() => setOpenFilters(!openFilters)}
           aria-expanded={openFilters}
         >
-          {openFilters ? (
-            <>
-              <FaTimes className="icon-close" /> Hide Filters
-            </>
-          ) : (
-            <>
-              <FaFilter className="icon-filter" /> Show Filters
-            </>
-          )}
+          {openFilters ? <><FaTimes /> Hide Filters</> : <><FaFilter /> Show Filters</>}
         </button>
       </div>
 
       <div className="accommodation-content">
         <FiltersSidebar
           open={openFilters}
-          accommodationTypes={accommodationTypes}
+          types={accommodationTypes}
           priceRanges={priceRanges}
           sortOptions={sortOptions}
-          selectedAccommodationTypes={selectedAccommodationTypes}
+          selectedTypes={selectedAccommodationTypes}
           selectedPriceRanges={selectedPriceRanges}
           selectedSortOption={selectedSortOption}
-          onAccommodationTypeChange={handleAccommodationTypeChange}
+          onTypeChange={handleAccommodationTypeChange}
           onPriceRangeChange={handlePriceRangeChange}
           onSortChange={handleSortChange}
           onResetFilters={resetAllFilters}
-          canReset={canResetFilters}
+          cardType="Accommodation"
+          canResetFilters={canResetFilters}
+          onAvailableChange={handleAvailableChange}
+          setOpenFilters={setOpenFilters}
+          showAvailableOnly={showAvailableOnly}
         />
 
-        {openFilters && (
-          <div
-            className="filters-overlay"
-            onClick={() => setOpenFilters(false)}
-          />
-        )}
+        {openFilters && <div className="filters-overlay" onClick={() => setOpenFilters(false)} />}
 
         <main className="accommodations-list">
-          <ResultsHeader count={totalCount} loading={loading} />
-
-          {loading ? (
-            <div className="loading-state">
-              <div className="loading-spinner"></div>
-              <p>Loading accommodations...</p>
-            </div>
-          ) : error ? (
-            <div className="error-state">
-              <h3>Error loading accommodations</h3>
-              <p>{error}</p>
-              <button className="retry-button" onClick={() => fetchAccommodations(1)}>
-                Try Again
-              </button>
-            </div>
-          ) : accommodations.length === 0 ? (
+          {currentAccommodations.length === 0 ? (
             <div className="no-results">
               <h3>No accommodations found matching your criteria</h3>
               <p>Try adjusting your filters to see more results</p>
@@ -259,13 +289,11 @@ const Accommodation = () => {
             </div>
           ) : (
             <>
-              {accommodations.map(accommodation => (
+              {currentAccommodations.map(item => (
                 <AccommodationCard
-                  key={accommodation._id}
-                  accommodation={accommodation}
-                  saved={savedAccommodations.includes(accommodation._id)}
-                  onSave={toggleSaveAccommodation}
-                  onClick={() => handleAccommodationClick(accommodation._id)}
+                  key={item._id}
+                  item={item}
+                  onClick={() => navigate(`/accommodation/${item._id}`)}
                 />
               ))}
 

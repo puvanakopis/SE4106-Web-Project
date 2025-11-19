@@ -86,7 +86,7 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-const uploadAccommodationImages = upload.array('accommodation_images', 10);
+const uploadAccommodationImages = upload.array('images', 10);
 
 const createAccommodation = async (req, res) => {
   try {
@@ -131,7 +131,7 @@ const createAccommodation = async (req, res) => {
       delete accommodationData.replaceImages;
 
       if (req.files?.length > 0) {
-        accommodationData.accommodation_images = req.files.map(file =>
+        accommodationData.images = req.files.map(file =>
           `/uploads/accommodations/${path.basename(file.path)}`
         );
       }
@@ -140,7 +140,7 @@ const createAccommodation = async (req, res) => {
       await accommodation.save();
 
       if (req.files?.length > 0) {
-        accommodation.accommodation_images = await renameUploadedFiles(req.files, accommodation._id);
+        accommodation.images = await renameUploadedFiles(req.files, accommodation._id);
         await accommodation.save();
       }
 
@@ -183,7 +183,7 @@ const getAccommodations = async (req, res) => {
     const {
       page = 1,
       limit = 10,
-      accommodation_type,
+      type,
       property_type,
       min_price,
       max_price,
@@ -205,7 +205,7 @@ const getAccommodations = async (req, res) => {
 
     const filter = {};
 
-    if (accommodation_type) filter.accommodation_type = accommodation_type;
+    if (type) filter.type = type;
     if (property_type) filter.property_type = property_type;
     if (available) filter.available = available;
     if (status) filter.status = status;
@@ -230,7 +230,7 @@ const getAccommodations = async (req, res) => {
 
     if (search) {
       filter.$or = [
-        { accommodation_name: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
         { address: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } }
       ];
@@ -327,13 +327,13 @@ const updateAccommodation = async (req, res) => {
 
       if (req.files?.length > 0) {
         const existingAccommodation = await Accommodation.findById(req.params.id);
-        const existingImagesCount = existingAccommodation ? existingAccommodation.accommodation_images.length : 0;
+        const existingImagesCount = existingAccommodation ? existingAccommodation.images.length : 0;
 
         const newImages = await renameUploadedFiles(req.files, req.params.id, existingImagesCount);
 
         if (updateData.replaceImages === 'true') {
-          if (existingAccommodation?.accommodation_images) {
-            existingAccommodation.accommodation_images.forEach(imagePath => {
+          if (existingAccommodation?.images) {
+            existingAccommodation.images.forEach(imagePath => {
               const fullPath = path.join(__dirname, '..', imagePath);
               if (fs.existsSync(fullPath)) {
                 try {
@@ -344,9 +344,9 @@ const updateAccommodation = async (req, res) => {
               }
             });
           }
-          updateData.accommodation_images = newImages;
+          updateData.images = newImages;
         } else {
-          updateData.accommodation_images = [...(existingAccommodation?.accommodation_images || []), ...newImages];
+          updateData.images = [...(existingAccommodation?.images || []), ...newImages];
         }
       }
 
@@ -400,8 +400,8 @@ const deleteAccommodation = async (req, res) => {
       });
     }
 
-    if (accommodation.accommodation_images?.length > 0) {
-      accommodation.accommodation_images.forEach(imagePath => {
+    if (accommodation.images?.length > 0) {
+      accommodation.images.forEach(imagePath => {
         const fullPath = path.join(__dirname, '..', imagePath);
         if (fs.existsSync(fullPath)) {
           try {
@@ -515,7 +515,7 @@ const getAccommodationsByOwner = async (req, res) => {
     const {
       page = 1,
       limit = 10,
-      accommodation_type,
+      type,
       property_type,
       status,
       available,
@@ -525,7 +525,7 @@ const getAccommodationsByOwner = async (req, res) => {
 
     const filter = { owner_id };
 
-    if (accommodation_type) filter.accommodation_type = accommodation_type;
+    if (type) filter.type = type;
     if (property_type) filter.property_type = property_type;
     if (status) filter.status = status;
     if (available) filter.available = available;
@@ -565,7 +565,7 @@ const getAccommodationsByOwner = async (req, res) => {
       { $match: filter },
       {
         $group: {
-          _id: "$accommodation_type",
+          _id: "$type",
           count: { $sum: 1 }
         }
       }
