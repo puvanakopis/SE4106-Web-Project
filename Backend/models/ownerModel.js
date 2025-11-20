@@ -47,18 +47,22 @@ const ownerSchema = new mongoose.Schema({
         enum: ["Active", "Blocked"],
         default: "Active"
     },
+    averageRating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
     totalReviews: {
         type: Number,
         default: 0
     },
-    averageRating: {
-        type: Number,
-        default: 0
-    },
     ratingCount: {
-        type: Map,
-        of: Number,
-        default: {}
+        1: { type: Number, default: 0 },
+        2: { type: Number, default: 0 },
+        3: { type: Number, default: 0 },
+        4: { type: Number, default: 0 },
+        5: { type: Number, default: 0 }
     },
     createdDate: {
         type: Date,

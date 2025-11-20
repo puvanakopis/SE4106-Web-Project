@@ -33,7 +33,7 @@
   margin: 1rem 0 0.5rem;
 }
 
-.error-message {
+.error-messages {
   font-size: 1.25rem;
   color: var(--error-text-medium);
   margin-bottom: 0;

@@ -76,8 +76,8 @@ const PopularAccommodations = ({ setLoading }) => {
     };
 
     const getImageUrl = (acc) => {
-        if (acc.accommodation_images?.length > 0) {
-            const img = acc.accommodation_images[0];
+        if (acc.images?.length > 0) {
+            const img = acc.images[0];
             if (img.startsWith('http')) return img;
             if (img.startsWith('/uploads/')) return `http://localhost:5000${img}`;
             return `http://localhost:5000/uploads/accommodations/${img}`;
@@ -117,11 +117,11 @@ const PopularAccommodations = ({ setLoading }) => {
                                 onError={e => e.target.src = "/images/default-accommodation.jpg"}
                             />
 
-                            <div className="property-badge">{acc.accommodation_type}</div>
+                            <div className="property-badge">{acc.type}</div>
 
                             <button
                                 className={`save-button ${savedAccommodations.includes(acc._id) ? 'saved' : ''}`}
-                                onClick={(e) => toggleSaveAccommodation(acc._id, acc.accommodation_name, e)}
+                                onClick={(e) => toggleSaveAccommodation(acc._id, acc.name, e)}
                             >
                                 {savedAccommodations.includes(acc._id)
                                     ? <FaHeart className="icon-heart-filled" />
@@ -129,7 +129,7 @@ const PopularAccommodations = ({ setLoading }) => {
                             </button>
 
                             <div className="accommodation-info">
-                                <h3>{acc.accommodation_name}</h3>
+                                <h3>{acc.name}</h3>
                                 <p className="location">{acc.address}</p>
                                 <p className="property-type">
                                     {acc.property_type} • {acc.bedrooms} bed • {acc.bathrooms} bath

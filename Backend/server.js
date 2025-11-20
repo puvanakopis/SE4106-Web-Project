@@ -22,11 +22,7 @@ app.use('/api/accommodations', require('./routes/accommodationRoutes'));
 app.use('/api/transport-bookings', require('./routes/transportBookingRoutes'));
 app.use('/api/accommodation-bookings', require('./routes/accommodationBookingRoutes'));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
     console.log('MongoDB connected');
     await seedAdmin();

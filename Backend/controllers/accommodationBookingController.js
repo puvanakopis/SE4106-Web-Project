@@ -84,7 +84,7 @@ const createAccommodationBooking = async (req, res) => {
 
         const booking = new AccommodationBooking({
             renter,
-            owner: accommodationData.owner_id, 
+            owner: accommodationData.owner_id,
             accommodation,
             booking_start: new Date(booking_start),
             booking_end: new Date(booking_end),
@@ -170,7 +170,7 @@ const getAccommodationBooking = async (req, res) => {
             .populate({
                 path: "owner",
                 select: "fullName displayName phoneNumber email firstName lastName",
-                model: [Owner, User] 
+                model: [Owner, User]
             })
             .populate("accommodation");
 
@@ -206,7 +206,7 @@ const getBookingsByRenter = async (req, res) => {
             .populate({
                 path: "owner",
                 select: "fullName displayName phoneNumber email firstName lastName",
-                model: [Owner, User] 
+                model: [Owner, User]
             })
             .sort({ createdDate: -1 })
             .limit(limit * 1)
@@ -361,7 +361,7 @@ const cancelBooking = async (req, res) => {
             .populate({
                 path: "owner",
                 select: "fullName displayName phoneNumber email firstName lastName",
-                model: [Owner, User] 
+                model: [Owner, User]
             })
             .populate("accommodation");
 
@@ -393,7 +393,8 @@ const addReview = async (req, res) => {
 
         const booking = await AccommodationBooking.findById(req.params.id)
             .populate("accommodation")
-            .populate("renter");
+            .populate("renter")
+            .populate("owner");
 
         if (!booking) {
             return res.status(404).json({
@@ -444,18 +445,36 @@ const addReview = async (req, res) => {
             await accommodation.save();
         }
 
+        const owner = await Owner.findById(booking.owner._id);
+        if (owner) {
+            if (!owner.ratingCount) {
+                owner.ratingCount = {
+                    1: 0, 2: 0, 3: 0, 4: 0, 5: 0
+                };
+            }
+
+            owner.ratingCount[rating] = (owner.ratingCount[rating] || 0) + 1;
+
+            const totalRatings = Object.values(owner.ratingCount).reduce((sum, count) => sum + count, 0);
+            const ratingSum = Object.entries(owner.ratingCount).reduce((sum, [star, count]) => sum + (parseInt(star) * count), 0);
+            owner.averageRating = totalRatings > 0 ? ratingSum / totalRatings : 0;
+            owner.totalReviews = totalRatings;
+
+            await owner.save();
+        }
+
         const updatedBooking = await AccommodationBooking.findById(booking._id)
             .populate("renter", "fullName email phone")
             .populate({
                 path: "owner",
                 select: "fullName displayName phoneNumber email firstName lastName",
-                model: [Owner, User] 
+                model: [Owner, User]
             })
             .populate("accommodation");
 
         res.json({
             success: true,
-            message: "Review added successfully",
+            message: "Review added successfully to both accommodation and owner",
             booking: updatedBooking
         });
     } catch (error) {

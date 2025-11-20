@@ -228,7 +228,7 @@ const AdminOwnerProperties = ({ owner, onClose, onEdit, onDelete, onBlockToggle 
                       <td>
                         <div className="property-info">
                           <img
-                            src={getImageUrl(accommodation.accommodation_images?.[0])}
+                            src={getImageUrl(accommodation.images?.[0])}
                             alt={accommodation.accommodation_name}
                             className="property-thumbnail"
                             onError={(e) => {

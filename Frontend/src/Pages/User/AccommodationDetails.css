@@ -1,4 +1,4 @@
-/* ==================== BASE STYLES ==================== */
+/* ---------------------- BASE STYLES ---------------------- */
 .accommodation-details {
   padding: 2rem 5%;
   max-width: 1400px;
@@ -6,7 +6,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ==================== LOADING & ERROR STATES ==================== */
+/* ---------------------- LOADING & ERROR STATES ---------------------- */
 .accommodation-loading,
 .accommodation-not-found {
   display: flex;
@@ -65,7 +65,7 @@
   background: var(--primary-hover);
 }
 
-/* ==================== ROOM HEADER ==================== */
+/* ---------------------- ROOM HEADER ---------------------- */
 .accommodation-header {
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--border-color);
@@ -120,7 +120,7 @@
   height: 16px;
 }
 
-/* ==================== ROOM GALLERY ==================== */
+/* ---------------------- ROOM GALLERY ---------------------- */
 .accommodation-gallery {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -183,7 +183,7 @@
   object-fit: cover;
 }
 
-/* ==================== MAIN CONTENT LAYOUT ==================== */
+/* ---------------------- MAIN CONTENT LAYOUT ---------------------- */
 .accommodation-content {
   width: 100%;
   display: flex;
@@ -200,7 +200,7 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-/* ==================== LEFT COLUMN - ROOM SPECS ==================== */
+/* ---------------------- LEFT COLUMN - ROOM SPECS ---------------------- */
 .accommodation-specs {
   flex: 1;
   background-color: var(--background-light);
@@ -393,7 +393,7 @@
   transform: translateY(-1px);
 }
 
-/* ==================== RIGHT COLUMN - BOOKING CARD ==================== */
+/* ---------------------- RIGHT COLUMN - BOOKING CARD ---------------------- */
 .accommodation-booking {
   width: 350px;
   flex-shrink: 0;
@@ -534,7 +534,7 @@
   opacity: 0.7;
 }
 
-/* ==================== RESPONSIVE ADJUSTMENTS ==================== */
+/* ---------------------- RESPONSIVE ADJUSTMENTS ---------------------- */
 @media (max-width: 1024px) {
   .accommodation-content {
     flex-direction: column;

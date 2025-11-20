@@ -300,7 +300,8 @@ const addReview = async (req, res) => {
 
         const booking = await TransportBooking.findById(req.params.id)
             .populate("transport")
-            .populate("renter");
+            .populate("renter")
+            .populate("owner");
 
         if (!booking) {
             return res.status(404).json({
@@ -351,6 +352,19 @@ const addReview = async (req, res) => {
             await transport.save();
         }
 
+        const owner = await Owner.findById(booking.owner._id);
+        if (owner) {
+
+            owner.ratingCount[rating] = (owner.ratingCount[rating] || 0) + 1;
+
+            const totalRatings = Object.values(owner.ratingCount).reduce((sum, count) => sum + count, 0);
+            const ratingSum = Object.entries(owner.ratingCount).reduce((sum, [star, count]) => sum + (parseInt(star) * count), 0);
+            owner.averageRating = totalRatings > 0 ? ratingSum / totalRatings : 0;
+            owner.totalReviews = totalRatings;
+
+            await owner.save();
+        }
+
         const updatedBooking = await TransportBooking.findById(booking._id)
             .populate("renter", "fullName email phone")
             .populate("owner", "fullName displayName phoneNumber")
@@ -358,7 +372,7 @@ const addReview = async (req, res) => {
 
         res.json({
             success: true,
-            message: "Review added successfully",
+            message: "Review added successfully to both transport and owner",
             booking: updatedBooking
         });
     } catch (error) {
