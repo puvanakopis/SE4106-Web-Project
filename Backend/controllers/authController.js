@@ -1,19 +1,14 @@
-// Below is a complete working example that correctly saves profile photos
-// into uploads/user/ with proper file renaming and path storage.
-
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const { validationResult, body } = require('express-validator');
 const path = require('path');
 const fs = require('fs');
 
-// Generate JWT
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 
-// Extract file extension
-const getFileExtension = (filename) => filename.split('.').pop();
-
-/* ===================== VALIDATION RULES ===================== */
+const getFileExtension = (filename) => {
+  return filename.split('.').pop();
+};
 
 const registerValidation = [
   body('fullName')
@@ -53,10 +48,11 @@ const updateProfileValidation = [
 ];
 
 const changePasswordValidation = [
-  body('currentPassword').notEmpty().withMessage('Current password is required'),
-  body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
+  body('currentPassword')
+    .notEmpty().withMessage('Current password is required'),
+  body('newPassword')
+    .isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
 ];
-
 
 const register = async (req, res) => {
   try {
@@ -68,21 +64,23 @@ const register = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ success: false, message: 'User already exists with this email' });
 
-    let user = await User.create({ fullName, email, password, role });
+    let userData = { fullName, email, password, role };
+    let user;
 
     if (req.file) {
+      user = await User.create(userData);
+
       const fileExtension = getFileExtension(req.file.filename);
-      const newFilename = `${user._id}.${fileExtension}`;
+      const newFilename = `profile-${user._id}.${fileExtension}`;
+      const newFilePath = path.join(path.dirname(req.file.path), newFilename);
 
-      const newFilePath = path.join('uploads/user', newFilename);
-      const uploadDir = path.join(__dirname, '..', 'uploads/user');
+      fs.renameSync(req.file.path, newFilePath);
+      const photoPath = `uploads/${newFilename}`;
 
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-      fs.renameSync(req.file.path, path.join(__dirname, '..', newFilePath));
-
-      user.photo = `uploads/user/${newFilename}`;
+      user.photo = photoPath;
       await user.save();
+    } else {
+      user = await User.create(userData);
     }
 
     const token = generateToken(user._id);
@@ -101,14 +99,11 @@ const register = async (req, res) => {
         photo: user.photo
       }
     });
-
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ success: false, message: 'Server error during registration' });
   }
 };
-
-
 
 const login = async (req, res) => {
   try {
@@ -147,11 +142,61 @@ const login = async (req, res) => {
   }
 };
 
-
-
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        displayName: user.displayName,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        role: user.role,
+        photo: user.photo
+      }
+    });
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
+
+    const { fullName, displayName, email, phone, address } = req.body;
+    const updateData = { fullName, displayName, email, phone, address };
+
+    if (email && email !== req.user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ success: false, message: 'Email is already taken' });
+      }
+    }
+
+    if (req.file) {
+      const currentUser = await User.findById(req.user.id);
+      if (currentUser.photo) {
+        const oldPhotoPath = path.join(__dirname, '..', currentUser.photo);
+        if (fs.existsSync(oldPhotoPath)) {
+          fs.unlinkSync(oldPhotoPath);
+        }
+      }
+
+      const fileExtension = getFileExtension(req.file.filename);
+      const newFilename = `profile-${req.user.id}.${fileExtension}`;
+      const newFilePath = path.join(path.dirname(req.file.path), newFilename);
+
+      fs.renameSync(req.file.path, newFilePath);
+      updateData.photo = `uploads/${newFilename}`;
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true, runValidators: true });
 
     res.json({
       success: true,
@@ -166,90 +211,58 @@ const getMe = async (req, res) => {
         photo: user.photo
       }
     });
-
-  } catch (error) {
-    console.error('Get user error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-};
-
-
-
-const updateProfile = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
-
-    const { fullName, displayName, email, phone, address } = req.body;
-    const updateData = { fullName, displayName, email, phone, address };
-
-    if (email && email !== req.user.email) {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) return res.status(400).json({ success: false, message: 'Email is already taken' });
-    }
-
-    if (req.file) {
-      const user = await User.findById(req.user.id);
-
-      if (user.photo) {
-        const oldPhoto = path.join(__dirname, '..', user.photo);
-        if (fs.existsSync(oldPhoto)) fs.unlinkSync(oldPhoto);
-      }
-
-      const fileExtension = getFileExtension(req.file.filename);
-      const newFilename = `${user._id}.${fileExtension}`;
-      const newFilePath = path.join('uploads/user', newFilename);
-
-      fs.renameSync(req.file.path, path.join(__dirname, '..', newFilePath));
-      updateData.photo = `uploads/user/${newFilename}`;
-    }
-
-    const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true, runValidators: true });
-
-    res.json({ success: true, user });
-
   } catch (error) {
     console.error('Update profile error:', error);
     res.status(500).json({ success: false, message: 'Server error during profile update' });
   }
 };
 
-
 const deleteAccount = async (req, res) => {
   try {
     const { password } = req.body;
+
     const user = await User.findById(req.user.id).select('+password');
 
-    if (!(await user.matchPassword(password)))
+    if (!(await user.matchPassword(password))) {
       return res.status(400).json({ success: false, message: 'Password is incorrect' });
+    }
 
     if (user.photo) {
       const photoPath = path.join(__dirname, '..', user.photo);
-      if (fs.existsSync(photoPath)) fs.unlinkSync(photoPath);
+      if (fs.existsSync(photoPath)) {
+        fs.unlinkSync(photoPath);
+      }
     }
 
     user.isActive = false;
     await user.save();
 
-    res.json({ success: true, message: 'Account deleted successfully' });
-
+    res.json({
+      success: true,
+      message: 'Account deleted successfully'
+    });
   } catch (error) {
     console.error('Delete account error:', error);
     res.status(500).json({ success: false, message: 'Server error during account deletion' });
   }
 };
 
-
 const logout = async (req, res) => {
   try {
-    res.cookie('token', '', { httpOnly: true, expires: new Date(0) });
-    res.json({ success: true, message: 'Logged out successfully' });
+    res.cookie('token', '', {
+      httpOnly: true,
+      expires: new Date(0)
+    });
+
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
   } catch (error) {
     console.error('Logout error:', error);
     res.status(500).json({ success: false, message: 'Server error during logout' });
   }
 };
-
 
 const changePassword = async (req, res) => {
   try {
@@ -257,16 +270,20 @@ const changePassword = async (req, res) => {
     if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
 
     const { currentPassword, newPassword } = req.body;
+
     const user = await User.findById(req.user.id).select('+password');
 
-    if (!(await user.matchPassword(currentPassword)))
+    if (!(await user.matchPassword(currentPassword))) {
       return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+    }
 
     user.password = newPassword;
     await user.save();
 
-    res.json({ success: true, message: 'Password updated successfully' });
-
+    res.json({
+      success: true,
+      message: 'Password updated successfully'
+    });
   } catch (error) {
     console.error('Change password error:', error);
     res.status(500).json({ success: false, message: 'Server error during password change' });

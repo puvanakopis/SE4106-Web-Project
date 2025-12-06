@@ -10,19 +10,6 @@ const Home = () => {
   const [accommodationsLoading, setAccommodationsLoading] = useState(false);
   const [transportLoading, setTransportLoading] = useState(false);
 
-  const isLoading = accommodationsLoading || transportLoading;
-
-  // if (isLoading) {
-  //   return (
-  //     <div className="booking-container">
-  //       <div className="dashboard-loading">
-  //         <div className="loading-spinner"></div>
-  //         <p>Loading your home page...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div>
       <Hero />

@@ -1,33 +1,8 @@
-import { useEffect, useState } from 'react';
 import testimonial1 from '../../Assets/About/testimonial1.jpg'
 import testimonial2 from '../../Assets/About/testimonial2.jpg'
 import './About.css'
 
 const About = () => {
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    setLoading(true);
-
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 200);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading your about page...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>{/* ------------- Hero Section ------------- */}
       <section className="about-hero">
@@ -41,18 +16,15 @@ const About = () => {
       <div className="about-page">
         {/* ------------- Mission Section ------------- */}
         <section className="about-section mission-section">
-          <div className="section-header">
-            <h2>Our Mission</h2>
-            <p>Serving the Sabaragamuwa University community with trusted housing</p>
-            <div>
-              We specialize in connecting Sabaragamuwa University students and lecturers with
-              quality, affordable housing options in Belihuloya and surrounding areas.
-              Our platform addresses the unique accommodation challenges faced by our university community.
-              <br /><br />
-              From verified boarding houses to shared apartments near campus, we ensure every listing
-              meets strict safety and quality standards. Our integrated transport solutions help
-              overcome the mobility challenges in the Belihuloya area.
-            </div>
+          <h2>Our Mission</h2>
+          <div>
+            We specialize in connecting Sabaragamuwa University students and lecturers with
+            quality, affordable housing options in Belihuloya and surrounding areas.
+            Our platform addresses the unique accommodation challenges faced by our university community.
+            <br /><br />
+            From verified boarding houses to shared apartments near campus, we ensure every listing
+            meets strict safety and quality standards. Our integrated transport solutions help
+            overcome the mobility challenges in the Belihuloya area.
           </div>
         </section>
 
@@ -80,10 +52,7 @@ const About = () => {
 
         {/* ------------- Testimonials Section ------------- */}
         <section className="about-section testimonials-section">
-          <div className="section-header">
-            <h2>Sabaragamuwa Experiences</h2>
-            <p>What our university community says about us</p>
-          </div>
+          <h2>Sabaragamuwa Experiences</h2>
           <div className="testimonials">
             <div className="testimonial-card">
               <div className="testimonial-content">

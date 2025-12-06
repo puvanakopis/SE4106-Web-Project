@@ -11,6 +11,7 @@ import OwnerDetails from './OwnerDetails';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './AccommodationDetails.css';
+import Loading from '../Loading';
 
 const AccommodationDetails = () => {
   const { id } = useParams();
@@ -317,14 +318,7 @@ const AccommodationDetails = () => {
   };
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading your accommodation details...</p>
-        </div>
-      </div>
-    );
+    return <Loading text='Loading your accommodation details...' />
   }
 
   if (!accommodation) {

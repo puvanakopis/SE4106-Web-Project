@@ -5,6 +5,7 @@ import FiltersSidebar from '../../Components/User/FiltersSidebar';
 import Pagination from '../../Components/Pagination';
 import ItemCard from '../../Components/User/ItemCard';
 import './Transport.css';
+import Loading from '../Loading';
 
 const Transport = () => {
   const navigate = useNavigate();
@@ -234,24 +235,7 @@ const Transport = () => {
   };
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading your vehicles...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error && transports.length === 0) {
-    return (
-      <div className="transport-error">
-        <h3>Error loading vehicles</h3>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Try Again</button>
-      </div>
-    );
+    return <Loading text='Loading your vehicles...' />
   }
 
   return (
@@ -263,7 +247,7 @@ const Transport = () => {
           onClick={() => setOpenFilters(!openFilters)}
           aria-expanded={openFilters}
         >
-          {openFilters ? <><FaTimes /> Hide Filters</> : <><FaFilter /> Show Filters</> }
+          {openFilters ? <><FaTimes /> Hide Filters</> : <><FaFilter /> Show Filters</>}
         </button>
       </div>
 

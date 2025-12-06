@@ -4,6 +4,7 @@ import { AuthContext } from '../../Context/AuthContext';
 import Feedback from './Feedback';
 import StarRating from '../../Components/Rating/StarRating';
 import './Booking.css';
+import Loading from '../Loading';
 
 const Booking = () => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ const Booking = () => {
       const vehicleBookings = transportData.bookings || transportData.data?.bookings || [];
 
       const { confirmed, completed, cancelled } = processBookingsData(roomBookings, vehicleBookings);
-      
+
       setConfirmedBookings(confirmed);
       setCompletedBookings(completed);
       setCancelledBookings(cancelled);
@@ -95,11 +96,11 @@ const Booking = () => {
   // Create standardized booking data
   const createBookingData = (booking, type) => {
     const isAccommodation = type === 'accommodation';
-    
+
     // Handle different field names between accommodation and transport bookings
     const reviewRating = booking.review?.rating;
     const reviewComment = booking.review?.comment;
-    
+
     const item = isAccommodation ? booking.accommodation : booking.transport;
     const owner = booking.owner || {};
     const renter = booking.renter || {};
@@ -248,8 +249,8 @@ const Booking = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          booking_status: status 
+        body: JSON.stringify({
+          booking_status: status
         })
       });
 
@@ -273,11 +274,11 @@ const Booking = () => {
   const completeBookingWithReview = async (bookingId, type, reviewData) => {
     try {
       setIsSubmitting(true);
-      
+
       if (type === 'accommodation') {
         // First update status to completed
         await updateAccommodationBookingStatus(bookingId, 'completed');
-        
+
         // Then add review if provided
         if (reviewData.rating > 0) {
           await addAccommodationReview(bookingId, reviewData);
@@ -285,13 +286,13 @@ const Booking = () => {
       } else {
         // First update status to completed
         await updateTransportBookingStatus(bookingId, 'completed');
-        
+
         // Then add review if provided
         if (reviewData.rating > 0) {
           await addTransportReview(bookingId, reviewData);
         }
       }
-      
+
       return true;
     } catch (error) {
       console.error('Error completing booking with review:', error);
@@ -305,13 +306,13 @@ const Booking = () => {
   const completeBookingWithoutReview = async (bookingId, type) => {
     try {
       setIsSubmitting(true);
-      
+
       if (type === 'accommodation') {
         await updateAccommodationBookingStatus(bookingId, 'completed');
       } else {
         await updateTransportBookingStatus(bookingId, 'completed');
       }
-      
+
       return true;
     } catch (error) {
       console.error('Error completing booking without review:', error);
@@ -358,7 +359,7 @@ const Booking = () => {
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'Invalid Date';
-      
+
       const options = { year: 'numeric', month: 'short', day: 'numeric' };
       return date.toLocaleDateString(undefined, options);
     } catch (error) {
@@ -387,10 +388,10 @@ const Booking = () => {
   // Cancel booking
   const cancelBooking = async (bookingId, type, e) => {
     e.stopPropagation();
-    
+
     const cancellationReason = prompt('Please provide a reason for cancellation:');
     if (!cancellationReason) return;
-    
+
     if (window.confirm('Are you sure you want to cancel this booking?')) {
       try {
         if (type === 'accommodation') {
@@ -398,7 +399,7 @@ const Booking = () => {
         } else {
           await updateTransportBookingStatus(bookingId, 'cancelled');
         }
-        
+
         await fetchBookings();
         alert('Booking cancelled successfully');
       } catch (error) {
@@ -443,7 +444,7 @@ const Booking = () => {
         await completeBookingWithoutReview(selectedBooking.id, selectedBooking.type);
         alert('Booking marked as completed!');
       }
-      
+
       await fetchBookings();
       setShowRatingPopup(false);
       setSelectedBooking(null);
@@ -549,14 +550,7 @@ const Booking = () => {
   };
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading your bookings...</p>
-        </div>
-      </div>
-    );
+    return <Loading text='Loading your bookings...' />
   }
 
   return (

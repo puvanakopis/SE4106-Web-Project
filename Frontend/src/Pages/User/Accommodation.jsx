@@ -5,6 +5,7 @@ import FiltersSidebar from '../../Components/User/FiltersSidebar';
 import Pagination from '../../Components/Pagination';
 import ItemCard from '../../Components/User/ItemCard';
 import './Accommodation.css';
+import Loading from '../Loading';
 
 const Accommodation = () => {
   const navigate = useNavigate();
@@ -224,25 +225,9 @@ const Accommodation = () => {
   const totalPages = Math.ceil(filteredAccommodations.length / accommodationsPerPage);
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading your accommodations...</p>
-        </div>
-      </div>
-    );
+    return <Loading text='Loading your accommodations...' />
   }
 
-  if (error && accommodations.length === 0) {
-    return (
-      <div className="accommodation-error">
-        <h3>Error loading accommodations</h3>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Try Again</button>
-      </div>
-    );
-  }
 
   return (
     <div className="accommodation">

@@ -3,6 +3,7 @@ import { AuthContext } from '../../Context/AuthContext';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './AdminDashboard.css';
+import Loading from '../Loading';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -141,11 +142,11 @@ const AdminDashboard = () => {
     const totalAccommodations = accommodations.length;
     const occupiedAccommodations = accommodations.filter(acc => !acc.isAvailable).length;
     const availableAccommodations = totalAccommodations - occupiedAccommodations;
-    
+
     const averageRating = accommodations.length > 0
       ? accommodations.reduce((sum, acc) => sum + (acc.averageRating || 0), 0) / totalAccommodations
       : 0;
-    
+
     const averagePrice = accommodations.length > 0
       ? accommodations.reduce((sum, acc) => sum + (acc.price_per_month || 0), 0) / totalAccommodations
       : 0;
@@ -163,11 +164,11 @@ const AdminDashboard = () => {
     const totalVehicles = vehicles.length;
     const rentedVehicles = vehicles.filter(vehicle => !vehicle.isAvailable).length;
     const availableVehicles = totalVehicles - rentedVehicles;
-    
+
     const averageRating = vehicles.length > 0
       ? vehicles.reduce((sum, vehicle) => sum + (vehicle.averageRating || 0), 0) / totalVehicles
       : 0;
-    
+
     const averagePrice = vehicles.length > 0
       ? vehicles.reduce((sum, vehicle) => sum + (vehicle.rental_price_per_day || 0), 0) / totalVehicles
       : 0;
@@ -188,10 +189,10 @@ const AdminDashboard = () => {
 
     // Count owners with properties (both accommodations and vehicles)
     const ownersWithProperties = owners.filter(owner => {
-      const hasAccommodations = accommodations.some(acc => 
+      const hasAccommodations = accommodations.some(acc =>
         acc.owner_id === owner._id || acc.owner_id?._id === owner._id
       );
-      const hasVehicles = vehicles.some(vehicle => 
+      const hasVehicles = vehicles.some(vehicle =>
         vehicle.owner_id === owner._id || vehicle.owner_id?._id === owner._id
       );
       return hasAccommodations || hasVehicles;
@@ -211,7 +212,7 @@ const AdminDashboard = () => {
     const confirmedAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'confirmed').length;
     const cancelledAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'cancelled').length;
     const completedAccommodationBookings = accommodationBookings.filter(b => b.booking_status === 'completed').length;
-    
+
     // Calculate accommodation revenue from completed payments
     const accommodationRevenue = accommodationBookings.reduce((sum, booking) => {
       if (booking.paymentDetails?.paymentStatus === "completed" || booking.isPaid) {
@@ -225,7 +226,7 @@ const AdminDashboard = () => {
     const confirmedVehicleBookings = vehicleBookings.filter(b => b.booking_status === 'confirmed').length;
     const cancelledVehicleBookings = vehicleBookings.filter(b => b.booking_status === 'cancelled').length;
     const completedVehicleBookings = vehicleBookings.filter(b => b.booking_status === 'completed').length;
-    
+
     // Calculate vehicle revenue from completed payments
     const vehicleRevenue = vehicleBookings.reduce((sum, booking) => {
       if (booking.paymentDetails?.paymentStatus === "completed" || booking.isPaid) {
@@ -365,10 +366,7 @@ const AdminDashboard = () => {
   // ----------------------- Render Method -----------------------
   if (isLoading) {
     return (
-      <div className="dashboard-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading dashboard data...</p>
-      </div>
+      <Loading text="Loading dashboard data..." />
     );
   }
 
@@ -387,7 +385,7 @@ const AdminDashboard = () => {
         pauseOnHover
         theme="light"
       />
-      
+
       {/* ----------------------- Header Section ----------------------- */}
       <div className="dashboard-header">
         <h1 className="title">Admin Dashboard</h1>
@@ -849,10 +847,10 @@ const AdminDashboard = () => {
                       </td>
                       <td>{owner.email || 'N/A'}</td>
                       <td>
-                        {accommodations.filter(acc => 
+                        {accommodations.filter(acc =>
                           acc.owner_id === owner._id || acc.owner_id?._id === owner._id
                         ).length +
-                          vehicles.filter(vehicle => 
+                          vehicles.filter(vehicle =>
                             vehicle.owner_id === owner._id || vehicle.owner_id?._id === owner._id
                           ).length}
                       </td>

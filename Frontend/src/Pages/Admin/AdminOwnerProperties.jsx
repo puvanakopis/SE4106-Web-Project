@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './AdminOwnerProperties.css';
+import Loading from '../Loading';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -124,16 +125,7 @@ const AdminOwnerProperties = ({ owner, onClose, onEdit, onDelete, onBlockToggle 
   };
 
   if (loading) {
-    return (
-      <div className="owner-properties">
-        <div className="modal-content">
-          <div className="loading-state">
-            <div className="loading-spinner"></div>
-            <p>Loading properties...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loading text='Loading admin properties...'/>
   }
 
   return (

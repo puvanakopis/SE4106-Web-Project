@@ -671,12 +671,6 @@
   gap: 20px;
 }
 
-.loading {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .profile-picture-upload {

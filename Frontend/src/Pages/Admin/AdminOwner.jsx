@@ -4,6 +4,7 @@ import OwnerProperties from './AdminOwnerProperties';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {AuthContext} from '../../Context/AuthContext'; 
+import Loading from '../Loading';
 
 const AdminOwner = () => {
   const [owners, setOwners] = useState([]);
@@ -230,12 +231,9 @@ const AdminOwner = () => {
 
   const ownerStats = calculateOwnerStats();
 
-  if (loading && owners.length === 0) {
+  if (loading) {
     return (
-      <div className="dashboard-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading dashboard data...</p>
-      </div>
+      <Loading text='Loading Admin Owner data...'/>
     );
   }
 

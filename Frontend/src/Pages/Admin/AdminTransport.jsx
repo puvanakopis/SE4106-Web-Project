@@ -3,6 +3,7 @@ import { assets } from '../../Assets/assets';
 import './AdminTransport.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loading from '../Loading';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -571,12 +572,7 @@ const AdminTransport = () => {
 
   // ----------------------- Render Method -----------------------
   if (loading) {
-    return (
-      <div className="dashboard-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading dashboard data...</p>
-      </div>
-    );
+    return <Loading text='Loading admin transport ...'/>
   }
 
   return (

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { assets } from '../../Assets/assets';
+import { useState } from 'react';
+import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaGlobe } from 'react-icons/fa';
 import './Contact.css';
 
 const Contact = () => {
@@ -13,17 +13,6 @@ const Contact = () => {
 
     const [submitted, setSubmitted] = useState(false);
     const [activeFaq, setActiveFaq] = useState(null);
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        setLoading(true);
-
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 200);
-
-        return () => clearTimeout(timer);
-    }, []);
 
 
     const handleChange = (e) => {
@@ -52,38 +41,25 @@ const Contact = () => {
         setActiveFaq(activeFaq === index ? null : index);
     };
 
-
-    if (loading) {
-        return (
-            <div className="loading-container">
-                <div className="dashboard-loading">
-                    <div className="loading-spinner"></div>
-                    <p>Loading your contact page...</p>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <>  {/* ------------- Hero Section -------------*/}
+        <>
+            {/* ------------- Hero Section -------------*/}
             <section className="contact-hero">
                 <div className="hero-content">
                     <h1>Contact Us</h1>
                     <p>We're here to help and answer any questions you might have</p>
                 </div>
             </section>
+
+
             <div className="contact-page">
-
-
-                <div className="contact-container">
-                    {/* ------------- Contact Information ------------- */}
-                    <aside className="contact-info">
-                        <div className="info-card">
-                            <h2>Get in Touch</h2>
-                            <p>Have questions or need assistance? Reach out to us—we're here to help!</p>
-
+                <section className="contact-section">
+                    {/*  Contact Information  */}
+                    <div className="contact-info">
+                        <h2 className='section-header'>Get in Touch</h2>
+                        <div className='contact-info-container'>
                             <div className="info-item">
-                                <img src={assets.locationIcon} alt="Location icon" />
+                                <FaMapMarkerAlt className="icon" />
                                 <div>
                                     <h3>Address</h3>
                                     <p>University Road, Pambahinna, Belihuloya 70140, Sri Lanka</p>
@@ -91,7 +67,7 @@ const Contact = () => {
                             </div>
 
                             <div className="info-item">
-                                <img src={assets.phoneIcon} alt="Phone icon" />
+                                <FaPhoneAlt className="icon" />
                                 <div>
                                     <h3>Phone</h3>
                                     <p>1234567890</p>
@@ -100,26 +76,29 @@ const Contact = () => {
                             </div>
 
                             <div className="info-item">
-                                <img src={assets.emailIcon} alt="Email icon" />
+                                <FaEnvelope className="icon" />
                                 <div>
                                     <h3>Email</h3>
                                     <p>campusease@email.com</p>
                                     <p>Response within 24 hours</p>
                                 </div>
                             </div>
-                        </div>
-                    </aside>
 
-                    {/* ------------- Contact Form Section ------------- */}
-                    <main className="contact-form">
-                        <h2>Send Us a Message</h2>
-
-                        {submitted && (
-                            <div className="success-message" role="alert">
-                                Thank you for your message! We'll get back to you soon.
+                            <div className="info-item">
+                                <FaGlobe className="icon" />
+                                <div>
+                                    <h3>Website</h3>
+                                    <p>www.campusease.com</p>
+                                    <p>Visit for more info</p>
+                                </div>
                             </div>
-                        )}
+                        </div>
 
+                    </div>
+
+                    {/* Contact Form */}
+                    <div className="contact-form">
+                        <h2 className='section-header'>Send Us a Message</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <label htmlFor="name">Full Name</label>
@@ -191,48 +170,38 @@ const Contact = () => {
                                 Send Message
                             </button>
                         </form>
-                    </main>
-                </div>
+                    </div>
+                </section>
 
                 {/* ------------- Map Section ------------- */}
                 <section className="map-section">
-                    <div className="map-content-container">
-                        <div className="map-text-content">
-                            <h2>Visit Our Office</h2>
-                            <p>
-                                Located just minutes from Sabaragamuwa University (SUSL), our headquarters are conveniently situated for students and visitors. Easily accessible by bus or tuk-tuk, drop by to explore your accommodation options in person.
-                            </p>
-
-                            <div className="office-hours">
-                                <h3>Office Hours</h3>
-                                <ul>
-                                    <li><strong>Monday-Friday:</strong> 9:00 AM - 6:00 PM</li>
-                                    <li><strong>Saturday:</strong> 10:00 AM - 4:00 PM</li>
-                                    <li><strong>Sunday:</strong> Closed</li>
-                                </ul>
-                            </div>
+                    <div className="map-text-content">
+                        <h2 className='section-header'>Visit Our Office</h2>
+                        <div className="office-hours">
+                            <h3>Office Hours</h3>
+                            <ul>
+                                <li><strong>Monday-Friday:</strong> 9:00 AM - 6:00 PM</li>
+                                <li><strong>Saturday:</strong> 10:00 AM - 4:00 PM</li>
+                                <li><strong>Sunday:</strong> Closed</li>
+                            </ul>
                         </div>
+                    </div>
 
-                        <div className="map-container">
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.4517358854396!2d80.78464357448158!3d6.7145965209142044!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae38a5d15e55917%3A0x92bb8770edf29b53!2sSabaragamuwa%20University%20of%20Sri%20Lanka!5e0!3m2!1sen!2slk!4v1748275157732!5m2!1sen!2slk"
-                                className="w-full h-full"
-                                allowFullScreen=""
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                title="Sabaragamuwa University of Sri Lanka"
-                            ></iframe>
-                        </div>
+                    <div className="map-container">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.4517358854396!2d80.78464357448158!3d6.7145965209142044!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae38a5d15e55917%3A0x92bb8770edf29b53!2sSabaragamuwa%20University%20of%20Sri%20Lanka!5e0!3m2!1sen!2slk!4v1748275157732!5m2!1sen!2slk"
+                            className="w-full h-full"
+                            allowFullScreen=""
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            title="Sabaragamuwa University of Sri Lanka"
+                        ></iframe>
                     </div>
                 </section>
 
                 {/* ------------- FAQ Section ------------- */}
                 <section className="faq-section">
-                    <div className="section-header">
-                        <h2>Frequently Asked Questions</h2>
-                        <p>Find quick answers to common questions</p>
-                    </div>
-
+                    <h2 className='section-header'>Frequently Asked Questions</h2>
                     <div className="faq-container">
                         {[
                             {

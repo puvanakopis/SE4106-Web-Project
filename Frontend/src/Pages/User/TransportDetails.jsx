@@ -11,6 +11,7 @@ import OwnerDetails from './OwnerDetails';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './TransportDetails.css';
+import Loading from '../Loading';
 
 const TransportDetails = () => {
   const { id } = useParams();
@@ -286,14 +287,7 @@ const TransportDetails = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="loading-container">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading transport details...</p>
-        </div>
-      </div>
-    );
+    return <Loading text='Loading transport details...' />
   }
 
   if (!transport) {
